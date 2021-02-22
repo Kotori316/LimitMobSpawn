@@ -1,8 +1,9 @@
 package com.kotori316.limiter;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
@@ -12,10 +13,10 @@ import com.kotori316.limiter.conditions.Or;
 
 public interface TestSpawn {
 
-    boolean test(EntitySpawnPlacementRegistry.PlacementType placeType,
-                 IWorldReader worldIn,
+    boolean test(IWorldReader worldIn,
                  BlockPos pos,
-                 EntityType<?> entityTypeIn);
+                 EntityType<?> entityTypeIn,
+                 @Nullable SpawnReason reason);
 
     default Serializer<? extends TestSpawn> getSerializer() {
         return EMPTY_SERIALIZER;
@@ -51,7 +52,7 @@ public interface TestSpawn {
         INSTANCE;
 
         @Override
-        public boolean test(EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn) {
+        public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
             return false;
         }
     }

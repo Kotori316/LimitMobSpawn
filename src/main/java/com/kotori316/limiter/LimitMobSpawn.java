@@ -3,8 +3,9 @@ package com.kotori316.limiter;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,13 +32,13 @@ public class LimitMobSpawn {
         event.addListener(SpawnConditionLoader.INSTANCE);
     }
 
-    public static SpawnCheckResult allowSpawning(EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos,
-                                                 EntityType<?> entityTypeIn) {
-        boolean matchForce = forceSet.stream().anyMatch(spawn -> spawn.test(placeType, worldIn, pos, entityTypeIn));
+    public static SpawnCheckResult allowSpawning(IWorldReader worldIn, BlockPos pos,
+                                                 EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
+        boolean matchForce = forceSet.stream().anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchForce) return SpawnCheckResult.FORCE;
-        boolean matchDefault = defaultSet.stream().anyMatch(spawn -> spawn.test(placeType, worldIn, pos, entityTypeIn));
+        boolean matchDefault = defaultSet.stream().anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchDefault) return SpawnCheckResult.DEFAULT;
-        boolean matchDeny = denySet.stream().anyMatch(spawn -> spawn.test(placeType, worldIn, pos, entityTypeIn));
+        boolean matchDeny = denySet.stream().anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchDeny) return SpawnCheckResult.DENY;
         else return SpawnCheckResult.DEFAULT;
     }

@@ -3,8 +3,8 @@ package com.kotori316.limiter.conditions;
 import java.util.Objects;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
@@ -13,10 +13,10 @@ import com.kotori316.limiter.TestSpawn;
 
 public class Not implements TestSpawn {
     public static final TestSpawn.Serializer<Not> SERIALIZER = new Serializer();
-    private final TestSpawn t1;
+    private final TestSpawn value;
 
-    public Not(TestSpawn t1) {
-        this.t1 = t1;
+    public Not(TestSpawn value) {
+        this.value = value;
     }
 
     @Override
@@ -24,29 +24,29 @@ public class Not implements TestSpawn {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         com.kotori316.limiter.conditions.Not not = (com.kotori316.limiter.conditions.Not) o;
-        return Objects.equals(t1, not.t1);
+        return Objects.equals(value, not.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(t1);
+        return Objects.hash(value);
     }
 
     @Override
     public String toString() {
         return "Not{" +
-            "t1=" + t1 +
+            "value=" + value +
             '}';
     }
 
     @Override
-    public boolean test(EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn) {
-        return !t1.test(placeType, worldIn, pos, entityTypeIn);
+    public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+        return !value.test(worldIn, pos, entityTypeIn, reason);
     }
 
     @Override
     public TestSpawn not() {
-        return t1;
+        return value;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class Not implements TestSpawn {
 
         @Override
         public Not fromJson(JsonObject object) {
-            TestSpawn t1 = SpawnConditionLoader.INSTANCE.deserialize(object.getAsJsonObject("t1"));
+            TestSpawn t1 = SpawnConditionLoader.INSTANCE.deserialize(object.getAsJsonObject("value"));
             return new Not(t1);
         }
 
@@ -71,7 +71,7 @@ public class Not implements TestSpawn {
         public JsonObject toJson(TestSpawn t) {
             Not not = (Not) t;
             JsonObject object = new JsonObject();
-            object.add("t1", not.t1.toJson());
+            object.add("value", not.value.toJson());
             return object;
         }
     }

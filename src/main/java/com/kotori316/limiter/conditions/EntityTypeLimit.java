@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import com.google.gson.JsonObject;
 import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
@@ -21,7 +21,7 @@ public class EntityTypeLimit implements TestSpawn {
     }
 
     @Override
-    public boolean test(EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn) {
+    public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
         return entityTypeIn.getClassification() == this.classification;
     }
 
@@ -43,6 +43,11 @@ public class EntityTypeLimit implements TestSpawn {
     @Override
     public int hashCode() {
         return Objects.hash(classification);
+    }
+
+    @Override
+    public TestSpawn.Serializer<? extends TestSpawn> getSerializer() {
+        return SERIALIZER;
     }
 
     private static class Serializer extends TestSpawn.Serializer<EntityTypeLimit> {

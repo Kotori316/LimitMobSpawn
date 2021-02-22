@@ -3,8 +3,8 @@ package com.kotori316.limiter.conditions;
 import java.util.Objects;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
@@ -24,7 +24,7 @@ public class DimensionLimit implements TestSpawn {
     }
 
     @Override
-    public boolean test(EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn) {
+    public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
         RegistryKey<World> type;
         if (worldIn instanceof World) {
             World world = (World) worldIn;

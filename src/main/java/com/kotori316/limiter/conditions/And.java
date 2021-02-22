@@ -3,8 +3,8 @@ package com.kotori316.limiter.conditions;
 import java.util.Objects;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
@@ -21,8 +21,8 @@ public class And implements TestSpawn {
     }
 
     @Override
-    public boolean test(EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn) {
-        return t1.test(placeType, worldIn, pos, entityTypeIn) && t2.test(placeType, worldIn, pos, entityTypeIn);
+    public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+        return t1.test(worldIn, pos, entityTypeIn, reason) && t2.test(worldIn, pos, entityTypeIn, reason);
     }
 
     @Override
