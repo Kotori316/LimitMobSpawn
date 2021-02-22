@@ -19,7 +19,10 @@ public class WorldEntitySpawnerMixin {
         EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos,
         EntityType<?> entityTypeIn, CallbackInfoReturnable<Boolean> cir) {
 
-        if (!LimitMobSpawn.allowSpawning(placeType, worldIn, pos, entityTypeIn))
+        LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(placeType, worldIn, pos, entityTypeIn);
+        if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY)
             cir.setReturnValue(Boolean.FALSE);
+        else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE)
+            cir.setReturnValue(Boolean.TRUE);
     }
 }

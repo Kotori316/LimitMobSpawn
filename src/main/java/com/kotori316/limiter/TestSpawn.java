@@ -8,6 +8,7 @@ import net.minecraft.world.IWorldReader;
 
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Not;
+import com.kotori316.limiter.conditions.Or;
 
 public interface TestSpawn {
 
@@ -22,6 +23,10 @@ public interface TestSpawn {
 
     default TestSpawn and(TestSpawn other) {
         return new And(this, other);
+    }
+
+    default TestSpawn or(TestSpawn other) {
+        return new Or(this, other);
     }
 
     default TestSpawn not() {

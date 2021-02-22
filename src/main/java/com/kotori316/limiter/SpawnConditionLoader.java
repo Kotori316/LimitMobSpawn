@@ -52,16 +52,20 @@ public class SpawnConditionLoader extends JsonReloadListener {
     protected void apply(Map<ResourceLocation, JsonElement> objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn) {
         Set<TestSpawn> denySet = new HashSet<>();
         Set<TestSpawn> defaultSet = new HashSet<>();
+        Set<TestSpawn> forceSet = new HashSet<>();
         for (JsonElement element : objectIn.values()) {
             JsonObject asObject = element.getAsJsonObject();
             defaultSet.addAll(getValues(asObject.get("default")));
             denySet.addAll(getValues(asObject.get("deny")));
+            forceSet.addAll(getValues(asObject.get("force")));
         }
         LimitMobSpawn.defaultSet = defaultSet;
         LimitMobSpawn.denySet = denySet;
+        LimitMobSpawn.forceSet = forceSet;
     }
 
     private Set<TestSpawn> getValues(JsonElement element) {
+        if (element == null) return Collections.emptySet();
         if (element.isJsonArray()) {
             return StreamSupport.stream(element.getAsJsonArray().spliterator(), false)
                 .map(JsonElement::getAsJsonObject)
