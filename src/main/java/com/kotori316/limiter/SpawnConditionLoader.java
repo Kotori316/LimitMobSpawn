@@ -23,7 +23,9 @@ import org.apache.logging.log4j.MarkerManager;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.EntityTypeLimit;
 import com.kotori316.limiter.conditions.Not;
+import com.kotori316.limiter.conditions.Or;
 
 public class SpawnConditionLoader extends JsonReloadListener {
     private static final Marker MARKER = MarkerManager.getMarker("LimitMobSpawn/SpawnConditionLoader");
@@ -35,9 +37,11 @@ public class SpawnConditionLoader extends JsonReloadListener {
         super(GSON, LimitMobSpawn.MOD_ID);
         register(TestSpawn.EMPTY_SERIALIZER);
         register(And.SERIALIZER);
+        register(Or.SERIALIZER);
         register(Not.SERIALIZER);
         register(DimensionLimit.SERIALIZER);
         register(EntityLimit.SERIALIZER);
+        register(EntityTypeLimit.SERIALIZER);
     }
 
     public void register(TestSpawn.Serializer<?> serializer) {
