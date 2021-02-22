@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+license = "All rights reserved"
+[[mods]]
+modId = "limit-mob-spawn"
+version = "${file.jarVersion}"
+displayName = "Limit Mob Spawn"
+credits = "Kotori316"
+authors = "Kotori316"
+description = '''
+Prevent mobs from spawning.
+'''
+[[dependencies.limit-mob-spawn]]
+modId = "forge"
+mandatory = true
+versionRange = "[36,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.limit-mob-spawn]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.5,1.17)"
+ordering = "NONE"
+side = "BOTH"

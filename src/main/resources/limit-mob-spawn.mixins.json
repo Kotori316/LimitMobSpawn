@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.kotori316.limiter.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "WorldEntitySpawnerMixin"
+  ],
+  "client": [ ],
+  "server": [ ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "mixins.limit-mob-spawn.refmap.json"
+}
