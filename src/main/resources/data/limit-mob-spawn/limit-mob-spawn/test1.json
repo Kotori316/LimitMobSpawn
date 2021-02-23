@@ -10,6 +10,27 @@
       "t1": {"dim": "minecraft:the_nether", "type": "dimension"},
       "t2": {"entity": "minecraft:piglin", "type": "entity"},
       "type": "and"
+    },
+    {
+      "t1": {
+        "value": {
+          "entity": "minecraft:bat",
+          "type": "entity"
+        },
+        "type": "not"
+      },
+      "t2": {
+        "t1": {
+          "classification": "creature",
+          "type": "classification"
+        },
+        "t2": {
+          "classification": "misc",
+          "type": "classification"
+        },
+        "type": "or"
+      },
+      "type": "and"
     }
   ]
 }

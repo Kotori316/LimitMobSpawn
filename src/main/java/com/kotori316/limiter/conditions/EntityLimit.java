@@ -9,6 +9,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
+import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class EntityLimit implements TestSpawn {
@@ -17,6 +18,7 @@ public class EntityLimit implements TestSpawn {
 
     public EntityLimit(EntityType<?> type) {
         this.type = type;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", type);
     }
 
     @Override

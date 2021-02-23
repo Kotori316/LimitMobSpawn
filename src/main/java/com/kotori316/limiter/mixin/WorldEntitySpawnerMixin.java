@@ -20,9 +20,12 @@ public class WorldEntitySpawnerMixin {
         EntityType<?> entityTypeIn, CallbackInfoReturnable<Boolean> cir) {
 
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(worldIn, pos, entityTypeIn, null);
-        if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY)
+        if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY) {
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "WorldEntitySpawnerMixin denied spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.FALSE);
-        else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE)
+        } else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE) {
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "WorldEntitySpawnerMixin forced spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.TRUE);
+        }
     }
 }

@@ -6,12 +6,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
 
 public interface TestSpawn {
+    Marker MARKER = MarkerManager.getMarker("TestSpawn");
 
     boolean test(IWorldReader worldIn,
                  BlockPos pos,

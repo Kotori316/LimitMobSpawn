@@ -13,6 +13,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
+import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class DimensionLimit implements TestSpawn {
@@ -21,6 +22,7 @@ public class DimensionLimit implements TestSpawn {
 
     public DimensionLimit(RegistryKey<World> type) {
         this.type = type;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", type);
     }
 
     @Override

@@ -12,6 +12,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +23,7 @@ public class LimitMobSpawn {
     public static Set<TestSpawn> denySet = new HashSet<>();
     public static Set<TestSpawn> defaultSet = new HashSet<>();
     public static Set<TestSpawn> forceSet = new HashSet<>();
+    public static final Level LOG_LEVEL = Level.DEBUG;
 
     public LimitMobSpawn() {
         MinecraftForge.EVENT_BUS.register(this);

@@ -1,5 +1,6 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import com.google.gson.JsonObject;
@@ -10,6 +11,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
+import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class EntityTypeLimit implements TestSpawn {
@@ -18,6 +20,7 @@ public class EntityTypeLimit implements TestSpawn {
 
     public EntityTypeLimit(EntityClassification classification) {
         this.classification = classification;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", classification);
     }
 
     @Override
@@ -58,7 +61,8 @@ public class EntityTypeLimit implements TestSpawn {
 
         @Override
         public EntityTypeLimit fromJson(JsonObject object) {
-            EntityClassification classification = EntityClassification.getClassificationByName(JSONUtils.getString(object, "classification"));
+            EntityClassification classification = EntityClassification.getClassificationByName(
+                JSONUtils.getString(object, "classification").toLowerCase(Locale.ROOT));
             return new EntityTypeLimit(classification);
         }
 

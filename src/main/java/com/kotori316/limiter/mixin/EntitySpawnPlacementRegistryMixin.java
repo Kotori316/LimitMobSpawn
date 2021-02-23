@@ -21,9 +21,12 @@ public class EntitySpawnPlacementRegistryMixin {
     private static <T extends Entity> void canSpawnEntity(EntityType<T> entityType, IServerWorld world, SpawnReason reason,
                                                           BlockPos pos, Random rand, CallbackInfoReturnable<Boolean> cir) {
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(world, pos, entityType, reason);
-        if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY)
+        if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY) {
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "EntitySpawnPlacementRegistryMixin denied spawning of {} by {} at {}.", entityType, reason, pos);
             cir.setReturnValue(Boolean.FALSE);
-        else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE)
+        } else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE) {
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "EntitySpawnPlacementRegistryMixin forced spawning of {} by {} at {}.", entityType, reason, pos);
             cir.setReturnValue(Boolean.TRUE);
+        }
     }
 }

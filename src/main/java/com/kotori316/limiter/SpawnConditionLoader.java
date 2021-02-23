@@ -17,6 +17,7 @@ import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -55,9 +56,11 @@ public class SpawnConditionLoader extends JsonReloadListener {
         Set<TestSpawn> forceSet = new HashSet<>();
         for (JsonElement element : objectIn.values()) {
             JsonObject asObject = element.getAsJsonObject();
-            defaultSet.addAll(getValues(asObject.get("default")));
-            denySet.addAll(getValues(asObject.get("deny")));
-            forceSet.addAll(getValues(asObject.get("force")));
+            if (CraftingHelper.processConditions(asObject, "conditions")) {
+                defaultSet.addAll(getValues(asObject.get("default")));
+                denySet.addAll(getValues(asObject.get("deny")));
+                forceSet.addAll(getValues(asObject.get("force")));
+            }
         }
         LimitMobSpawn.defaultSet = defaultSet;
         LimitMobSpawn.denySet = denySet;
