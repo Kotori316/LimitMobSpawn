@@ -16,6 +16,7 @@ import net.minecraft.data.IDataProvider;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
+import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
@@ -77,6 +78,11 @@ public class LimitMobSpawnDataProvider {
                     denies.add(new EntityLimit(EntityType.BAT).toJson());
                     object.add("deny", denies);
                 }
+                {
+                    JsonArray conditions = new JsonArray();
+                    conditions.add(TrueCondition.Serializer.INSTANCE.getJson(TrueCondition.INSTANCE));
+                    object.add("conditions", conditions);
+                }
                 list.add(Pair.of(name, object));
             }
             {
@@ -86,6 +92,11 @@ public class LimitMobSpawnDataProvider {
                     JsonArray denies = new JsonArray();
                     denies.add(new EntityTypeLimit(EntityClassification.MONSTER).toJson());
                     object.add("deny", denies);
+                }
+                {
+                    JsonArray conditions = new JsonArray();
+                    conditions.add(TrueCondition.Serializer.INSTANCE.getJson(TrueCondition.INSTANCE));
+                    object.add("conditions", conditions);
                 }
                 list.add(Pair.of(name, object));
             }

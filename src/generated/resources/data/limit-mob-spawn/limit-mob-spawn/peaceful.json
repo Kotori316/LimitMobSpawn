@@ -4,5 +4,10 @@
       "classification": "monster",
       "type": "classification"
     }
+  ],
+  "conditions": [
+    {
+      "type": "forge:true"
+    }
   ]
 }
