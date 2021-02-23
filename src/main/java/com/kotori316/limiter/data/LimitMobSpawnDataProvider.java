@@ -22,6 +22,7 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.kotori316.limiter.LimitMobSpawn;
+import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
 import com.kotori316.limiter.conditions.EntityTypeLimit;
@@ -63,9 +64,9 @@ public class LimitMobSpawnDataProvider {
                 JsonObject object = new JsonObject();
                 {
                     JsonArray defaults = new JsonArray();
-                    defaults.add(new DimensionLimit(World.THE_NETHER).and(new EntityLimit(EntityType.PIGLIN)).toJson());
-                    defaults.add(new EntityLimit(EntityType.BAT).not().and(
-                        new EntityTypeLimit(EntityClassification.CREATURE).or(new EntityTypeLimit(EntityClassification.MISC))).toJson());
+                    defaults.add(Creator.entityAtDimension(World.THE_NETHER, EntityType.PIGLIN).toJson());
+                    defaults.add(new EntityTypeLimit(EntityClassification.CREATURE).or(new EntityTypeLimit(EntityClassification.MISC)).toJson());
+                    defaults.add(Creator.posAtDimension(World.THE_END, -500, 500, -500, 500).toJson());
                     object.add("default", defaults);
                 }
                 {

@@ -27,6 +27,7 @@ import com.kotori316.limiter.conditions.EntityLimit;
 import com.kotori316.limiter.conditions.EntityTypeLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
+import com.kotori316.limiter.conditions.PositionLimit;
 
 public class SpawnConditionLoader extends JsonReloadListener {
     private static final Marker MARKER = MarkerManager.getMarker("LimitMobSpawn/SpawnConditionLoader");
@@ -43,6 +44,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
         register(DimensionLimit.SERIALIZER);
         register(EntityLimit.SERIALIZER);
         register(EntityTypeLimit.SERIALIZER);
+        register(PositionLimit.SERIALIZER);
     }
 
     public void register(TestSpawn.Serializer<?> serializer) {
