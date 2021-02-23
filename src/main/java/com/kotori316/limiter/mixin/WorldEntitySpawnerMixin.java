@@ -1,5 +1,6 @@
 package com.kotori316.limiter.mixin;
 
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
@@ -15,7 +16,7 @@ import com.kotori316.limiter.LimitMobSpawn;
 public class WorldEntitySpawnerMixin {
     @Inject(method = "canCreatureTypeSpawnAtLocation", at = @At("HEAD"), cancellable = true)
     private static void canCreatureTypeSpawnAtLocation(
-        IWorldReader worldIn, BlockPos pos,
+        EntitySpawnPlacementRegistry.PlacementType placeType, IWorldReader worldIn, BlockPos pos,
         EntityType<?> entityTypeIn, CallbackInfoReturnable<Boolean> cir) {
 
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(worldIn, pos, entityTypeIn, null);
