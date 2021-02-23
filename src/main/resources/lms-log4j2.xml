@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" shutdownHook="disable">
+    <Appenders>
+        <RollingRandomAccessFile name="Mobs" fileName="logs/mob.log" filePattern="logs/mob/mob-%d{yyyy-MM-dd}-%i.gz">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%t/%level] [%logger/%markerSimpleName]: %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="50" fileIndex="min"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Logger level="debug" name="com.kotori316.limiter">
+            <AppenderRef ref="Mobs" level="debug"/>
+        </Logger>
+        <Root level="all">
+        </Root>
+    </Loggers>
+</Configuration>

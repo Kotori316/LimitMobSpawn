@@ -1,0 +1,8 @@
+{
+  "deny": [
+    {
+      "classification": "monster",
+      "type": "classification"
+    }
+  ]
+}
