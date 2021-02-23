@@ -29,10 +29,8 @@ public class WorldEntitySpawnerMixin {
     ) {
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(worldIn, pos, entityTypeIn, null);
         if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY) {
-            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "WorldEntitySpawner#canCreatureTypeSpawnAtLocation denied spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.FALSE);
         } else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE) {
-            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "WorldEntitySpawner#canCreatureTypeSpawnAtLocation forced spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.TRUE);
         }
     }

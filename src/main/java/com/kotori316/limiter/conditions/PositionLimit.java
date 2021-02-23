@@ -70,7 +70,7 @@ public class PositionLimit implements TestSpawn {
     private static class Serializer extends TestSpawn.Serializer<PositionLimit> {
         @Override
         public String getType() {
-            return "dimension";
+            return "position";
         }
 
         @Override
