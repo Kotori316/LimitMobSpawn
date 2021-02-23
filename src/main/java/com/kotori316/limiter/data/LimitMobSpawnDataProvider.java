@@ -79,6 +79,16 @@ public class LimitMobSpawnDataProvider {
                 }
                 list.add(Pair.of(name, object));
             }
+            {
+                String name = "peaceful";
+                JsonObject object = new JsonObject();
+                {
+                    JsonArray denies = new JsonArray();
+                    denies.add(new EntityTypeLimit(EntityClassification.MONSTER).toJson());
+                    object.add("deny", denies);
+                }
+                list.add(Pair.of(name, object));
+            }
             return list;
         }
     }

@@ -50,7 +50,7 @@ public class LimitMobSpawn {
             defaultSet.stream().anyMatch(spawn -> spawn.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null)))
             return; // SKIP
         if (denySet.stream().anyMatch(spawn -> spawn.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null))) {
-            LOGGER.log(LOG_LEVEL, "onEntityJoinWorld denied spawning of {}({}) at {}.", event.getEntity(), event.getEntity().getType(), event.getEntity().getPosition());
+            LOGGER.log(LOG_LEVEL, "onEntityJoinWorld denied spawning of {}.", event.getEntity());
             event.setCanceled(true);
         }
     }
