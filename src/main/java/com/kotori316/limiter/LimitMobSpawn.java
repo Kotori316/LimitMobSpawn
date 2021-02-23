@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,7 +34,7 @@ public class LimitMobSpawn {
         event.addListener(SpawnConditionLoader.INSTANCE);
     }
 
-    public static SpawnCheckResult allowSpawning(IWorldReader worldIn, BlockPos pos,
+    public static SpawnCheckResult allowSpawning(IBlockReader worldIn, BlockPos pos,
                                                  EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
         boolean matchForce = forceSet.stream().anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchForce) return SpawnCheckResult.FORCE;

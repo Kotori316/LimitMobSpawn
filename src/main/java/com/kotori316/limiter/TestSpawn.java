@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockReader;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -16,7 +16,7 @@ import com.kotori316.limiter.conditions.Or;
 public interface TestSpawn {
     Marker MARKER = MarkerManager.getMarker("TestSpawn");
 
-    boolean test(IWorldReader worldIn,
+    boolean test(IBlockReader worldIn,
                  BlockPos pos,
                  EntityType<?> entityTypeIn,
                  @Nullable SpawnReason reason);
@@ -55,7 +55,7 @@ public interface TestSpawn {
         INSTANCE;
 
         @Override
-        public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+        public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
             return false;
         }
     }

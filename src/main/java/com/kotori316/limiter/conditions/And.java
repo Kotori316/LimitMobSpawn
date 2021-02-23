@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockReader;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.SpawnConditionLoader;
@@ -23,7 +23,7 @@ public class And implements TestSpawn {
     }
 
     @Override
-    public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
         return t1.test(worldIn, pos, entityTypeIn, reason) && t2.test(worldIn, pos, entityTypeIn, reason);
     }
 

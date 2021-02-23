@@ -10,7 +10,7 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import com.kotori316.limiter.LimitMobSpawn;
@@ -26,7 +26,7 @@ public class DimensionLimit implements TestSpawn {
     }
 
     @Override
-    public boolean test(IWorldReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
         RegistryKey<World> type;
         if (worldIn instanceof World) {
             World world = (World) worldIn;
