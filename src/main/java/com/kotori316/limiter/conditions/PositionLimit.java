@@ -24,6 +24,7 @@ public class PositionLimit implements TestSpawn {
         this.maxY = maxY;
         this.minZ = minZ;
         this.maxZ = maxZ;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with ({},{},{}),({},{},{})", minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public PositionLimit(BlockPos pos1, BlockPos pos2) {
@@ -33,6 +34,7 @@ public class PositionLimit implements TestSpawn {
         maxY = Math.max(pos1.getY(), pos2.getY());
         minZ = Math.min(pos1.getZ(), pos2.getZ());
         maxZ = Math.max(pos1.getZ(), pos2.getZ());
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with ({}),({})", pos1, pos2);
     }
 
     @Override

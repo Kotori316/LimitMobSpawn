@@ -10,6 +10,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
+import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class SpawnReasonLimit implements TestSpawn {
@@ -18,6 +19,7 @@ public class SpawnReasonLimit implements TestSpawn {
 
     public SpawnReasonLimit(SpawnReason reason) {
         this.reason = reason;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", reason);
     }
 
     @Override
