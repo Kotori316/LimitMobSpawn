@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonObject;
@@ -18,6 +19,7 @@ import com.kotori316.limiter.TestSpawn;
 
 public class And implements TestSpawn {
     public static final TestSpawn.Serializer<And> SERIALIZER = new Serializer();
+    private static final Pattern KEY_PATTERN = Pattern.compile("t(\\d+)");
     private final TestSpawn t1;
     private final List<TestSpawn> ts;
 
@@ -76,8 +78,8 @@ public class And implements TestSpawn {
         @Override
         public And fromJson(JsonObject object) {
             List<TestSpawn> list = object.entrySet().stream()
-                .filter(e -> e.getKey().startsWith("t"))
-                .sorted(Comparator.comparing(e -> e.getKey().substring(1)))
+                .filter(e -> KEY_PATTERN.matcher(e.getKey()).matches())
+                .sorted(Comparator.comparing(e -> Integer.parseInt(e.getKey().substring(1))))
                 .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue().getAsJsonObject()))
                 .collect(Collectors.toList());
             if (list.size() < 1)

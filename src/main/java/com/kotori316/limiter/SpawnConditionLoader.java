@@ -21,13 +21,15 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
+import com.kotori316.limiter.conditions.EntityClassificationLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
-import com.kotori316.limiter.conditions.EntityTypeLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
+import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 public class SpawnConditionLoader extends JsonReloadListener {
     private static final Marker MARKER = MarkerManager.getMarker("LimitMobSpawn/SpawnConditionLoader");
@@ -38,17 +40,21 @@ public class SpawnConditionLoader extends JsonReloadListener {
     private SpawnConditionLoader() {
         super(GSON, LimitMobSpawn.MOD_ID);
         register(TestSpawn.EMPTY_SERIALIZER);
+        register(All.SERIALIZER);
         register(And.SERIALIZER);
         register(Or.SERIALIZER);
         register(Not.SERIALIZER);
         register(DimensionLimit.SERIALIZER);
         register(EntityLimit.SERIALIZER);
-        register(EntityTypeLimit.SERIALIZER);
+        register(EntityClassificationLimit.SERIALIZER);
         register(PositionLimit.SERIALIZER);
+        register(SpawnReasonLimit.SERIALIZER);
     }
 
     public void register(TestSpawn.Serializer<?> serializer) {
-        this.serializers.put(serializer.getType(), serializer);
+        TestSpawn.Serializer<?> put = this.serializers.put(serializer.getType(), serializer);
+        if (put != null)
+            throw new IllegalArgumentException(String.format("Duplicated keys: %s, TYPE: %s, Map: %s", serializer.getType(), serializer.getClass(), serializers));
     }
 
     @Override

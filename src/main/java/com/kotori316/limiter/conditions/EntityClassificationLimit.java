@@ -14,11 +14,11 @@ import net.minecraft.world.IBlockReader;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
-public class EntityTypeLimit implements TestSpawn {
-    public static final TestSpawn.Serializer<EntityTypeLimit> SERIALIZER = new Serializer();
+public class EntityClassificationLimit implements TestSpawn {
+    public static final TestSpawn.Serializer<EntityClassificationLimit> SERIALIZER = new Serializer();
     private final EntityClassification classification;
 
-    public EntityTypeLimit(EntityClassification classification) {
+    public EntityClassificationLimit(EntityClassification classification) {
         this.classification = classification;
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", classification);
     }
@@ -30,7 +30,7 @@ public class EntityTypeLimit implements TestSpawn {
 
     @Override
     public String toString() {
-        return "EntityTypeLimit{" +
+        return "EntityClassificationLimit{" +
             "classification=" + classification +
             '}';
     }
@@ -39,7 +39,7 @@ public class EntityTypeLimit implements TestSpawn {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EntityTypeLimit that = (EntityTypeLimit) o;
+        EntityClassificationLimit that = (EntityClassificationLimit) o;
         return classification == that.classification;
     }
 
@@ -53,22 +53,22 @@ public class EntityTypeLimit implements TestSpawn {
         return SERIALIZER;
     }
 
-    private static class Serializer extends TestSpawn.Serializer<EntityTypeLimit> {
+    private static class Serializer extends TestSpawn.Serializer<EntityClassificationLimit> {
         @Override
         public String getType() {
             return "classification";
         }
 
         @Override
-        public EntityTypeLimit fromJson(JsonObject object) {
+        public EntityClassificationLimit fromJson(JsonObject object) {
             EntityClassification classification = EntityClassification.getClassificationByName(
                 JSONUtils.getString(object, "classification").toLowerCase(Locale.ROOT));
-            return new EntityTypeLimit(classification);
+            return new EntityClassificationLimit(classification);
         }
 
         @Override
         public JsonObject toJson(TestSpawn t) {
-            EntityTypeLimit l = (EntityTypeLimit) t;
+            EntityClassificationLimit l = (EntityClassificationLimit) t;
             JsonObject object = new JsonObject();
             object.addProperty("classification", l.classification.getName());
             return object;

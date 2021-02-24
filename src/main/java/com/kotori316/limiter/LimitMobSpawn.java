@@ -25,7 +25,7 @@ public class LimitMobSpawn {
     public static Set<TestSpawn> denySet = new HashSet<>();
     public static Set<TestSpawn> defaultSet = new HashSet<>();
     public static Set<TestSpawn> forceSet = new HashSet<>();
-    public static final Level LOG_LEVEL = Level.TRACE;
+    public static final Level LOG_LEVEL = Boolean.getBoolean("limit-mob-spawn") ? Level.DEBUG : Level.TRACE;
 
     public LimitMobSpawn() {
         MinecraftForge.EVENT_BUS.register(this);
