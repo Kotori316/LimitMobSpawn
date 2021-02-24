@@ -8,6 +8,20 @@
     {
       "spawn_reason": "spawn_egg",
       "type": "spawn_reason"
+    },
+    {
+      "t1": {
+        "value": {
+          "dim": "minecraft:overworld",
+          "type": "dimension"
+        },
+        "type": "not"
+      },
+      "t2": {
+        "entity": "minecraft:ghast",
+        "type": "entity"
+      },
+      "type": "and"
     }
   ],
   "deny": [

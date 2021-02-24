@@ -24,6 +24,7 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.kotori316.limiter.LimitMobSpawn;
+import com.kotori316.limiter.TestSpawn;
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
@@ -61,6 +62,14 @@ public class LimitMobSpawnDataProvider {
             return getClass().getName();
         }
 
+        private static JsonArray as(TestSpawn... conditions) {
+            JsonArray array = new JsonArray();
+            for (TestSpawn spawn : conditions) {
+                array.add(spawn.toJson());
+            }
+            return array;
+        }
+
         private List<Pair<String, JsonElement>> getData() {
             List<Pair<String, JsonElement>> list = new ArrayList<>();
             {
@@ -68,19 +77,19 @@ public class LimitMobSpawnDataProvider {
                 JsonObject object = new JsonObject();
                 object.addProperty("_comment", "Conditions in each category are combined by OR.");
                 {
-                    JsonArray defaults = new JsonArray();
-                    defaults.add(Creator.entityAtDimension(World.THE_NETHER, EntityType.PIGLIN).toJson());
-                    defaults.add(new EntityClassificationLimit(EntityClassification.CREATURE).or(new EntityClassificationLimit(EntityClassification.MISC)).toJson());
-                    defaults.add(Creator.posAtDimension(World.THE_END, -500, 500, -500, 500).toJson());
-                    object.add("default", defaults);
+                    object.add("default", as(
+                        Creator.entityAtDimension(World.THE_NETHER, EntityType.PIGLIN),
+                        new EntityClassificationLimit(EntityClassification.CREATURE).or(new EntityClassificationLimit(EntityClassification.MISC)),
+                        Creator.posAtDimension(World.THE_END, -500, 500, -500, 500)
+                    ));
                 }
                 {
-                    JsonArray denies = new JsonArray();
-                    denies.add(new DimensionLimit(World.OVERWORLD).toJson());
-                    denies.add(new DimensionLimit(World.THE_NETHER).toJson());
-                    denies.add(new DimensionLimit(World.THE_END).toJson());
-                    denies.add(new EntityLimit(EntityType.BAT).toJson());
-                    object.add("deny", denies);
+                    object.add("deny", as(
+                        new DimensionLimit(World.OVERWORLD),
+                        new DimensionLimit(World.THE_NETHER),
+                        new DimensionLimit(World.THE_END),
+                        new EntityLimit(EntityType.BAT)
+                    ));
                 }
                 {
                     JsonArray conditions = new JsonArray();
@@ -94,21 +103,22 @@ public class LimitMobSpawnDataProvider {
                 JsonObject object = new JsonObject();
                 object.addProperty("_comment", "Conditions in each category are combined by OR.");
                 {
-                    JsonArray defaults = new JsonArray();
-                    defaults.add(new SpawnReasonLimit(SpawnReason.SPAWNER).toJson());
-                    defaults.add(new SpawnReasonLimit(SpawnReason.SPAWN_EGG).toJson());
-                    object.add("default", defaults);
+                    object.add("default", as(
+                        new SpawnReasonLimit(SpawnReason.SPAWNER),
+                        new SpawnReasonLimit(SpawnReason.SPAWN_EGG),
+                        new DimensionLimit(World.OVERWORLD).not().and(new EntityLimit(EntityType.GHAST))
+                    ));
                 }
                 {
-                    JsonArray denies = new JsonArray();
-                    denies.add(All.getInstance().toJson());
-                    object.add("deny", denies);
+                    object.add("deny", as(
+                        All.getInstance()
+                    ));
                 }
                 {
-                    JsonArray force = new JsonArray();
-                    force.add(Creator.posAtDimension(World.OVERWORLD, -64, 64, -64, 64)
-                        .and(new EntityLimit(EntityType.ENDERMAN)).toJson());
-                    object.add("force", force);
+                    object.add("force", as(
+                        Creator.posAtDimension(World.OVERWORLD, -64, 64, -64, 64)
+                            .and(new EntityLimit(EntityType.ENDERMAN))
+                    ));
                 }
                 {
                     JsonArray conditions = new JsonArray();
@@ -121,9 +131,9 @@ public class LimitMobSpawnDataProvider {
                 String name = "peaceful";
                 JsonObject object = new JsonObject();
                 {
-                    JsonArray denies = new JsonArray();
-                    denies.add(new EntityClassificationLimit(EntityClassification.MONSTER).toJson());
-                    object.add("deny", denies);
+                    object.add("deny", as(
+                        new EntityClassificationLimit(EntityClassification.MONSTER)
+                    ));
                 }
                 {
                     JsonArray conditions = new JsonArray();
