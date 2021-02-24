@@ -60,10 +60,12 @@ public class Or implements TestSpawn {
 
     @Override
     public String toString() {
-        return "Or{" +
-            "t1=" + t1 +
-            ", ts=" + ts +
-            '}';
+        StringBuilder builder = new StringBuilder("Or{t1=" + t1);
+        for (int i = 0; i < ts.size(); i++) {
+            builder.append(", t").append(i + 2).append('=').append(ts.get(i));
+        }
+        builder.append('}');
+        return builder.toString();
     }
 
     @Override
@@ -77,6 +79,7 @@ public class Or implements TestSpawn {
         public String getType() {
             return "or";
         }
+
         @Override
         public <T> Or from(Dynamic<T> dynamic) {
             List<TestSpawn> list = dynamic.asMap(d -> d.asString(""), Function.identity())

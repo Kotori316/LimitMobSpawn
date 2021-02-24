@@ -61,10 +61,12 @@ public class And implements TestSpawn {
 
     @Override
     public String toString() {
-        return "And{" +
-            "t1=" + t1 +
-            ", ts=" + ts +
-            '}';
+        StringBuilder builder = new StringBuilder("And{t1=" + t1);
+        for (int i = 0; i < ts.size(); i++) {
+            builder.append(", t").append(i + 2).append('=').append(ts.get(i));
+        }
+        builder.append('}');
+        return builder.toString();
     }
 
     @Override

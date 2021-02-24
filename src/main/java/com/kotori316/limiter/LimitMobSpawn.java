@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.kotori316.limiter.capability.Caps;
 import com.kotori316.limiter.capability.LMSHandler;
+import com.kotori316.limiter.command.LMSCommand;
 
 @Mod(LimitMobSpawn.MOD_ID)
 public class LimitMobSpawn {
@@ -40,6 +42,11 @@ public class LimitMobSpawn {
     @SubscribeEvent
     public void addLister(AddReloadListenerEvent event) {
         event.addListener(SpawnConditionLoader.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public void addCommand(RegisterCommandsEvent event) {
+        LMSCommand.register(event.getDispatcher());
     }
 
     /**
