@@ -6,12 +6,14 @@ import java.time.format.DateTimeFormatter
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = "https://plugins.gradle.org/m2/" }
         maven { url = 'https://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.4.0'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
@@ -19,6 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: "com.matthewprenger.cursegradle"
 
 version = '16.0'
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -81,8 +84,12 @@ repositories {
     }
 }
 
+def getForgeVersionToBuild() {
+    return 'net.minecraftforge:forge:1.16.5-36.0.42'
+}
+
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.0.42'
+    minecraft getForgeVersionToBuild()
     // Mixin
     annotationProcessor("org.spongepowered:mixin:0.8.2:processor")
 }
@@ -144,15 +151,56 @@ task signJar(type: net.minecraftforge.gradle.common.task.SignJar, dependsOn: 're
     outputFile = jar.getArchiveFile().get()
 }
 
+curseforge {
+    apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
+    project {
+        id = '449932'
+        changelogType = 'markdown'
+        changelog = "See https://github.com/Kotori316/LimitMobSpawn/commits/master for change log."
+        releaseType = 'release'
+        addGameVersion '1.16.5'
+        mainArtifact jar
+        addArtifact deobfJar
+        addArtifact srcJar
+    }
+    options {
+        curseGradleOptions.debug = false // defaults to false
+        javaVersionAutoDetect = false
+    }
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = "LimitMobSpawn"
+            artifact srcJar {
+                archiveClassifier.set('sources')
+                extension = 'jar'
+            }
+            artifact deobfJar {
+                archiveClassifier.set('deobf')
+                extension = 'jar'
+            }
             artifact jar
-            artifact srcJar
-            artifact deobfJar
+            pom {
+                String v = getForgeVersionToBuild()
+                String minecraftVersion = v.substring(v.lastIndexOf(":") + 1).split("-")[0]
+                name = archivesBaseName
+                description = "LimitMobSpawn for Minecraft $minecraftVersion, build with forge $v"
+                url = 'https://github.com/Kotori316/LimitMobSpawn'
+                packaging = "jar"
+            }
         }
     }
     repositories {
+        maven {
+            name = "AzureRepository"
+            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+            credentials {
+                username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
+                password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+            }
+        }
     }
 }
 
