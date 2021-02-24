@@ -12,15 +12,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+import com.kotori316.limiter.capability.LMSDataPackHolder;
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
@@ -36,6 +38,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private final Map<String, TestSpawn.Serializer<?>> serializers = new HashMap<>();
     public static final SpawnConditionLoader INSTANCE = new SpawnConditionLoader();
+    public static final LMSDataPackHolder HOLDER = new LMSDataPackHolder();
 
     private SpawnConditionLoader() {
         super(GSON, LimitMobSpawn.MOD_ID);
@@ -70,9 +73,9 @@ public class SpawnConditionLoader extends JsonReloadListener {
                 forceSet.addAll(getValues(asObject.get("force")));
             }
         }
-        LimitMobSpawn.defaultSet = defaultSet;
-        LimitMobSpawn.denySet = denySet;
-        LimitMobSpawn.forceSet = forceSet;
+        HOLDER.setDefaultSet(defaultSet);
+        HOLDER.setDenySet(denySet);
+        HOLDER.setForceSet(forceSet);
     }
 
     private Set<TestSpawn> getValues(JsonElement element) {
@@ -93,12 +96,16 @@ public class SpawnConditionLoader extends JsonReloadListener {
     }
 
     public TestSpawn deserialize(JsonObject object) {
-        String type = JSONUtils.getString(object, "type", "anonymous");
+        return deserialize(new Dynamic<>(JsonOps.INSTANCE, object));
+    }
+
+    public <T> TestSpawn deserialize(Dynamic<T> dynamic) {
+        String type = dynamic.get("type").asString("anonymous");
         TestSpawn.Serializer<?> serializer = serializers.get(type);
         if (serializer == null || serializer == TestSpawn.EMPTY_SERIALIZER) {
-            LimitMobSpawn.LOGGER.error(MARKER, "Type {} is not registered. Error in loading {}", type, object);
+            LimitMobSpawn.LOGGER.error(MARKER, "Type {} is not registered. Error in loading {}", type, dynamic.getValue());
             return TestSpawn.Empty.INSTANCE;
         }
-        return serializer.fromJson(object);
+        return serializer.from(dynamic);
     }
 }

@@ -1,6 +1,7 @@
 package com.kotori316.limiter.conditions;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -34,13 +35,13 @@ public class All implements TestSpawn {
         }
 
         @Override
-        public All fromJson(JsonObject object) {
+        public <T> All from(Dynamic<T> dynamic) {
             return getInstance();
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
-            return new JsonObject();
+        public <T> T to(TestSpawn a, DynamicOps<T> ops) {
+            return ops.emptyMap();
         }
     }
 }

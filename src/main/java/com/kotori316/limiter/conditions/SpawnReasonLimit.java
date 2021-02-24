@@ -1,12 +1,14 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
@@ -41,18 +43,18 @@ public class SpawnReasonLimit implements TestSpawn {
         }
 
         @Override
-        public SpawnReasonLimit fromJson(JsonObject object) {
-            String reasonName = JSONUtils.getString(object, "spawn_reason");
+        public <T> SpawnReasonLimit from(Dynamic<T> dynamic) {
+            String reasonName = dynamic.get("spawn_reason").asString("");
             SpawnReason spawnReason = SpawnReason.valueOf(reasonName.toUpperCase(Locale.ROOT));
             return new SpawnReasonLimit(spawnReason);
         }
 
         @Override
-        public JsonObject toJson(TestSpawn a) {
+        public <T> T to(TestSpawn a, DynamicOps<T> ops) {
             SpawnReasonLimit spawnReasonLimit = ((SpawnReasonLimit) a);
-            JsonObject object = new JsonObject();
-            object.addProperty("spawn_reason", spawnReasonLimit.reason.toString().toLowerCase(Locale.ROOT));
-            return object;
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("spawn_reason"), ops.createString(spawnReasonLimit.reason.toString().toLowerCase(Locale.ROOT)));
+            return ops.createMap(map);
         }
     }
 }

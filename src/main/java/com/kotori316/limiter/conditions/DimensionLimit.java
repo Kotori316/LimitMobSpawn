@@ -1,11 +1,13 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -67,17 +69,17 @@ public class DimensionLimit implements TestSpawn {
         }
 
         @Override
-        public DimensionLimit fromJson(JsonObject object) {
-            RegistryKey<World> dim = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(JSONUtils.getString(object, "dim")));
+        public <T> DimensionLimit from(Dynamic<T> dynamic) {
+            RegistryKey<World> dim = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(dynamic.get("dim").asString("INVALID")));
             return new DimensionLimit(dim);
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
+        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             DimensionLimit l = (DimensionLimit) t;
-            JsonObject object = new JsonObject();
-            object.addProperty("dim", l.type.getLocation().toString());
-            return object;
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("dim"), ops.createString(l.type.getLocation().toString()));
+            return ops.createMap(map);
         }
     }
 }

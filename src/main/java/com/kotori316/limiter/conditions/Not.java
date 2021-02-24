@@ -1,8 +1,11 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
@@ -64,17 +67,17 @@ public class Not implements TestSpawn {
         }
 
         @Override
-        public Not fromJson(JsonObject object) {
-            TestSpawn t1 = SpawnConditionLoader.INSTANCE.deserialize(object.getAsJsonObject("value"));
+        public <T> Not from(Dynamic<T> dynamic) {
+            TestSpawn t1 = SpawnConditionLoader.INSTANCE.deserialize(dynamic.get("value").orElseEmptyMap());
             return new Not(t1);
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
+        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             Not not = (Not) t;
-            JsonObject object = new JsonObject();
-            object.add("value", not.value.toJson());
-            return object;
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("value"), not.value.to(ops));
+            return ops.createMap(map);
         }
     }
 }

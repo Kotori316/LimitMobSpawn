@@ -2,12 +2,16 @@ package com.kotori316.limiter.conditions;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
@@ -76,26 +80,27 @@ public class And implements TestSpawn {
         }
 
         @Override
-        public And fromJson(JsonObject object) {
-            List<TestSpawn> list = object.entrySet().stream()
+        public <T> And from(Dynamic<T> dynamic) {
+            List<TestSpawn> list = dynamic.asMap(d -> d.asString(""), Function.identity())
+                .entrySet().stream()
                 .filter(e -> KEY_PATTERN.matcher(e.getKey()).matches())
                 .sorted(Comparator.comparing(e -> Integer.parseInt(e.getKey().substring(1))))
-                .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue().getAsJsonObject()))
+                .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue()))
                 .collect(Collectors.toList());
             if (list.size() < 1)
-                throw new IllegalStateException("And object has no child conditions. " + object);
+                throw new IllegalStateException("And object has no child conditions. " + dynamic.getValue());
             return new And(list.get(0), list.subList(1, list.size()).toArray(new TestSpawn[0]));
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
+        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             And and = (And) t;
-            JsonObject object = new JsonObject();
-            object.add("t1", and.t1.toJson());
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("t1"), and.t1.to(ops));
             for (int i = 0; i < and.ts.size(); i++) {
-                object.add("t" + (i + 2), and.ts.get(i).toJson());
+                map.put(ops.createString("t" + (i + 2)), and.ts.get(i).to(ops));
             }
-            return object;
+            return ops.createMap(map);
         }
     }
 }

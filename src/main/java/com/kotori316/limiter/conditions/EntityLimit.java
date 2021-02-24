@@ -1,11 +1,13 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
@@ -58,17 +60,17 @@ public class EntityLimit implements TestSpawn {
         }
 
         @Override
-        public EntityLimit fromJson(JsonObject object) {
-            EntityType<?> type = EntityType.byKey(JSONUtils.getString(object, "entity")).orElseThrow(() -> new RuntimeException("Error " + object));
+        public <T> EntityLimit from(Dynamic<T> dynamic) {
+            EntityType<?> type = EntityType.byKey(dynamic.get("entity").asString("INVALID")).orElseThrow(() -> new RuntimeException("Error " + dynamic.getValue()));
             return new EntityLimit(type);
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
+        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             EntityLimit l = (EntityLimit) t;
-            JsonObject object = new JsonObject();
-            object.addProperty("entity", EntityType.getKey(l.type).toString());
-            return object;
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("entity"), ops.createString(EntityType.getKey(l.type).toString()));
+            return ops.createMap(map);
         }
     }
 }

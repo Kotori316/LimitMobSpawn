@@ -1,6 +1,9 @@
 package com.kotori316.limiter;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -38,17 +41,23 @@ public interface TestSpawn {
     }
 
     default JsonObject toJson() {
-        JsonObject object = getSerializer().toJson(this);
+        JsonObject object = getSerializer().to(this, JsonOps.INSTANCE).getAsJsonObject();
         object.addProperty("type", getSerializer().getType());
         return object;
+    }
+
+    default <T> T to(DynamicOps<T> ops) {
+        T map = getSerializer().to(this, ops);
+        return ops.mergeToMap(map, ops.createString("type"), ops.createString(getSerializer().getType()))
+            .getOrThrow(true, s -> LimitMobSpawn.LOGGER.error("Error in serialize {}, {}", this, s));
     }
 
     abstract class Serializer<A extends TestSpawn> {
         public abstract String getType();
 
-        public abstract A fromJson(JsonObject object);
+        public abstract <T> A from(Dynamic<T> dynamic);
 
-        public abstract JsonObject toJson(TestSpawn a);
+        public abstract <T> T to(TestSpawn a, DynamicOps<T> ops);
     }
 
     enum Empty implements TestSpawn {
@@ -67,13 +76,13 @@ public interface TestSpawn {
         }
 
         @Override
-        public Empty fromJson(JsonObject object) {
+        public <T> Empty from(Dynamic<T> dynamic) {
             return Empty.INSTANCE;
         }
 
         @Override
-        public JsonObject toJson(TestSpawn empty) {
-            return new JsonObject();
+        public <T> T to(TestSpawn a, DynamicOps<T> ops) {
+            return ops.emptyMap();
         }
     };
 }

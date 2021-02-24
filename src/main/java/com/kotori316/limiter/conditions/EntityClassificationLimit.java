@@ -1,13 +1,15 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
@@ -60,18 +62,18 @@ public class EntityClassificationLimit implements TestSpawn {
         }
 
         @Override
-        public EntityClassificationLimit fromJson(JsonObject object) {
+        public <T> EntityClassificationLimit from(Dynamic<T> dynamic) {
             EntityClassification classification = EntityClassification.getClassificationByName(
-                JSONUtils.getString(object, "classification").toLowerCase(Locale.ROOT));
+                dynamic.get("classification").asString("INVALID").toLowerCase(Locale.ROOT));
             return new EntityClassificationLimit(classification);
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
+        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             EntityClassificationLimit l = (EntityClassificationLimit) t;
-            JsonObject object = new JsonObject();
-            object.addProperty("classification", l.classification.getName());
-            return object;
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("classification"), ops.createString(l.classification.getName()));
+            return ops.createMap(map);
         }
     }
 }

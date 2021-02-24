@@ -2,12 +2,16 @@ package com.kotori316.limiter.conditions;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
@@ -73,28 +77,28 @@ public class Or implements TestSpawn {
         public String getType() {
             return "or";
         }
-
         @Override
-        public Or fromJson(JsonObject object) {
-            List<TestSpawn> list = object.entrySet().stream()
+        public <T> Or from(Dynamic<T> dynamic) {
+            List<TestSpawn> list = dynamic.asMap(d -> d.asString(""), Function.identity())
+                .entrySet().stream()
                 .filter(e -> KEY_PATTERN.matcher(e.getKey()).matches())
                 .sorted(Comparator.comparing(e -> Integer.parseInt(e.getKey().substring(1))))
-                .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue().getAsJsonObject()))
+                .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue()))
                 .collect(Collectors.toList());
             if (list.size() < 1)
-                throw new IllegalStateException("And object has no child conditions. " + object);
+                throw new IllegalStateException("And object has no child conditions. " + dynamic.getValue());
             return new Or(list.get(0), list.subList(1, list.size()).toArray(new TestSpawn[0]));
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
+        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             Or or = (Or) t;
-            JsonObject object = new JsonObject();
-            object.add("t1", or.t1.toJson());
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("t1"), or.t1.to(ops));
             for (int i = 0; i < or.ts.size(); i++) {
-                object.add("t" + (i + 2), or.ts.get(i).toJson());
+                map.put(ops.createString("t" + (i + 2)), or.ts.get(i).to(ops));
             }
-            return object;
+            return ops.createMap(map);
         }
     }
 }

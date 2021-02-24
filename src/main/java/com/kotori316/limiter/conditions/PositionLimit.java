@@ -1,9 +1,11 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -76,24 +78,24 @@ public class PositionLimit implements TestSpawn {
         }
 
         @Override
-        public PositionLimit fromJson(JsonObject object) {
-            return BlockPos.CODEC.decode(JsonOps.INSTANCE, object.get("pos1")).flatMap(pos1 ->
-                BlockPos.CODEC.decode(JsonOps.INSTANCE, object.get("pos2")).map(pos2 ->
+        public <T> PositionLimit from(Dynamic<T> dynamic) {
+            return dynamic.get("pos1").flatMap(d -> BlockPos.CODEC.decode(d.getOps(), d.getValue())).flatMap(pos1 ->
+                dynamic.get("pos2").flatMap(d -> BlockPos.CODEC.decode(d.getOps(), d.getValue())).map(pos2 ->
                     new PositionLimit(pos1.getFirst(), pos2.getFirst())))
                 .getOrThrow(true, s -> LimitMobSpawn.LOGGER.error("Erred when loading PositionLimit, {}", s));
         }
 
         @Override
-        public JsonObject toJson(TestSpawn t) {
+        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             PositionLimit l = (PositionLimit) t;
-            JsonObject object = new JsonObject();
-            BlockPos.CODEC.encodeStart(JsonOps.INSTANCE, new BlockPos(l.minX, l.minY, l.minZ)).result().ifPresent(
-                pos1 -> object.add("pos1", pos1)
+            Map<T, T> map = new HashMap<>();
+            BlockPos.CODEC.encodeStart(ops, new BlockPos(l.minX, l.minY, l.minZ)).result().ifPresent(
+                pos1 -> map.put(ops.createString("pos1"), pos1)
             );
-            BlockPos.CODEC.encodeStart(JsonOps.INSTANCE, new BlockPos(l.maxX, l.maxY, l.maxZ)).result().ifPresent(
-                pos2 -> object.add("pos2", pos2)
+            BlockPos.CODEC.encodeStart(ops, new BlockPos(l.maxX, l.maxY, l.maxZ)).result().ifPresent(
+                pos2 -> map.put(ops.createString("pos2"), pos2)
             );
-            return object;
+            return ops.createMap(map);
         }
     }
 }
