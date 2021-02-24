@@ -22,7 +22,8 @@ public class SpawnReasonLimit implements TestSpawn {
 
     @Override
     public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
-        return reason == this.reason;
+        // Pass if reason isn't available.
+        return reason == null || reason == this.reason;
     }
 
     @Override
