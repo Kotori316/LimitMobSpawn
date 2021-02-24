@@ -1,0 +1,49 @@
+{
+  "_comment": "Conditions in each category are combined by OR.",
+  "default": [
+    {
+      "spawn_reason": "spawner",
+      "type": "spawn_reason"
+    },
+    {
+      "spawn_reason": "spawn_egg",
+      "type": "spawn_reason"
+    }
+  ],
+  "deny": [
+    {
+      "type": "all"
+    }
+  ],
+  "force": [
+    {
+      "t1": {
+        "pos1": [
+          -64,
+          0,
+          -64
+        ],
+        "pos2": [
+          64,
+          255,
+          64
+        ],
+        "type": "position"
+      },
+      "t2": {
+        "dim": "minecraft:overworld",
+        "type": "dimension"
+      },
+      "t3": {
+        "entity": "minecraft:enderman",
+        "type": "entity"
+      },
+      "type": "and"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:true"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 {
+  "_comment": "Conditions in each category are combined by OR.",
   "default": [
     {
       "t1": {
