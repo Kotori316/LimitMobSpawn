@@ -3,6 +3,7 @@ package com.kotori316.limiter;
 import java.util.Collections;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -10,6 +11,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -97,6 +102,27 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
 
             Set<TestSpawn> values = loader.getValues(a);
             assertEquals(Collections.singleton(All.getInstance()), values);
+        }
+
+        @Test
+        void loadFromJsonArray2() {
+            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
+            Set<TestSpawn> ans = Sets.newHashSet(
+                new DimensionLimit(World.THE_NETHER),
+                new EntityClassificationLimit(EntityClassification.CREATURE),
+                new SpawnReasonLimit(SpawnReason.SPAWNER),
+                new PositionLimit(new BlockPos(-10, 5, 64), new BlockPos(24, 65, 95)),
+                new PositionLimit(-15, 263, 2, 45, 624, 964),
+                new EntityLimit("minecraft:zombie"),
+                new EntityClassificationLimit(EntityClassification.WATER_CREATURE),
+                new DimensionLimit(World.THE_END),
+                new SpawnReasonLimit(SpawnReason.CHUNK_GENERATION)
+            );
+
+            JsonArray a = new JsonArray();
+            ans.stream().map(TestSpawn::toJson).forEach(a::add);
+            Set<TestSpawn> read = loader.getValues(a);
+            assertEquals(ans, read);
         }
 
         static JsonElement[] stupids() {

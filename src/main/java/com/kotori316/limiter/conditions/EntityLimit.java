@@ -26,6 +26,9 @@ public class EntityLimit implements TestSpawn {
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", type);
     }
 
+    /**
+     * Just for data creation. Not for runtime. Use {@link EntityLimit#EntityLimit(EntityType)} instead.
+     */
     public EntityLimit(String key) {
         this.type = EntityType.byKey(key).orElse(null);
         this.key = new ResourceLocation(key);
