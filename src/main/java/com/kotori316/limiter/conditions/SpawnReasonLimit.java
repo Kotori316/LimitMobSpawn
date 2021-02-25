@@ -1,6 +1,7 @@
 package com.kotori316.limiter.conditions;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
@@ -31,6 +32,26 @@ public class SpawnReasonLimit implements TestSpawn {
     public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
         // Pass if reason isn't available.
         return reason == null || reason == this.reason;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SpawnReasonLimit that = (SpawnReasonLimit) o;
+        return reason == that.reason;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reason);
+    }
+
+    @Override
+    public String toString() {
+        return "SpawnReasonLimit{" +
+            "reason=" + reason +
+            '}';
     }
 
     @Override
