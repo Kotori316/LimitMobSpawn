@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -19,10 +20,12 @@ import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import com.kotori316.limiter.capability.LMSDataPackHolder;
+import com.kotori316.limiter.capability.LMSHandler;
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
@@ -38,7 +41,9 @@ public class SpawnConditionLoader extends JsonReloadListener {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private final Map<String, TestSpawn.Serializer<?>> serializers = new HashMap<>();
     public static final SpawnConditionLoader INSTANCE = new SpawnConditionLoader();
-    public static final LMSDataPackHolder HOLDER = new LMSDataPackHolder();
+    private final LMSDataPackHolder holder = new LMSDataPackHolder();
+    private static final boolean SKIP_CONDITION =
+        !FMLLoader.isProduction() && System.getenv("target") == null;
 
     private SpawnConditionLoader() {
         super(GSON, LimitMobSpawn.MOD_ID);
@@ -67,18 +72,23 @@ public class SpawnConditionLoader extends JsonReloadListener {
         Set<TestSpawn> forceSet = new HashSet<>();
         for (JsonElement element : objectIn.values()) {
             JsonObject asObject = element.getAsJsonObject();
-            if (CraftingHelper.processConditions(asObject, "conditions")) {
+            if (SKIP_CONDITION || CraftingHelper.processConditions(asObject, "conditions")) {
                 defaultSet.addAll(getValues(asObject.get("default")));
                 denySet.addAll(getValues(asObject.get("deny")));
                 forceSet.addAll(getValues(asObject.get("force")));
             }
         }
-        HOLDER.setDefaultSet(defaultSet);
-        HOLDER.setDenySet(denySet);
-        HOLDER.setForceSet(forceSet);
+        holder.setDefaultSet(defaultSet);
+        holder.setDenySet(denySet);
+        holder.setForceSet(forceSet);
     }
 
-    private Set<TestSpawn> getValues(JsonElement element) {
+    public LMSHandler getHolder() {
+        return holder;
+    }
+
+    @VisibleForTesting // Should be private
+    Set<TestSpawn> getValues(JsonElement element) {
         if (element == null) return Collections.emptySet();
         if (element.isJsonArray()) {
             return StreamSupport.stream(element.getAsJsonArray().spliterator(), false)
@@ -107,5 +117,10 @@ public class SpawnConditionLoader extends JsonReloadListener {
             return TestSpawn.Empty.INSTANCE;
         }
         return serializer.from(dynamic);
+    }
+
+    @VisibleForTesting // Should not exist.
+    static SpawnConditionLoader createInstance() {
+        return new SpawnConditionLoader();
     }
 }

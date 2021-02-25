@@ -61,10 +61,10 @@ public class LimitMobSpawn {
             return;
         LazyOptional<LMSHandler> maybeHandler = event.getWorld().getCapability(Caps.getLmsCapability());
 
-        if (LMSHandler.getCombinedForce(SpawnConditionLoader.HOLDER, maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null)) ||
-            LMSHandler.getCombinedDefault(SpawnConditionLoader.HOLDER, maybeHandler).anyMatch(spawn -> spawn.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null)))
+        if (LMSHandler.getCombinedForce(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null)) ||
+            LMSHandler.getCombinedDefault(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn -> spawn.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null)))
             return; // SKIP
-        if (LMSHandler.getCombinedDeny(SpawnConditionLoader.HOLDER, maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null))) {
+        if (LMSHandler.getCombinedDeny(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), event.getEntity().getPosition(), event.getEntity().getType(), null))) {
             LOGGER.log(LOG_LEVEL, "onEntityJoinWorld denied spawning of {}.", event.getEntity());
             event.setCanceled(true);
         }
@@ -74,11 +74,11 @@ public class LimitMobSpawn {
                                                  EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
         LazyOptional<LMSHandler> maybeHandler = worldIn instanceof World ? ((World) worldIn).getCapability(Caps.getLmsCapability()) : LazyOptional.empty();
 
-        boolean matchForce = LMSHandler.getCombinedForce(SpawnConditionLoader.HOLDER, maybeHandler).anyMatch(spawn11 -> spawn11.test(worldIn, pos, entityTypeIn, reason));
+        boolean matchForce = LMSHandler.getCombinedForce(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn11 -> spawn11.test(worldIn, pos, entityTypeIn, reason));
         if (matchForce) return SpawnCheckResult.FORCE;
-        boolean matchDefault = LMSHandler.getCombinedDefault(SpawnConditionLoader.HOLDER, maybeHandler).anyMatch(spawn1 -> spawn1.test(worldIn, pos, entityTypeIn, reason));
+        boolean matchDefault = LMSHandler.getCombinedDefault(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn1 -> spawn1.test(worldIn, pos, entityTypeIn, reason));
         if (matchDefault) return SpawnCheckResult.DEFAULT;
-        boolean matchDeny = LMSHandler.getCombinedDeny(SpawnConditionLoader.HOLDER, maybeHandler).anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
+        boolean matchDeny = LMSHandler.getCombinedDeny(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchDeny) return SpawnCheckResult.DENY;
         else return SpawnCheckResult.DEFAULT;
     }
