@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -98,10 +99,8 @@ public class Or implements TestSpawn {
         public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             Or or = (Or) t;
             Map<T, T> map = new HashMap<>();
-            map.put(ops.createString("t1"), or.t1.to(ops));
-            for (int i = 0; i < or.ts.size(); i++) {
-                map.put(ops.createString("t" + (i + 2)), or.ts.get(i).to(ops));
-            }
+            map.put(ops.createString("values"),
+                ops.createList(Stream.concat(Stream.of(or.t1), or.ts.stream()).map(ts -> ts.to(ops))));
             return ops.createMap(map);
         }
     }

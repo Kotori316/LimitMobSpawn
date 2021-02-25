@@ -2,45 +2,51 @@
   "_comment": "Conditions in each category are combined by OR.",
   "default": [
     {
-      "t1": {
-        "entity": "minecraft:piglin",
-        "type": "entity"
-      },
-      "t2": {
-        "dim": "minecraft:the_nether",
-        "type": "dimension"
-      },
+      "values": [
+        {
+          "entity": "minecraft:piglin",
+          "type": "entity"
+        },
+        {
+          "dim": "minecraft:the_nether",
+          "type": "dimension"
+        }
+      ],
       "type": "and"
     },
     {
-      "t1": {
-        "classification": "creature",
-        "type": "classification"
-      },
-      "t2": {
-        "classification": "misc",
-        "type": "classification"
-      },
+      "values": [
+        {
+          "classification": "creature",
+          "type": "classification"
+        },
+        {
+          "classification": "misc",
+          "type": "classification"
+        }
+      ],
       "type": "or"
     },
     {
-      "t1": {
-        "pos1": [
-          -500,
-          0,
-          -500
-        ],
-        "pos2": [
-          500,
-          255,
-          500
-        ],
-        "type": "position"
-      },
-      "t2": {
-        "dim": "minecraft:the_end",
-        "type": "dimension"
-      },
+      "values": [
+        {
+          "pos1": [
+            -500,
+            0,
+            -500
+          ],
+          "pos2": [
+            500,
+            255,
+            500
+          ],
+          "type": "position"
+        },
+        {
+          "dim": "minecraft:the_end",
+          "type": "dimension"
+        }
+      ],
       "type": "and"
     }
   ],

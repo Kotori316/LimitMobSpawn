@@ -1,24 +1,28 @@
 {
   "deny": [
     {
-      "t1": {
-        "type": "all"
-      },
-      "t2": {
-        "dim": "mining_dimension:mining",
-        "type": "dimension"
-      },
-      "t3": {
-        "t1": {
-          "entity": "minecraft:zombie",
-          "type": "entity"
+      "values": [
+        {
+          "type": "all"
         },
-        "t2": {
-          "entity": "minecraft:skeleton",
-          "type": "entity"
+        {
+          "dim": "mining_dimension:mining",
+          "type": "dimension"
         },
-        "type": "or"
-      },
+        {
+          "values": [
+            {
+              "entity": "minecraft:zombie",
+              "type": "entity"
+            },
+            {
+              "entity": "minecraft:skeleton",
+              "type": "entity"
+            }
+          ],
+          "type": "or"
+        }
+      ],
       "type": "and"
     }
   ],
