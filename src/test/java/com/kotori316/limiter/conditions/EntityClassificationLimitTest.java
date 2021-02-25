@@ -2,7 +2,6 @@ package com.kotori316.limiter.conditions;
 
 import java.util.Arrays;
 
-import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.nbt.NBTDynamicOps;
@@ -12,7 +11,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import com.kotori316.limiter.BeforeAllTest;
-import com.kotori316.limiter.SpawnConditionLoader;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -43,10 +41,6 @@ class EntityClassificationLimitTest extends BeforeAllTest {
     @EnumSource(EntityClassification.class)
     void cycleConsistency(EntityClassification classification) {
         EntityClassificationLimit limit = new EntityClassificationLimit(classification);
-        assertAll(
-            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.INSTANCE, limit.to(JsonOps.INSTANCE)))),
-            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.COMPRESSED, limit.to(JsonOps.COMPRESSED)))),
-            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(NBTDynamicOps.INSTANCE, limit.to(NBTDynamicOps.INSTANCE))))
-        );
+        testCycle(limit);
     }
 }

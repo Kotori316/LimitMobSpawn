@@ -2,7 +2,6 @@ package com.kotori316.limiter.conditions;
 
 import java.util.stream.Stream;
 
-import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.RegistryKey;
@@ -13,11 +12,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.kotori316.limiter.BeforeAllTest;
-import com.kotori316.limiter.SpawnConditionLoader;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DimensionLimitTest extends BeforeAllTest {
     static Stream<RegistryKey<World>> registryKeys() {
@@ -45,10 +42,6 @@ class DimensionLimitTest extends BeforeAllTest {
     @MethodSource("registryKeys")
     void cycleConsistency(RegistryKey<World> worldRegistryKey) {
         DimensionLimit limit = new DimensionLimit(worldRegistryKey);
-        assertAll(
-            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.INSTANCE, limit.to(JsonOps.INSTANCE)))),
-            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.COMPRESSED, limit.to(JsonOps.COMPRESSED)))),
-            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(NBTDynamicOps.INSTANCE, limit.to(NBTDynamicOps.INSTANCE))))
-        );
+        testCycle(limit);
     }
 }

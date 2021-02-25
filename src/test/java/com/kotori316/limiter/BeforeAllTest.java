@@ -4,13 +4,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import cpw.mods.modlauncher.Launcher;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.registry.Bootstrap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.junit.jupiter.api.BeforeAll;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -50,4 +54,13 @@ public abstract class BeforeAllTest {
             fail(e);
         }
     }
+
+    protected static void testCycle(TestSpawn limit) {
+        assertAll(
+            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.INSTANCE, limit.to(JsonOps.INSTANCE)))),
+            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.COMPRESSED, limit.to(JsonOps.COMPRESSED)))),
+            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(NBTDynamicOps.INSTANCE, limit.to(NBTDynamicOps.INSTANCE))))
+        );
+    }
+
 }

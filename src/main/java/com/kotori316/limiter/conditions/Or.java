@@ -82,18 +82,13 @@ public class Or implements TestSpawn {
 
         @Override
         public <T> Or from(Dynamic<T> dynamic) {
-            Map<String, Dynamic<T>> stringDynamicMap = dynamic.asMap(d -> d.asString(""), Function.identity());
-            List<TestSpawn> list;
-            if (!stringDynamicMap.isEmpty())
-                list = stringDynamicMap
-                    .entrySet().stream()
-                    .filter(e -> KEY_PATTERN.matcher(e.getKey()).matches())
-                    .sorted(Comparator.comparing(e -> Integer.parseInt(e.getKey().substring(1))))
-                    .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue()))
-                    .collect(Collectors.toList());
-            else
-                // dynamic has array of values
-                list = dynamic.asList(SpawnConditionLoader.INSTANCE::deserialize);
+            List<TestSpawn> list = dynamic.get("values").map(d -> d.asList(SpawnConditionLoader.INSTANCE::deserialize)).result()
+                .orElseGet(() ->
+                    dynamic.asMap(d -> d.asString(""), Function.identity()).entrySet().stream()
+                        .filter(e -> KEY_PATTERN.matcher(e.getKey()).matches())
+                        .sorted(Comparator.comparing(e -> Integer.parseInt(e.getKey().substring(1))))
+                        .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue()))
+                        .collect(Collectors.toList()));
             if (list.size() < 1)
                 throw new IllegalStateException("And object has no child conditions. " + dynamic.getValue());
             return new Or(list.get(0), list.subList(1, list.size()).toArray(new TestSpawn[0]));
