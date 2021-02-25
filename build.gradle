@@ -152,11 +152,14 @@ task signJar(type: net.minecraftforge.gradle.common.task.SignJar, dependsOn: 're
 }
 
 curseforge {
+    String v = getForgeVersionToBuild()
+    String minecraftVersion = v.substring(v.lastIndexOf(":") + 1).split("-")[0]
     apiKey = project.hasProperty("curseforge_additional-enchanted-miner_key") ? getProperty("curseforge_additional-enchanted-miner_key") : ""
     project {
         id = '449932'
         changelogType = 'markdown'
-        changelog = "See https://github.com/Kotori316/LimitMobSpawn/commits/master for change log."
+        changelog = "See https://github.com/Kotori316/LimitMobSpawn/commits/master for change log.\n" +
+                "For Minecraft $minecraftVersion, built with $v"
         releaseType = 'release'
         addGameVersion '1.16.5'
         mainArtifact jar
