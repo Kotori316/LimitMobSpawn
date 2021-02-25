@@ -1,11 +1,7 @@
 package com.kotori316.limiter.conditions;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
-import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.RegistryKey;
@@ -19,7 +15,12 @@ import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class DimensionLimit implements TestSpawn {
-    public static final TestSpawn.Serializer<DimensionLimit> SERIALIZER = new Serializer();
+    public static final TestSpawn.Serializer<DimensionLimit> SERIALIZER = StringLimitSerializer.fromFunction(
+        DimensionLimit::getType, DimensionLimit::new,
+        key -> key.getLocation().toString(), s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(s)),
+        "dim", "dimension"
+    );
+
     private final RegistryKey<World> type;
 
     public DimensionLimit(RegistryKey<World> type) {
@@ -37,6 +38,10 @@ public class DimensionLimit implements TestSpawn {
             type = World.OVERWORLD;
         }
         return this.type == type;
+    }
+
+    public RegistryKey<World> getType() {
+        return type;
     }
 
     @Override
@@ -62,24 +67,4 @@ public class DimensionLimit implements TestSpawn {
         return SERIALIZER;
     }
 
-    private static class Serializer extends TestSpawn.Serializer<DimensionLimit> {
-        @Override
-        public String getType() {
-            return "dimension";
-        }
-
-        @Override
-        public <T> DimensionLimit from(Dynamic<T> dynamic) {
-            RegistryKey<World> dim = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(dynamic.get("dim").asString("INVALID")));
-            return new DimensionLimit(dim);
-        }
-
-        @Override
-        public <T> T to(TestSpawn t, DynamicOps<T> ops) {
-            DimensionLimit l = (DimensionLimit) t;
-            Map<T, T> map = new HashMap<>();
-            map.put(ops.createString("dim"), ops.createString(l.type.getLocation().toString()));
-            return ops.createMap(map);
-        }
-    }
 }

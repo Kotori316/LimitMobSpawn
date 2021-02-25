@@ -1,11 +1,7 @@
 package com.kotori316.limiter.conditions;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
-import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -16,12 +12,19 @@ import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class SpawnReasonLimit implements TestSpawn {
-    public static final TestSpawn.Serializer<SpawnReasonLimit> SERIALIZER = new Serializer();
+    public static final TestSpawn.Serializer<SpawnReasonLimit> SERIALIZER = StringLimitSerializer.fromFunction(
+        SpawnReasonLimit::getReason, SpawnReasonLimit::new, r -> r.toString().toLowerCase(Locale.ROOT),
+        s -> SpawnReason.valueOf(s.toUpperCase(Locale.ROOT)), "spawn_reason", "spawn_reason"
+    );
     private final SpawnReason reason;
 
     public SpawnReasonLimit(SpawnReason reason) {
         this.reason = reason;
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", reason);
+    }
+
+    public SpawnReason getReason() {
+        return reason;
     }
 
     @Override
@@ -35,26 +38,4 @@ public class SpawnReasonLimit implements TestSpawn {
         return SERIALIZER;
     }
 
-    private static class Serializer extends TestSpawn.Serializer<SpawnReasonLimit> {
-
-        @Override
-        public String getType() {
-            return "spawn_reason";
-        }
-
-        @Override
-        public <T> SpawnReasonLimit from(Dynamic<T> dynamic) {
-            String reasonName = dynamic.get("spawn_reason").asString("");
-            SpawnReason spawnReason = SpawnReason.valueOf(reasonName.toUpperCase(Locale.ROOT));
-            return new SpawnReasonLimit(spawnReason);
-        }
-
-        @Override
-        public <T> T to(TestSpawn a, DynamicOps<T> ops) {
-            SpawnReasonLimit spawnReasonLimit = ((SpawnReasonLimit) a);
-            Map<T, T> map = new HashMap<>();
-            map.put(ops.createString("spawn_reason"), ops.createString(spawnReasonLimit.reason.toString().toLowerCase(Locale.ROOT)));
-            return ops.createMap(map);
-        }
-    }
 }
