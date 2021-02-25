@@ -78,7 +78,6 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
 
     static Stream<TestSpawn> getCombinedForce(LMSHandler h1, LazyOptional<LMSHandler> h2) {
         return Stream.concat(h1.getForceConditions().stream(), h2.map(LMSHandler::getForceConditions).map(Set::stream).orElse(Stream.empty()));
-
     }
 }
 
