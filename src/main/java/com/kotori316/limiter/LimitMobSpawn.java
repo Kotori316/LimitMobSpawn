@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import com.kotori316.limiter.capability.Caps;
 import com.kotori316.limiter.capability.LMSHandler;
 import com.kotori316.limiter.command.LMSCommand;
+import com.kotori316.limiter.command.TestSpawnArgument;
 
 @Mod(LimitMobSpawn.MOD_ID)
 public class LimitMobSpawn {
@@ -37,6 +38,7 @@ public class LimitMobSpawn {
 
     public void setup(FMLCommonSetupEvent event) {
         LMSHandler.registerCapability();
+        TestSpawnArgument.registerArgumentType();
     }
 
     @SubscribeEvent

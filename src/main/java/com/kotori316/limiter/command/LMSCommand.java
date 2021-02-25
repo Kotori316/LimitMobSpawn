@@ -52,6 +52,25 @@ public class LMSCommand {
                     return Command.SINGLE_SUCCESS;
                 }));
         }
+        {
+            // add
+            LiteralArgumentBuilder<CommandSource> add = Commands.literal("add");
+            add.then(Commands.literal("default").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
+                LMSHandler lmsHandler = getLmsHandler(context);
+                lmsHandler.addDefaultCondition(context.getArgument("rule", TestSpawn.class));
+                return Command.SINGLE_SUCCESS;
+            })));
+            add.then(Commands.literal("deny").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
+                LMSHandler lmsHandler = getLmsHandler(context);
+                lmsHandler.addDenyCondition(context.getArgument("rule", TestSpawn.class));
+                return Command.SINGLE_SUCCESS;
+            })));
+            add.then(Commands.literal("force").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
+                LMSHandler lmsHandler = getLmsHandler(context);
+                lmsHandler.addForceCondition(context.getArgument("rule", TestSpawn.class));
+                return Command.SINGLE_SUCCESS;
+            })));
+        }
         dispatcher.register(literal);
     }
 
