@@ -1,0 +1,136 @@
+{
+  "deny": [
+    {
+      "t1": {
+        "dim": "gaiadimension:gaia_dimension",
+        "type": "dimension"
+      },
+      "t2": {
+        "t4": {
+          "entity": "gaiadimension:blue_howlite_wolf",
+          "type": "entity"
+        },
+        "t5": {
+          "entity": "gaiadimension:cavern_tick",
+          "type": "entity"
+        },
+        "t6": {
+          "entity": "gaiadimension:contorted_naga",
+          "type": "entity"
+        },
+        "t7": {
+          "entity": "gaiadimension:corrupt_sapper",
+          "type": "entity"
+        },
+        "t8": {
+          "entity": "gaiadimension:lesser_shockshooter",
+          "type": "entity"
+        },
+        "t9": {
+          "entity": "gaiadimension:lesser_spitfire",
+          "type": "entity"
+        },
+        "t10": {
+          "entity": "gaiadimension:malachite_drone",
+          "type": "entity"
+        },
+        "t12": {
+          "entity": "gaiadimension:muckling",
+          "type": "entity"
+        },
+        "t11": {
+          "entity": "gaiadimension:malachite_guard",
+          "type": "entity"
+        },
+        "t14": {
+          "entity": "gaiadimension:shalurker",
+          "type": "entity"
+        },
+        "t13": {
+          "entity": "gaiadimension:primal_beast",
+          "type": "entity"
+        },
+        "t16": {
+          "entity": "gaiadimension:crystal_golem",
+          "type": "entity"
+        },
+        "t15": {
+          "entity": "gaiadimension:bismuth_uletrus",
+          "type": "entity"
+        },
+        "t18": {
+          "entity": "gaiadimension:howlite_wolf",
+          "type": "entity"
+        },
+        "t17": {
+          "entity": "gaiadimension:growth_sapper",
+          "type": "entity"
+        },
+        "t19": {
+          "entity": "gaiadimension:mutant_growth_extractor",
+          "type": "entity"
+        },
+        "t21": {
+          "entity": "gaiadimension:rocky_luggeroth",
+          "type": "entity"
+        },
+        "t20": {
+          "entity": "gaiadimension:nomadic_lagrahk",
+          "type": "entity"
+        },
+        "t23": {
+          "entity": "gaiadimension:saltion",
+          "type": "entity"
+        },
+        "t22": {
+          "entity": "gaiadimension:rugged_lurmorus",
+          "type": "entity"
+        },
+        "t25": {
+          "entity": "gaiadimension:markuzar_plant",
+          "type": "entity"
+        },
+        "t24": {
+          "entity": "gaiadimension:spellbound_elemental",
+          "type": "entity"
+        },
+        "t27": {
+          "entity": "gaiadimension:shallow_arenthis",
+          "type": "entity"
+        },
+        "t26": {
+          "entity": "gaiadimension:mineral_arenthis",
+          "type": "entity"
+        },
+        "t29": {
+          "entity": "gaiadimension:thrown_pebble",
+          "type": "entity"
+        },
+        "t28": {
+          "entity": "gaiadimension:agate_arrow",
+          "type": "entity"
+        },
+        "t1": {
+          "entity": "gaiadimension:agate_golem",
+          "type": "entity"
+        },
+        "t2": {
+          "entity": "gaiadimension:ancient_lagrahk",
+          "type": "entity"
+        },
+        "t3": {
+          "entity": "gaiadimension:archaic_warrior",
+          "type": "entity"
+        },
+        "type": "or"
+      },
+      "type": "and"
+    }
+  ],
+  "conditions": [
+    {
+      "modid": "gaiadimension",
+      "type": "forge:mod_loaded"
+    }
+  ]
+}

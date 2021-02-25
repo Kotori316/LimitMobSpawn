@@ -8,6 +8,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
@@ -17,10 +18,18 @@ import com.kotori316.limiter.TestSpawn;
 public class EntityLimit implements TestSpawn {
     public static final TestSpawn.Serializer<EntityLimit> SERIALIZER = new Serializer();
     private final EntityType<?> type;
+    private final ResourceLocation key; // Just for data creation. Not for runtime test.
 
     public EntityLimit(EntityType<?> type) {
         this.type = type;
+        this.key = null;
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", type);
+    }
+
+    public EntityLimit(String key) {
+        this.type = EntityType.byKey(key).orElse(null);
+        this.key = new ResourceLocation(key);
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", key);
     }
 
     @Override
@@ -69,7 +78,12 @@ public class EntityLimit implements TestSpawn {
         public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             EntityLimit l = (EntityLimit) t;
             Map<T, T> map = new HashMap<>();
-            map.put(ops.createString("entity"), ops.createString(EntityType.getKey(l.type).toString()));
+            String value;
+            if (l.type != null)
+                value = EntityType.getKey(l.type).toString();
+            else
+                value = Objects.requireNonNull(l.key).toString();
+            map.put(ops.createString("entity"), ops.createString(value));
             return ops.createMap(map);
         }
     }

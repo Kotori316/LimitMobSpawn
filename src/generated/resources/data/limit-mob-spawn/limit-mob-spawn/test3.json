@@ -26,7 +26,16 @@
   ],
   "deny": [
     {
-      "type": "all"
+      "dim": "minecraft:overworld",
+      "type": "dimension"
+    },
+    {
+      "dim": "minecraft:the_nether",
+      "type": "dimension"
+    },
+    {
+      "dim": "minecraft:the_end",
+      "type": "dimension"
     }
   ],
   "force": [
@@ -50,6 +59,30 @@
       },
       "t3": {
         "entity": "minecraft:enderman",
+        "type": "entity"
+      },
+      "type": "and"
+    },
+    {
+      "t1": {
+        "pos1": [
+          64,
+          0,
+          -64
+        ],
+        "pos2": [
+          128,
+          255,
+          64
+        ],
+        "type": "position"
+      },
+      "t2": {
+        "dim": "minecraft:overworld",
+        "type": "dimension"
+      },
+      "t3": {
+        "entity": "minecraft:witch",
         "type": "entity"
       },
       "type": "and"

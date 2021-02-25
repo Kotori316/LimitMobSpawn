@@ -1,0 +1,31 @@
+{
+  "deny": [
+    {
+      "t1": {
+        "type": "all"
+      },
+      "t2": {
+        "dim": "mining_dimension:mining",
+        "type": "dimension"
+      },
+      "t3": {
+        "t1": {
+          "entity": "minecraft:zombie",
+          "type": "entity"
+        },
+        "t2": {
+          "entity": "minecraft:skeleton",
+          "type": "entity"
+        },
+        "type": "or"
+      },
+      "type": "and"
+    }
+  ],
+  "conditions": [
+    {
+      "modid": "mining_dimension",
+      "type": "forge:mod_loaded"
+    }
+  ]
+}

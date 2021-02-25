@@ -16,7 +16,11 @@ import net.minecraft.data.IDataProvider;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,6 +34,7 @@ import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityClassificationLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = LimitMobSpawn.MOD_ID)
@@ -70,6 +75,7 @@ public class LimitMobSpawnDataProvider {
             return array;
         }
 
+        @SuppressWarnings("SpellCheckingInspection") // Mod IDs
         private List<Pair<String, JsonElement>> getData() {
             List<Pair<String, JsonElement>> list = new ArrayList<>();
             {
@@ -111,13 +117,17 @@ public class LimitMobSpawnDataProvider {
                 }
                 {
                     object.add("deny", as(
-                        All.getInstance()
+                        new DimensionLimit(World.OVERWORLD),
+                        new DimensionLimit(World.THE_NETHER),
+                        new DimensionLimit(World.THE_END)
                     ));
                 }
                 {
                     object.add("force", as(
                         Creator.posAtDimension(World.OVERWORLD, -64, 64, -64, 64)
-                            .and(new EntityLimit(EntityType.ENDERMAN))
+                            .and(new EntityLimit(EntityType.ENDERMAN)),
+                        Creator.posAtDimension(World.OVERWORLD, 64, 128, -64, 64)
+                            .and(new EntityLimit(EntityType.WITCH))
                     ));
                 }
                 {
@@ -138,6 +148,71 @@ public class LimitMobSpawnDataProvider {
                 {
                     JsonArray conditions = new JsonArray();
                     conditions.add(TrueCondition.Serializer.INSTANCE.getJson(TrueCondition.INSTANCE));
+                    object.add("conditions", conditions);
+                }
+                list.add(Pair.of(name, object));
+            }
+            {
+                String name = "mining_dim";
+                JsonObject object = new JsonObject();
+                {
+                    object.add("deny", as(
+                        All.getInstance()
+                            .and(new DimensionLimit(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation("mining_dimension:mining"))))
+                            .and(new Or(
+                                new EntityLimit(EntityType.ZOMBIE),
+                                new EntityLimit(EntityType.SKELETON)
+                            ))
+                    ));
+                }
+                {
+                    JsonArray conditions = new JsonArray();
+                    conditions.add(ModLoadedCondition.Serializer.INSTANCE.getJson(new ModLoadedCondition("mining_dimension")));
+                    object.add("conditions", conditions);
+                }
+                list.add(Pair.of(name, object));
+            }
+            {
+                String name = "gaia_dim";
+                JsonObject object = new JsonObject();
+                {
+                    object.add("deny", as(
+                        new DimensionLimit(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation("gaiadimension:gaia_dimension")))
+                            .and(new Or(
+                                new EntityLimit("gaiadimension:agate_golem            ".trim()),
+                                new EntityLimit("gaiadimension:ancient_lagrahk        ".trim()),
+                                new EntityLimit("gaiadimension:archaic_warrior        ".trim()),
+                                new EntityLimit("gaiadimension:blue_howlite_wolf      ".trim()),
+                                new EntityLimit("gaiadimension:cavern_tick            ".trim()),
+                                new EntityLimit("gaiadimension:contorted_naga         ".trim()),
+                                new EntityLimit("gaiadimension:corrupt_sapper         ".trim()),
+                                new EntityLimit("gaiadimension:lesser_shockshooter    ".trim()),
+                                new EntityLimit("gaiadimension:lesser_spitfire        ".trim()),
+                                new EntityLimit("gaiadimension:malachite_drone        ".trim()),
+                                new EntityLimit("gaiadimension:malachite_guard        ".trim()),
+                                new EntityLimit("gaiadimension:muckling               ".trim()),
+                                new EntityLimit("gaiadimension:primal_beast           ".trim()),
+                                new EntityLimit("gaiadimension:shalurker              ".trim()),
+                                new EntityLimit("gaiadimension:bismuth_uletrus        ".trim()),
+                                new EntityLimit("gaiadimension:crystal_golem          ".trim()),
+                                new EntityLimit("gaiadimension:growth_sapper          ".trim()),
+                                new EntityLimit("gaiadimension:howlite_wolf           ".trim()),
+                                new EntityLimit("gaiadimension:mutant_growth_extractor".trim()),
+                                new EntityLimit("gaiadimension:nomadic_lagrahk        ".trim()),
+                                new EntityLimit("gaiadimension:rocky_luggeroth        ".trim()),
+                                new EntityLimit("gaiadimension:rugged_lurmorus        ".trim()),
+                                new EntityLimit("gaiadimension:saltion                ".trim()),
+                                new EntityLimit("gaiadimension:spellbound_elemental   ".trim()),
+                                new EntityLimit("gaiadimension:markuzar_plant         ".trim()),
+                                new EntityLimit("gaiadimension:mineral_arenthis       ".trim()),
+                                new EntityLimit("gaiadimension:shallow_arenthis       ".trim()),
+                                new EntityLimit("gaiadimension:agate_arrow            ".trim()),
+                                new EntityLimit("gaiadimension:thrown_pebble          ".trim())))
+                    ));
+                }
+                {
+                    JsonArray conditions = new JsonArray();
+                    conditions.add(ModLoadedCondition.Serializer.INSTANCE.getJson(new ModLoadedCondition("gaiadimension")));
                     object.add("conditions", conditions);
                 }
                 list.add(Pair.of(name, object));
