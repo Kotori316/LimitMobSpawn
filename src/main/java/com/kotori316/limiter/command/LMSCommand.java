@@ -1,5 +1,7 @@
 package com.kotori316.limiter.command;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.mojang.brigadier.Command;
@@ -57,23 +59,23 @@ public class LMSCommand {
             // add
             LiteralArgumentBuilder<CommandSource> add = Commands.literal("add").requires(s -> s.hasPermissionLevel(2));
             add.then(Commands.literal("default").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
+                List<LMSHandler> list = getAllLmsHandlers(context);
                 TestSpawn rule = context.getArgument("rule", TestSpawn.class);
-                lmsHandler.addDefaultCondition(rule);
+                list.forEach(lmsHandler -> lmsHandler.addDefaultCondition(rule));
                 context.getSource().sendFeedback(new StringTextComponent("Added " + rule + " to default."), true);
                 return Command.SINGLE_SUCCESS;
             })));
             add.then(Commands.literal("deny").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
+                List<LMSHandler> list = getAllLmsHandlers(context);
                 TestSpawn rule = context.getArgument("rule", TestSpawn.class);
-                lmsHandler.addDenyCondition(rule);
+                list.forEach(lmsHandler -> lmsHandler.addDenyCondition(rule));
                 context.getSource().sendFeedback(new StringTextComponent("Added " + rule + " to deny."), true);
                 return Command.SINGLE_SUCCESS;
             })));
             add.then(Commands.literal("force").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
+                List<LMSHandler> list = getAllLmsHandlers(context);
                 TestSpawn rule = context.getArgument("rule", TestSpawn.class);
-                lmsHandler.addForceCondition(rule);
+                list.forEach(lmsHandler -> lmsHandler.addForceCondition(rule));
                 context.getSource().sendFeedback(new StringTextComponent("Added " + rule + " to force."), true);
                 return Command.SINGLE_SUCCESS;
             })));
@@ -83,20 +85,17 @@ public class LMSCommand {
             // remove
             LiteralArgumentBuilder<CommandSource> remove = Commands.literal("remove").requires(s -> s.hasPermissionLevel(2));
             remove.then(Commands.literal("default").executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
-                lmsHandler.clearDefaultConditions();
+                getAllLmsHandlers(context).forEach(LMSHandler::clearDefaultConditions);
                 context.getSource().sendFeedback(new StringTextComponent("Cleared defaults"), true);
                 return Command.SINGLE_SUCCESS;
             }));
             remove.then(Commands.literal("deny").executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
-                lmsHandler.clearDenyConditions();
+                getAllLmsHandlers(context).forEach(LMSHandler::clearDenyConditions);
                 context.getSource().sendFeedback(new StringTextComponent("Cleared denies"), true);
                 return Command.SINGLE_SUCCESS;
             }));
             remove.then(Commands.literal("force").executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
-                lmsHandler.clearForceConditions();
+                getAllLmsHandlers(context).forEach(LMSHandler::clearForceConditions);
                 context.getSource().sendFeedback(new StringTextComponent("Cleared forces"), true);
                 return Command.SINGLE_SUCCESS;
             }));
@@ -114,5 +113,13 @@ public class LMSCommand {
     private static LMSHandler getLmsHandler(CommandContext<CommandSource> context) throws CommandSyntaxException {
         World world = context.getSource().getWorld();
         return world.getCapability(Caps.getLmsCapability()).orElseThrow(HandlersNotFound::create);
+    }
+
+    private static List<LMSHandler> getAllLmsHandlers(CommandContext<CommandSource> context) {
+        List<LMSHandler> list = new ArrayList<>();
+        for (World world : context.getSource().getServer().getWorlds()) {
+            world.getCapability(Caps.getLmsCapability()).ifPresent(list::add);
+        }
+        return list;
     }
 }
