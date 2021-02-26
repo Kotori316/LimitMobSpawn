@@ -24,6 +24,9 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
     public <T1> T from(Dynamic<T1> dynamic) {
         String valueString = dynamic.get(saveKey()).asString("INVALID");
         Value value = fromString(valueString);
+        if (value == null) {
+            throw new IllegalArgumentException("Value is null, by input: " + valueString + ", whole: " + dynamic.getValue());
+        }
         return instance(value);
     }
 

@@ -21,7 +21,6 @@ import com.kotori316.limiter.capability.LMSHandler;
 
 public class LMSCommand {
     private static final SimpleCommandExceptionType HandlersNotFound = new SimpleCommandExceptionType(new StringTextComponent("No LMS Handlers found."));
-    private static final SimpleCommandExceptionType RulesNotFound = new SimpleCommandExceptionType(new StringTextComponent("No Rules found."));
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         LiteralArgumentBuilder<CommandSource> literal = Commands.literal(LimitMobSpawn.MOD_ID);
@@ -46,6 +45,8 @@ public class LMSCommand {
             literal.then(query
                 .executes(context -> {
                     LMSHandler lmsHandler = getLmsHandler(context);
+                    if (lmsHandler.getDefaultConditions().isEmpty() && lmsHandler.getForceConditions().isEmpty() && lmsHandler.getDenyConditions().isEmpty())
+                        context.getSource().sendErrorMessage(new StringTextComponent("No Rules found."));
                     sendMessage(context, "Defaults", lmsHandler.getDefaultConditions());
                     sendMessage(context, "Denies", lmsHandler.getDenyConditions());
                     sendMessage(context, "Forces", lmsHandler.getForceConditions());
@@ -57,19 +58,26 @@ public class LMSCommand {
             LiteralArgumentBuilder<CommandSource> add = Commands.literal("add");
             add.then(Commands.literal("default").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
                 LMSHandler lmsHandler = getLmsHandler(context);
-                lmsHandler.addDefaultCondition(context.getArgument("rule", TestSpawn.class));
+                TestSpawn rule = context.getArgument("rule", TestSpawn.class);
+                lmsHandler.addDefaultCondition(rule);
+                context.getSource().sendFeedback(new StringTextComponent("Added " + rule + " to default."), true);
                 return Command.SINGLE_SUCCESS;
             })));
             add.then(Commands.literal("deny").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
                 LMSHandler lmsHandler = getLmsHandler(context);
-                lmsHandler.addDenyCondition(context.getArgument("rule", TestSpawn.class));
+                TestSpawn rule = context.getArgument("rule", TestSpawn.class);
+                lmsHandler.addDenyCondition(rule);
+                context.getSource().sendFeedback(new StringTextComponent("Added " + rule + " to deny."), true);
                 return Command.SINGLE_SUCCESS;
             })));
             add.then(Commands.literal("force").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
                 LMSHandler lmsHandler = getLmsHandler(context);
-                lmsHandler.addForceCondition(context.getArgument("rule", TestSpawn.class));
+                TestSpawn rule = context.getArgument("rule", TestSpawn.class);
+                lmsHandler.addForceCondition(rule);
+                context.getSource().sendFeedback(new StringTextComponent("Added " + rule + " to force."), true);
                 return Command.SINGLE_SUCCESS;
             })));
+            literal.then(add);
         }
         dispatcher.register(literal);
     }
@@ -82,9 +90,6 @@ public class LMSCommand {
     @Nonnull
     private static LMSHandler getLmsHandler(CommandContext<CommandSource> context) throws CommandSyntaxException {
         World world = context.getSource().getWorld();
-        LMSHandler lmsHandler = world.getCapability(Caps.getLmsCapability()).orElseThrow(HandlersNotFound::create);
-        if (lmsHandler.getDefaultConditions().isEmpty() && lmsHandler.getForceConditions().isEmpty() && lmsHandler.getDenyConditions().isEmpty())
-            throw RulesNotFound.create();
-        return lmsHandler;
+        return world.getCapability(Caps.getLmsCapability()).orElseThrow(HandlersNotFound::create);
     }
 }

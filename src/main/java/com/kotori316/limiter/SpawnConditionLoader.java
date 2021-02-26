@@ -59,6 +59,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
         register(SpawnReasonLimit.SERIALIZER);
     }
 
+    // ---------- Data pack Serialize & Deserialize ----------
     public void register(TestSpawn.Serializer<?> serializer) {
         TestSpawn.Serializer<?> put = this.serializers.put(serializer.getType(), serializer);
         if (put != null)
@@ -87,7 +88,8 @@ public class SpawnConditionLoader extends JsonReloadListener {
         return holder;
     }
 
-    @VisibleForTesting // Should be private
+    @VisibleForTesting
+        // Should be private
     Set<TestSpawn> getValues(JsonElement element) {
         if (element == null) return Collections.emptySet();
         if (element.isJsonArray()) {
@@ -118,6 +120,12 @@ public class SpawnConditionLoader extends JsonReloadListener {
         }
         return serializer.from(dynamic);
     }
+
+    // ---------- Command ----------
+    public boolean hasSerializeKey(String key) {
+        return this.serializers.containsKey(key);
+    }
+    public Set<String> serializeKeySet(){return this.serializers.keySet();}
 
     @VisibleForTesting // Should not exist.
     static SpawnConditionLoader createInstance() {
