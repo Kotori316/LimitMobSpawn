@@ -24,6 +24,11 @@ public class All implements TestSpawn {
     }
 
     @Override
+    public String toString() {
+        return "All Mobs";
+    }
+
+    @Override
     public TestSpawn.Serializer<? extends TestSpawn> getSerializer() {
         return SERIALIZER;
     }
