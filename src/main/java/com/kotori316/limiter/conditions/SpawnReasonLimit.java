@@ -15,7 +15,8 @@ import com.kotori316.limiter.TestSpawn;
 public class SpawnReasonLimit implements TestSpawn {
     public static final TestSpawn.Serializer<SpawnReasonLimit> SERIALIZER = StringLimitSerializer.fromFunction(
         SpawnReasonLimit::getReason, SpawnReasonLimit::new, r -> r.toString().toLowerCase(Locale.ROOT),
-        s -> SpawnReason.valueOf(s.toUpperCase(Locale.ROOT)), "spawn_reason", "spawn_reason"
+        s -> SpawnReason.valueOf(s.toUpperCase(Locale.ROOT)), "spawn_reason", "spawn_reason",
+        SpawnReason.values()
     );
     private final SpawnReason reason;
 

@@ -1,8 +1,10 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -78,6 +80,16 @@ public class Not implements TestSpawn {
             Map<T, T> map = new HashMap<>();
             map.put(ops.createString("value"), not.value.to(ops));
             return ops.createMap(map);
+        }
+
+        @Override
+        public Set<String> propertyKeys() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Set<String> possibleValues(String property) {
+            return Collections.emptySet();
         }
     }
 }

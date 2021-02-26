@@ -1,8 +1,11 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -11,6 +14,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
@@ -88,6 +92,19 @@ public class EntityLimit implements TestSpawn {
                 value = Objects.requireNonNull(l.key).toString();
             map.put(ops.createString("entity"), ops.createString(value));
             return ops.createMap(map);
+        }
+
+        @Override
+        public Set<String> propertyKeys() {
+            return Collections.singleton("entity");
+        }
+
+        @Override
+        public Set<String> possibleValues(String property) {
+            if (property.equals("entity")) {
+                return ForgeRegistries.ENTITIES.getKeys().stream().map(ResourceLocation::toString).collect(Collectors.toSet());
+            }
+            return Collections.emptySet();
         }
     }
 }

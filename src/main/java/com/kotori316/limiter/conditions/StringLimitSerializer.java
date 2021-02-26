@@ -1,8 +1,12 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -19,6 +23,11 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
     protected abstract T instance(Value value);
 
     protected abstract Value getter(T t);
+
+    @Override
+    public Set<String> propertyKeys() {
+        return Collections.singleton(saveKey());
+    }
 
     @Override
     public <T1> T from(Dynamic<T1> dynamic) {
@@ -43,7 +52,7 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
     public static <Type extends TestSpawn, Value> StringLimitSerializer<Type, Value> fromFunction(
         Function<Type, Value> getter, Function<Value, Type> instance,
         Function<Value, String> asString, Function<String, Value> fromString,
-        String saveKey, String typeName
+        String saveKey, String typeName, Value[] values
     ) {
         return new StringLimitSerializer<Type, Value>() {
             @Override
@@ -74,6 +83,14 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
             @Override
             public String getType() {
                 return typeName;
+            }
+
+            @Override
+            public Set<String> possibleValues(String property) {
+                if (property.equals(saveKey())) {
+                    return Arrays.stream(values).map(this::valueToString).collect(Collectors.toSet());
+                }
+                return Collections.emptySet();
             }
         };
     }

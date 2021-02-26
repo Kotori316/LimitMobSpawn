@@ -1,11 +1,13 @@
 package com.kotori316.limiter.conditions;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -102,6 +104,16 @@ public class Or implements TestSpawn {
             map.put(ops.createString("values"),
                 ops.createList(Stream.concat(Stream.of(or.t1), or.ts.stream()).map(ts -> ts.to(ops))));
             return ops.createMap(map);
+        }
+
+        @Override
+        public Set<String> propertyKeys() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Set<String> possibleValues(String property) {
+            return Collections.emptySet();
         }
     }
 }

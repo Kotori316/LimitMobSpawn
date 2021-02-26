@@ -1,5 +1,8 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
@@ -47,6 +50,15 @@ public class All implements TestSpawn {
         @Override
         public <T> T to(TestSpawn a, DynamicOps<T> ops) {
             return ops.emptyMap();
+        }
+        @Override
+        public Set<String> propertyKeys() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Set<String> possibleValues(String property) {
+            return Collections.emptySet();
         }
     }
 }

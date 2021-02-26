@@ -1,10 +1,13 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
+import com.google.common.collect.Sets;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
@@ -109,6 +112,16 @@ public class PositionLimit implements TestSpawn {
                 pos2 -> map.put(ops.createString("pos2"), pos2)
             );
             return ops.createMap(map);
+        }
+
+        @Override
+        public Set<String> propertyKeys() {
+            return Sets.newHashSet("minX", "maxX", "minY", "maxY", "minZ", "maxZ");
+        }
+
+        @Override
+        public Set<String> possibleValues(String property) {
+            return Collections.emptySet();
         }
     }
 }

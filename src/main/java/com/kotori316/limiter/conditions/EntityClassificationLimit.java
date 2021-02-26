@@ -15,7 +15,8 @@ import com.kotori316.limiter.TestSpawn;
 public class EntityClassificationLimit implements TestSpawn {
     public static final TestSpawn.Serializer<EntityClassificationLimit> SERIALIZER = StringLimitSerializer.fromFunction(
         EntityClassificationLimit::getClassification, EntityClassificationLimit::new, EntityClassification::getName,
-        s -> EntityClassification.getClassificationByName(s.toLowerCase(Locale.ROOT)), "classification", "classification"
+        s -> EntityClassification.getClassificationByName(s.toLowerCase(Locale.ROOT)), "classification", "classification",
+        EntityClassification.values()
     );
     private final EntityClassification classification;
 

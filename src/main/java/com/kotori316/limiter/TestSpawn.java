@@ -1,5 +1,8 @@
 package com.kotori316.limiter;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -58,6 +61,10 @@ public interface TestSpawn {
         public abstract <T> A from(Dynamic<T> dynamic);
 
         public abstract <T> T to(TestSpawn a, DynamicOps<T> ops);
+
+        public abstract Set<String> propertyKeys();
+
+        public abstract Set<String> possibleValues(String property);
     }
 
     enum Empty implements TestSpawn {
@@ -83,6 +90,16 @@ public interface TestSpawn {
         @Override
         public <T> T to(TestSpawn a, DynamicOps<T> ops) {
             return ops.emptyMap();
+        }
+
+        @Override
+        public Set<String> propertyKeys() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Set<String> possibleValues(String property) {
+            return Collections.emptySet();
         }
     };
 }

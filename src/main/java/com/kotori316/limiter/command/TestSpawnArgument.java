@@ -1,5 +1,6 @@
 package com.kotori316.limiter.command;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -86,19 +87,40 @@ class TestSpawnParser {
     void readRuleProperties(int first, int endExclusive) throws CommandSyntaxException {
         String pair = reader.getString().substring(first, endExclusive);
         if (!pair.contains("=")) {
-            throw FAILED_CREATE_INSTANCE.createWithContext(reader, "= expected");
+            reader.setCursor(first);
+            throw FAILED_CREATE_INSTANCE.createWithContext(reader, "= expected after key");
+        } else {
+            this.suggestion = generateSuggestPropertyValues(pair.substring(0, pair.indexOf("=")));
         }
         try {
             String[] split = pair.split("=", 2);
             try {
                 object.addProperty(split[0], Integer.parseInt(split[1]));
             } catch (NumberFormatException ignore) {
-                object.addProperty(split[0], split[1]);
+                Set<String> possibleValues = SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(split[0]);
+                if (possibleValues.isEmpty() || possibleValues.contains(split[1])) {
+                    object.addProperty(split[0], split[1]);
+                } else {
+                    reader.setCursor(first + pair.indexOf("=") + 1);
+                    throw FAILED_CREATE_INSTANCE.createWithContext(reader, "invalid value");
+                }
             }
         } catch (RuntimeException e) {
             reader.setCursor(first);
             throw FAILED_CREATE_INSTANCE.createWithContext(reader, e);
         }
+    }
+
+    private CompletableFuture<Suggestions> suggestPropertyKeys(SuggestionsBuilder builder) {
+        return ISuggestionProvider.suggest(
+            SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).propertyKeys(),
+            builder);
+    }
+
+    private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String key) {
+        return builder -> ISuggestionProvider.suggest(
+            SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).possibleValues(key),
+            builder);
     }
 
     private CompletableFuture<Suggestions> suggestEndProperties(SuggestionsBuilder builder) {
@@ -122,7 +144,7 @@ class TestSpawnParser {
         }
         if (reader.canRead()) {
             reader.skip(); // Skip [
-            this.suggestion = SuggestionsBuilder::buildFuture;
+            this.suggestion = this::suggestPropertyKeys;
         } else {
             throw PROPERTY_NOT_FOUND.createWithContext(reader);
         }
@@ -136,10 +158,12 @@ class TestSpawnParser {
                 }
                 readRuleProperties(pairStart, reader.getCursor());
                 if (reader.canRead()) {
-                    if (reader.peek() == ',') reader.skip(); // Skip ,
-                    else this.suggestion = SuggestionsBuilder::buildFuture;
-                } else {
-                    this.suggestion = this::suggestEndProperties;
+                    if (reader.peek() == ',') {
+                        reader.skip(); // Skip ,
+                        this.suggestion = this::suggestPropertyKeys;
+                    } else {
+                        this.suggestion = SuggestionsBuilder::buildFuture;
+                    }
                 }
             }
             if (reader.canRead() && reader.peek() == ']') {
