@@ -39,6 +39,21 @@ public class LMSConditionsHolder implements LMSHandler {
     }
 
     @Override
+    public void clearDefaultConditions() {
+        defaultConditions.clear();
+    }
+
+    @Override
+    public void clearDenyConditions() {
+        denyConditions.clear();
+    }
+
+    @Override
+    public void clearForceConditions() {
+        forceConditions.clear();
+    }
+
+    @Override
     public String toString() {
         return "LMSConditionsHolder{defaultConditions: " + defaultConditions.size()
             + ", denyConditions: " + denyConditions.size()

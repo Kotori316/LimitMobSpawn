@@ -29,6 +29,21 @@ public class LMSDataPackHolder implements LMSHandler {
     }
 
     @Override
+    @Deprecated // This class is modified by data packs, not commands.
+    public void clearDefaultConditions() {
+    }
+
+    @Override
+    @Deprecated // This class is modified by data packs, not commands.
+    public void clearDenyConditions() {
+    }
+
+    @Override
+    @Deprecated // This class is modified by data packs, not commands.
+    public void clearForceConditions() {
+    }
+
+    @Override
     public Set<TestSpawn> getDefaultConditions() {
         return defaultSet;
     }

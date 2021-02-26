@@ -33,6 +33,12 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
 
     Set<TestSpawn> getForceConditions();
 
+    void clearDefaultConditions();
+
+    void clearDenyConditions();
+
+    void clearForceConditions();
+
     @Override
     default CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();

@@ -55,7 +55,7 @@ public class LMSCommand {
         }
         {
             // add
-            LiteralArgumentBuilder<CommandSource> add = Commands.literal("add");
+            LiteralArgumentBuilder<CommandSource> add = Commands.literal("add").requires(s -> s.hasPermissionLevel(2));
             add.then(Commands.literal("default").then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
                 LMSHandler lmsHandler = getLmsHandler(context);
                 TestSpawn rule = context.getArgument("rule", TestSpawn.class);
@@ -78,6 +78,29 @@ public class LMSCommand {
                 return Command.SINGLE_SUCCESS;
             })));
             literal.then(add);
+        }
+        {
+            // remove
+            LiteralArgumentBuilder<CommandSource> remove = Commands.literal("remove").requires(s -> s.hasPermissionLevel(2));
+            remove.then(Commands.literal("default").executes(context -> {
+                LMSHandler lmsHandler = getLmsHandler(context);
+                lmsHandler.clearDefaultConditions();
+                context.getSource().sendFeedback(new StringTextComponent("Cleared defaults"), true);
+                return Command.SINGLE_SUCCESS;
+            }));
+            remove.then(Commands.literal("deny").executes(context -> {
+                LMSHandler lmsHandler = getLmsHandler(context);
+                lmsHandler.clearDenyConditions();
+                context.getSource().sendFeedback(new StringTextComponent("Cleared denies"), true);
+                return Command.SINGLE_SUCCESS;
+            }));
+            remove.then(Commands.literal("force").executes(context -> {
+                LMSHandler lmsHandler = getLmsHandler(context);
+                lmsHandler.clearForceConditions();
+                context.getSource().sendFeedback(new StringTextComponent("Cleared forces"), true);
+                return Command.SINGLE_SUCCESS;
+            }));
+            literal.then(remove);
         }
         dispatcher.register(literal);
     }
