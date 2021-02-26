@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.math.BlockPos;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -50,5 +53,33 @@ class PositionLimitTest extends BeforeAllTest {
         assertAll(Stream.of(JsonOps.INSTANCE, JsonOps.COMPRESSED, NBTDynamicOps.INSTANCE).map(
             ops -> () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic(ops, limit.to(ops))))
         ));
+    }
+
+    @Test
+    void fromJsonObject() {
+        JsonObject object = new JsonObject();
+        object.addProperty("minX", 45);
+        object.addProperty("maxX", 123);
+        object.addProperty("minY", 54);
+        object.addProperty("maxY", 95);
+        object.addProperty("minZ", 12);
+        object.addProperty("maxZ", 45);
+        PositionLimit limit = PositionLimit.SERIALIZER.from(new Dynamic<>(JsonOps.INSTANCE, object));
+        PositionLimit ans = new PositionLimit(45, 123, 54, 95, 12, 45);
+        assertEquals(ans, limit);
+    }
+
+    @Test
+    void fromCompoundNBT() {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putInt("minX", 45);
+        nbt.putInt("maxX", 123);
+        nbt.putInt("minY", 54);
+        nbt.putInt("maxY", 95);
+        nbt.putInt("minZ", 8);
+        nbt.putInt("maxZ", 45);
+        PositionLimit limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
+        PositionLimit ans = new PositionLimit(45, 123, 54, 95, 8, 45);
+        assertEquals(ans, limit);
     }
 }

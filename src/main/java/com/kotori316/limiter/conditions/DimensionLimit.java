@@ -28,6 +28,10 @@ public class DimensionLimit implements TestSpawn {
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", type);
     }
 
+    public static DimensionLimit fromName(String name) {
+        return new DimensionLimit(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(name)));
+    }
+
     @Override
     public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
         RegistryKey<World> type;

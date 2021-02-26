@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -125,7 +126,11 @@ public class SpawnConditionLoader extends JsonReloadListener {
     public boolean hasSerializeKey(String key) {
         return this.serializers.containsKey(key);
     }
-    public Set<String> serializeKeySet(){return this.serializers.keySet();}
+
+    public Set<String> serializeKeySet() {
+        Set<String> inactive = Sets.newHashSet("anonymous", "and", "not", "or");
+        return this.serializers.keySet().stream().filter(s -> !inactive.contains(s)).collect(Collectors.toSet());
+    }
 
     @VisibleForTesting // Should not exist.
     static SpawnConditionLoader createInstance() {

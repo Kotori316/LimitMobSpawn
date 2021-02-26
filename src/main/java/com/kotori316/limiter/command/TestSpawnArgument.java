@@ -3,8 +3,8 @@ package com.kotori316.limiter.command;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -17,7 +17,6 @@ import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.util.text.StringTextComponent;
-import org.apache.commons.lang3.StringUtils;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.SpawnConditionLoader;
@@ -86,11 +85,14 @@ class TestSpawnParser {
     // Step 2: Get rule properties
     void readRuleProperties(int first, int endExclusive) throws CommandSyntaxException {
         String pair = reader.getString().substring(first, endExclusive);
+        if (!pair.contains("=")) {
+            throw FAILED_CREATE_INSTANCE.createWithContext(reader, "= expected");
+        }
         try {
             String[] split = pair.split("=", 2);
-            if (StringUtils.isNumeric(split[1])) {
+            try {
                 object.addProperty(split[0], Integer.parseInt(split[1]));
-            } else {
+            } catch (NumberFormatException ignore) {
                 object.addProperty(split[0], split[1]);
             }
         } catch (RuntimeException e) {
@@ -127,6 +129,7 @@ class TestSpawnParser {
         {
             // Step 2
             while (reader.canRead() && reader.peek() != ']') {
+                reader.skipWhitespace();
                 int pairStart = reader.getCursor();
                 while (reader.canRead() && reader.peek() != ',' && reader.peek() != ']') {
                     reader.skip();
@@ -151,12 +154,17 @@ class TestSpawnParser {
         object.addProperty("type", this.ruleName);
         try {
             return SpawnConditionLoader.INSTANCE.deserialize(object);
-        } catch (JsonParseException e) {
+        } catch (RuntimeException e) {
             throw FAILED_CREATE_INSTANCE.createWithContext(this.reader, e);
         }
     }
 
     CompletableFuture<Suggestions> getSuggestion(SuggestionsBuilder builder) {
         return this.suggestion.apply(builder.createOffset(this.reader.getCursor()));
+    }
+
+    @VisibleForTesting
+    String foundRuleName() {
+        return ruleName;
     }
 }

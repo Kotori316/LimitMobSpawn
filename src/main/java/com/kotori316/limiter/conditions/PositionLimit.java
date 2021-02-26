@@ -3,6 +3,7 @@ package com.kotori316.limiter.conditions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -79,10 +80,22 @@ public class PositionLimit implements TestSpawn {
 
         @Override
         public <T> PositionLimit from(Dynamic<T> dynamic) {
-            return dynamic.get("pos1").flatMap(d -> BlockPos.CODEC.decode(d.getOps(), d.getValue())).flatMap(pos1 ->
-                dynamic.get("pos2").flatMap(d -> BlockPos.CODEC.decode(d.getOps(), d.getValue())).map(pos2 ->
-                    new PositionLimit(pos1.getFirst(), pos2.getFirst())))
-                .getOrThrow(true, s -> LimitMobSpawn.LOGGER.error("Erred when loading PositionLimit, {}", s));
+            Map<String, Dynamic<T>> map = dynamic.asMap(d -> d.asString(""), Function.identity());
+            if (map.containsKey("pos1") && map.containsKey("pos2")) {
+                return BlockPos.CODEC.decode(map.get("pos1")).flatMap(pos1 ->
+                    BlockPos.CODEC.decode(map.get("pos2")).map(pos2 ->
+                        new PositionLimit(pos1.getFirst(), pos2.getFirst())))
+                    .getOrThrow(true, s -> LimitMobSpawn.LOGGER.error("Erred when loading PositionLimit, {}", s));
+            } else {
+                // Map of minX, maxX, etc.
+                int minX = map.get("minX").asInt(0);
+                int maxX = map.get("maxX").asInt(0);
+                int minY = map.getOrDefault("minY", dynamic.createInt(0)).asInt(0);
+                int maxY = map.getOrDefault("maxY", dynamic.createInt(256)).asInt(256);
+                int minZ = map.get("minZ").asInt(0);
+                int maxZ = map.get("maxZ").asInt(0);
+                return new PositionLimit(minX, maxX, minY, maxY, minZ, maxZ);
+            }
         }
 
         @Override
