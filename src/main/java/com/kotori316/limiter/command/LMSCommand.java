@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -17,6 +18,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import com.kotori316.limiter.LimitMobSpawn;
+import com.kotori316.limiter.SpawnConditionLoader;
 import com.kotori316.limiter.TestSpawn;
 import com.kotori316.limiter.capability.Caps;
 import com.kotori316.limiter.capability.LMSHandler;
@@ -29,29 +31,66 @@ public class LMSCommand {
         {
             // query
             LiteralArgumentBuilder<CommandSource> query = Commands.literal("query");
-            query.then(Commands.literal("default").executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
-                sendMessage(context, "Defaults", lmsHandler.getDefaultConditions());
-                return Command.SINGLE_SUCCESS;
-            }));
-            query.then(Commands.literal("deny").executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
-                sendMessage(context, "Denies", lmsHandler.getDenyConditions());
-                return Command.SINGLE_SUCCESS;
-            }));
-            query.then(Commands.literal("force").executes(context -> {
-                LMSHandler lmsHandler = getLmsHandler(context);
-                sendMessage(context, "Forces", lmsHandler.getForceConditions());
-                return Command.SINGLE_SUCCESS;
-            }));
+            {
+                LiteralArgumentBuilder<CommandSource> world = Commands.literal("world");
+                world.then(Commands.literal("default").executes(context -> {
+                    LMSHandler lmsHandler = getLmsHandler(context);
+                    sendMessage(context, "Defaults", lmsHandler.getDefaultConditions());
+                    return Command.SINGLE_SUCCESS;
+                }));
+                world.then(Commands.literal("deny").executes(context -> {
+                    LMSHandler lmsHandler = getLmsHandler(context);
+                    sendMessage(context, "Denies", lmsHandler.getDenyConditions());
+                    return Command.SINGLE_SUCCESS;
+                }));
+                world.then(Commands.literal("force").executes(context -> {
+                    LMSHandler lmsHandler = getLmsHandler(context);
+                    sendMessage(context, "Forces", lmsHandler.getForceConditions());
+                    return Command.SINGLE_SUCCESS;
+                }));
+                world.executes(context -> {
+                    LMSHandler lmsHandler = getLmsHandler(context);
+                    sendMessage(context, "Defaults", lmsHandler.getDefaultConditions());
+                    sendMessage(context, "Denies", lmsHandler.getDenyConditions());
+                    sendMessage(context, "Forces", lmsHandler.getForceConditions());
+                    return Command.SINGLE_SUCCESS;
+                });
+                query.then(world);
+            }
+            {
+                LiteralArgumentBuilder<CommandSource> dataPack = Commands.literal("datapack");
+                dataPack.then(Commands.literal("default").executes(context -> {
+                    LMSHandler lmsHandler = SpawnConditionLoader.INSTANCE.getHolder();
+                    sendMessage(context, "Defaults", lmsHandler.getDefaultConditions());
+                    return Command.SINGLE_SUCCESS;
+                }));
+                dataPack.then(Commands.literal("deny").executes(context -> {
+                    LMSHandler lmsHandler = SpawnConditionLoader.INSTANCE.getHolder();
+                    sendMessage(context, "Denies", lmsHandler.getDenyConditions());
+                    return Command.SINGLE_SUCCESS;
+                }));
+                dataPack.then(Commands.literal("force").executes(context -> {
+                    LMSHandler lmsHandler = SpawnConditionLoader.INSTANCE.getHolder();
+                    sendMessage(context, "Forces", lmsHandler.getForceConditions());
+                    return Command.SINGLE_SUCCESS;
+                }));
+                dataPack.executes(context -> {
+                    LMSHandler lmsHandler = SpawnConditionLoader.INSTANCE.getHolder();
+                    sendMessage(context, "Defaults", lmsHandler.getDefaultConditions());
+                    sendMessage(context, "Denies", lmsHandler.getDenyConditions());
+                    sendMessage(context, "Forces", lmsHandler.getForceConditions());
+                    return Command.SINGLE_SUCCESS;
+                });
+                query.then(dataPack);
+            }
             literal.then(query
                 .executes(context -> {
                     LMSHandler lmsHandler = getLmsHandler(context);
                     if (lmsHandler.getDefaultConditions().isEmpty() && lmsHandler.getForceConditions().isEmpty() && lmsHandler.getDenyConditions().isEmpty())
                         context.getSource().sendErrorMessage(new StringTextComponent("No Rules found."));
-                    sendMessage(context, "Defaults", lmsHandler.getDefaultConditions());
-                    sendMessage(context, "Denies", lmsHandler.getDenyConditions());
-                    sendMessage(context, "Forces", lmsHandler.getForceConditions());
+                    sendMessage(context, "Defaults", Sets.union(lmsHandler.getDefaultConditions(), SpawnConditionLoader.INSTANCE.getHolder().getDefaultConditions()));
+                    sendMessage(context, "Denies", Sets.union(lmsHandler.getDenyConditions(), SpawnConditionLoader.INSTANCE.getHolder().getDenyConditions()));
+                    sendMessage(context, "Forces", Sets.union(lmsHandler.getForceConditions(), SpawnConditionLoader.INSTANCE.getHolder().getForceConditions()));
                     return Command.SINGLE_SUCCESS;
                 }));
         }
