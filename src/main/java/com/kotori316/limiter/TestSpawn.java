@@ -64,7 +64,7 @@ public interface TestSpawn {
 
         public abstract Set<String> propertyKeys();
 
-        public abstract Set<String> possibleValues(String property);
+        public abstract Set<String> possibleValues(String property, boolean suggesting);
     }
 
     enum Empty implements TestSpawn {
@@ -98,7 +98,7 @@ public interface TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property) {
+        public Set<String> possibleValues(String property, boolean suggesting) {
             return Collections.emptySet();
         }
     };

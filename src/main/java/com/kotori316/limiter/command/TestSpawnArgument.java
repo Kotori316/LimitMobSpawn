@@ -97,7 +97,7 @@ class TestSpawnParser {
             try {
                 object.addProperty(split[0], Integer.parseInt(split[1]));
             } catch (NumberFormatException ignore) {
-                Set<String> possibleValues = SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(split[0]);
+                Set<String> possibleValues = SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(split[0], false);
                 if (possibleValues.isEmpty() || possibleValues.contains(split[1])) {
                     object.addProperty(split[0], split[1]);
                 } else {
@@ -119,7 +119,7 @@ class TestSpawnParser {
 
     private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String key) {
         return builder -> ISuggestionProvider.suggest(
-            SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).possibleValues(key),
+            SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).possibleValues(key, true),
             builder);
     }
 

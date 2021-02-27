@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -86,9 +87,13 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
             }
 
             @Override
-            public Set<String> possibleValues(String property) {
+            public Set<String> possibleValues(String property, boolean suggesting) {
                 if (property.equals(saveKey())) {
-                    return Arrays.stream(values).map(this::valueToString).collect(Collectors.toSet());
+                    if (!suggesting && Enum.class.isAssignableFrom(values.getClass().getComponentType())) {
+                        return Arrays.stream(values).flatMap(v -> Stream.of(valueToString(v), ((Enum<?>) v).name())).collect(Collectors.toSet());
+                    } else {
+                        return Arrays.stream(values).map(this::valueToString).collect(Collectors.toSet());
+                    }
                 }
                 return Collections.emptySet();
             }

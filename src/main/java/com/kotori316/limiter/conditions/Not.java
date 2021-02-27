@@ -88,7 +88,7 @@ public class Not implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property) {
+        public Set<String> possibleValues(String property, boolean suggesting) {
             return Collections.emptySet();
         }
     }

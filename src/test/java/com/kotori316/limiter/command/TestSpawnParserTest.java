@@ -1,8 +1,10 @@
 package com.kotori316.limiter.command;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mojang.brigadier.StringReader;
@@ -79,7 +81,7 @@ class TestSpawnParserTest extends BeforeAllTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"NATURAL", "natural", "event"})
+    @ValueSource(strings = {"NATURAL", "natural", "event", "SPAWNER"})
     void createSpawnType(String name) throws CommandSyntaxException {
         String input = String.format("spawn_reason[spawn_reason=%s]", name);
         TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
@@ -87,6 +89,15 @@ class TestSpawnParserTest extends BeforeAllTest {
         assertDoesNotThrow(parser::createInstance);
         SpawnReasonLimit limit = (SpawnReasonLimit) parser.createInstance();
         assertEquals(SpawnReason.valueOf(name.toUpperCase(Locale.ROOT)), limit.getReason());
+    }
+
+    @Test
+    void suggestSpawnType1() throws ExecutionException, InterruptedException {
+        String input = "spawn_reason[";
+        TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+        assertThrows(CommandSyntaxException.class, parser::parse);
+        Suggestions suggestions = parser.getSuggestion(new SuggestionsBuilder(input, 0)).get();
+        assertEquals(Collections.singletonList("spawn_reason"), suggestions.getList().stream().map(Suggestion::getText).collect(Collectors.toList()));
     }
 
     @Test

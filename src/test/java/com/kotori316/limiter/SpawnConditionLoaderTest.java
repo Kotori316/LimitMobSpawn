@@ -78,6 +78,16 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
                 public <T> T to(TestSpawn a, DynamicOps<T> ops) {
                     return null;
                 }
+
+                @Override
+                public Set<String> propertyKeys() {
+                    return Collections.emptySet();
+                }
+
+                @Override
+                public Set<String> possibleValues(String property, boolean suggesting) {
+                    return Collections.emptySet();
+                }
             };
             assertDoesNotThrow(() -> loader.register(serializer));
         }

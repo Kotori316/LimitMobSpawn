@@ -100,7 +100,7 @@ public class EntityLimit implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property) {
+        public Set<String> possibleValues(String property, boolean suggesting) {
             if (property.equals("entity")) {
                 return ForgeRegistries.ENTITIES.getKeys().stream().map(ResourceLocation::toString).collect(Collectors.toSet());
             }
