@@ -3,6 +3,7 @@ package com.kotori316.limiter.command;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonObject;
@@ -17,6 +18,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.text.StringTextComponent;
 
 import com.kotori316.limiter.LimitMobSpawn;
@@ -105,22 +107,44 @@ class TestSpawnParser {
                     throw FAILED_CREATE_INSTANCE.createWithContext(reader, "invalid value");
                 }
             }
+            if (getPropertyKeysRest().isEmpty()) {
+                // Added the last property, we expect ']'
+                this.suggestion = this::suggestEndProperties;
+            } else {
+                if (split[1].isEmpty()) {
+                    // Maybe int input and int is empty, then we expect numbers, but suggest nothing.
+                    this.suggestion = SuggestionsBuilder::buildFuture;
+                } else {
+                    // User needs add more property. We expect ','
+                    this.suggestion = this::suggestComma;
+                }
+            }
         } catch (RuntimeException e) {
             reader.setCursor(first);
             throw FAILED_CREATE_INSTANCE.createWithContext(reader, e);
         }
     }
 
+    private Set<String> getPropertyKeysRest() {
+        return SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).propertyKeys()
+            .stream().filter(aKey -> !JSONUtils.hasField(object, aKey)).collect(Collectors.toSet());
+    }
+
     private CompletableFuture<Suggestions> suggestPropertyKeys(SuggestionsBuilder builder) {
-        return ISuggestionProvider.suggest(
-            SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).propertyKeys(),
-            builder);
+        return ISuggestionProvider.suggest(getPropertyKeysRest(), builder);
     }
 
     private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String key) {
         return builder -> ISuggestionProvider.suggest(
             SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).possibleValues(key, true),
             builder);
+    }
+
+    private CompletableFuture<Suggestions> suggestComma(SuggestionsBuilder builder) {
+        if (builder.getRemaining().isEmpty()) {
+            builder.suggest(String.valueOf(','));
+        }
+        return builder.buildFuture();
     }
 
     private CompletableFuture<Suggestions> suggestEndProperties(SuggestionsBuilder builder) {
