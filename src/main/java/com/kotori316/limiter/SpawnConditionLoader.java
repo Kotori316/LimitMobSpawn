@@ -16,9 +16,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
+import javax.annotation.Nullable;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -68,7 +70,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn) {
+    protected void apply(Map<ResourceLocation, JsonElement> objectIn, @Nullable IResourceManager resourceManagerIn, @Nullable IProfiler profilerIn) {
         Set<TestSpawn> denySet = new HashSet<>();
         Set<TestSpawn> defaultSet = new HashSet<>();
         Set<TestSpawn> forceSet = new HashSet<>();
@@ -99,11 +101,15 @@ public class SpawnConditionLoader extends JsonReloadListener {
                 .map(this::deserialize)
                 .collect(Collectors.toSet());
         } else if (element.isJsonObject()) {
-            return element.getAsJsonObject().entrySet().stream()
-                .map(Map.Entry::getValue)
-                .map(JsonElement::getAsJsonObject)
-                .map(this::deserialize)
-                .collect(Collectors.toSet());
+            if (JSONUtils.hasField(element.getAsJsonObject(), "type")) {
+                return Collections.singleton(this.deserialize(element.getAsJsonObject()));
+            } else {
+                return element.getAsJsonObject().entrySet().stream()
+                    .map(Map.Entry::getValue)
+                    .map(JsonElement::getAsJsonObject)
+                    .map(this::deserialize)
+                    .collect(Collectors.toSet());
+            }
         }
         return Collections.emptySet();
     }

@@ -1,6 +1,8 @@
 package com.kotori316.limiter;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -12,15 +14,19 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
+import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityClassificationLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
@@ -29,6 +35,7 @@ import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
 import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -95,10 +102,21 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
 
     static class LoadJson {
         @Test
+        @DisplayName("Load from strange json map")
         void loadFromJsonObject() {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             JsonObject object = new JsonObject();
             object.add("a", All.getInstance().toJson());
+
+            Set<TestSpawn> values = loader.getValues(object);
+            assertEquals(Collections.singleton(All.getInstance()), values);
+        }
+
+        @Test
+        @DisplayName("Load from just 1 element.")
+        void loadFromJsonObject2() {
+            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
+            JsonObject object = All.getInstance().toJson();
 
             Set<TestSpawn> values = loader.getValues(object);
             assertEquals(Collections.singleton(All.getInstance()), values);
@@ -135,6 +153,65 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             assertEquals(ans, read);
         }
 
+        @Test
+        void loadJsonWitchOnly0() {
+            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
+            JsonObject object = new JsonObject();
+            object.addProperty("_comment", "In overworld, only witch spawns at night. Other monsters disappeared.");
+            object.add("default", as(
+                Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)
+            ));
+            object.add("deny", as(
+                new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))
+            ));
+
+            assertAll(
+                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)),
+                    loader.getValues(object.get("default"))),
+                () -> assertEquals(Collections.singleton(new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))),
+                    loader.getValues(object.get("deny")))
+            );
+        }
+
+        @Test
+        void loadJsonWitchOnly1() {
+            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
+            JsonObject object = new JsonObject();
+            object.addProperty("_comment", "In overworld, only witch spawns at night. Other monsters disappeared.");
+            object.add("default", Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH).toJson());
+            object.add("deny", new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD)).toJson());
+
+            assertAll(
+                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)),
+                    loader.getValues(object.get("default"))),
+                () -> assertEquals(Collections.singleton(new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))),
+                    loader.getValues(object.get("deny")))
+            );
+        }
+
+        @Test
+        void loadJsonWitchOnly2() {
+            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
+            JsonObject object = new JsonObject();
+            object.addProperty("_comment", "In overworld, only witch spawns at night. Other monsters disappeared.");
+            object.add("default", as(
+                Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)
+            ));
+            object.add("deny", as(
+                new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))
+            ));
+            Map<ResourceLocation, JsonElement> map = new HashMap<>();
+            map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "witch_only"), object);
+            loader.apply(map, null, null);
+
+            assertAll(
+                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)),
+                    loader.getHolder().getDefaultConditions()),
+                () -> assertEquals(Collections.singleton(new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))),
+                    loader.getHolder().getDenyConditions())
+            );
+        }
+
         static JsonElement[] stupids() {
             return new JsonElement[]{
                 JsonNull.INSTANCE, new JsonPrimitive("value"), new JsonPrimitive(false), null
@@ -161,6 +238,14 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
 
             Set<TestSpawn> values = loader.getValues(empty);
             assertTrue(values.isEmpty());
+        }
+
+        private static JsonArray as(TestSpawn... conditions) {
+            JsonArray array = new JsonArray();
+            for (TestSpawn spawn : conditions) {
+                array.add(spawn.toJson());
+            }
+            return array;
         }
     }
 }
