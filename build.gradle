@@ -66,7 +66,7 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'info'
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'limit-mob-spawn', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'limit-mob-spawn', '--all', '--output', file('src/test/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 "limit-mob-spawn" {
