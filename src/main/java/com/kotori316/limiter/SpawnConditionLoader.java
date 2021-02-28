@@ -16,7 +16,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
-import javax.annotation.Nullable;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
@@ -70,7 +69,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> objectIn, @Nullable IResourceManager resourceManagerIn, @Nullable IProfiler profilerIn) {
+    protected void apply(Map<ResourceLocation, JsonElement> objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn) {
         Set<TestSpawn> denySet = new HashSet<>();
         Set<TestSpawn> defaultSet = new HashSet<>();
         Set<TestSpawn> forceSet = new HashSet<>();
