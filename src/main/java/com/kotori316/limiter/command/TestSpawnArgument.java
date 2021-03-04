@@ -51,9 +51,9 @@ public class TestSpawnArgument implements ArgumentType<TestSpawn> {
 }
 
 class TestSpawnParser {
-    private static final SimpleCommandExceptionType TYPE_NOT_FOUND = new SimpleCommandExceptionType(new StringTextComponent("Type not found."));
-    private static final SimpleCommandExceptionType PROPERTY_NOT_FOUND = new SimpleCommandExceptionType(new StringTextComponent("Property not found."));
-    private static final DynamicCommandExceptionType FAILED_CREATE_INSTANCE = new DynamicCommandExceptionType(o -> new StringTextComponent("Error " + o));
+    static final SimpleCommandExceptionType TYPE_NOT_FOUND = new SimpleCommandExceptionType(new StringTextComponent("Type not found."));
+    static final SimpleCommandExceptionType PROPERTY_NOT_FOUND = new SimpleCommandExceptionType(new StringTextComponent("Property not found."));
+    static final DynamicCommandExceptionType FAILED_CREATE_INSTANCE = new DynamicCommandExceptionType(o -> new StringTextComponent("Error " + o));
     private final StringReader reader;
     private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestion = SuggestionsBuilder::buildFuture;
     private String ruleName;
@@ -64,7 +64,7 @@ class TestSpawnParser {
     }
 
     // Step 1: Get rule name
-    String getRuleName(int first, int endExclusive) throws CommandSyntaxException {
+    static String getRuleName(StringReader reader, int first, int endExclusive) throws CommandSyntaxException {
         String name = reader.getString().substring(first, endExclusive);
         if (SpawnConditionLoader.INSTANCE.hasSerializeKey(name)) {
             return name;
@@ -74,80 +74,34 @@ class TestSpawnParser {
         }
     }
 
-    private CompletableFuture<Suggestions> suggestRuleName(SuggestionsBuilder builder) {
+    static CompletableFuture<Suggestions> suggestRuleName(SuggestionsBuilder builder) {
         return ISuggestionProvider.suggest(SpawnConditionLoader.INSTANCE.serializeKeySet(), builder);
     }
 
-    private CompletableFuture<Suggestions> suggestStartProperties(SuggestionsBuilder builder) {
+    static CompletableFuture<Suggestions> suggestStartProperties(SuggestionsBuilder builder) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf('['));
         }
         return builder.buildFuture();
     }
 
-    // Step 2: Get rule properties
-    void readRuleProperties(int first, int endExclusive) throws CommandSyntaxException {
-        String pair = reader.getString().substring(first, endExclusive);
-        if (!pair.contains("=")) {
-            reader.setCursor(first);
-            throw FAILED_CREATE_INSTANCE.createWithContext(reader, "= expected after key");
-        } else {
-            this.suggestion = generateSuggestPropertyValues(pair.substring(0, pair.indexOf("=")));
-        }
-        try {
-            String[] split = pair.split("=", 2);
-            try {
-                object.addProperty(split[0], Integer.parseInt(split[1]));
-            } catch (NumberFormatException ignore) {
-                Set<String> possibleValues = SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(split[0], false);
-                if (possibleValues.isEmpty() || possibleValues.contains(split[1])) {
-                    object.addProperty(split[0], split[1]);
-                } else {
-                    reader.setCursor(first + pair.indexOf("=") + 1);
-                    throw FAILED_CREATE_INSTANCE.createWithContext(reader, "invalid value");
-                }
-            }
-            if (getPropertyKeysRest().isEmpty()) {
-                // Added the last property, we expect ']'
-                this.suggestion = this::suggestEndProperties;
-            } else {
-                if (split[1].isEmpty()) {
-                    // Maybe int input and int is empty, then we expect numbers, but suggest nothing.
-                    this.suggestion = SuggestionsBuilder::buildFuture;
-                } else {
-                    // User needs add more property. We expect ','
-                    this.suggestion = this::suggestComma;
-                }
-            }
-        } catch (RuntimeException e) {
-            reader.setCursor(first);
-            throw FAILED_CREATE_INSTANCE.createWithContext(reader, e);
-        }
-    }
-
-    private Set<String> getPropertyKeysRest() {
-        return SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).propertyKeys()
+    static Set<String> getPropertyKeysRest(String ruleName, JsonObject object) {
+        return SpawnConditionLoader.INSTANCE.getSerializer(ruleName).propertyKeys()
             .stream().filter(aKey -> !JSONUtils.hasField(object, aKey)).collect(Collectors.toSet());
     }
 
-    private CompletableFuture<Suggestions> suggestPropertyKeys(SuggestionsBuilder builder) {
-        return ISuggestionProvider.suggest(getPropertyKeysRest(), builder);
+    static Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestPropertyKeys(String ruleName, JsonObject object) {
+        return (SuggestionsBuilder builder) -> ISuggestionProvider.suggest(getPropertyKeysRest(ruleName, object), builder);
     }
 
-    private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String key) {
-        return builder -> ISuggestionProvider.suggest(
-            SpawnConditionLoader.INSTANCE.getSerializer(this.ruleName).possibleValues(key, true),
-            builder);
-    }
-
-    private CompletableFuture<Suggestions> suggestComma(SuggestionsBuilder builder) {
+    static CompletableFuture<Suggestions> suggestComma(SuggestionsBuilder builder) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf(','));
         }
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> suggestEndProperties(SuggestionsBuilder builder) {
+    static CompletableFuture<Suggestions> suggestEndProperties(SuggestionsBuilder builder) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf(']'));
         }
@@ -157,45 +111,28 @@ class TestSpawnParser {
     void parse() throws CommandSyntaxException {
         {
             // Step 1
-            this.suggestion = this::suggestRuleName;
+            this.suggestion = TestSpawnParser::suggestRuleName;
             int i = reader.getCursor();
             while (reader.canRead() && reader.peek() != '[') {
                 reader.skip();
             }
-            ruleName = getRuleName(i, reader.getCursor());
+            ruleName = getRuleName(reader, i, reader.getCursor());
             reader.skipWhitespace();
-            this.suggestion = this::suggestStartProperties;
+            this.suggestion = TestSpawnParser::suggestStartProperties;
         }
         if (reader.canRead()) {
             reader.skip(); // Skip [
-            this.suggestion = this::suggestPropertyKeys;
+            this.suggestion = suggestPropertyKeys(ruleName, object);
         } else {
             throw PROPERTY_NOT_FOUND.createWithContext(reader);
         }
-        {
-            // Step 2
-            while (reader.canRead() && reader.peek() != ']') {
-                reader.skipWhitespace();
-                int pairStart = reader.getCursor();
-                while (reader.canRead() && reader.peek() != ',' && reader.peek() != ']') {
-                    reader.skip();
-                }
-                readRuleProperties(pairStart, reader.getCursor());
-                if (reader.canRead()) {
-                    if (reader.peek() == ',') {
-                        reader.skip(); // Skip ,
-                        this.suggestion = this::suggestPropertyKeys;
-                    } else {
-                        this.suggestion = SuggestionsBuilder::buildFuture;
-                    }
-                }
-            }
-            if (reader.canRead() && reader.peek() == ']') {
-                reader.skip();
-            } else {
-                throw FAILED_CREATE_INSTANCE.createWithContext(reader, "Not finished statement.");
-            }
-        }
+
+        ConditionParser parser = ConditionParser.findParser(ruleName);
+        parser.parse(ruleName, reader, object, this::setSuggestion);
+    }
+
+    private void setSuggestion(Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestion) {
+        this.suggestion = suggestion;
     }
 
     TestSpawn createInstance() throws CommandSyntaxException {

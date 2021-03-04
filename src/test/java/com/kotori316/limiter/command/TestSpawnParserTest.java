@@ -19,12 +19,16 @@ import net.minecraft.entity.SpawnReason;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.kotori316.limiter.BeforeAllTest;
 import com.kotori316.limiter.TestSpawn;
 import com.kotori316.limiter.conditions.All;
+import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
+import com.kotori316.limiter.conditions.Not;
+import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
 import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
@@ -95,6 +99,14 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::createInstance);
             SpawnReasonLimit limit = (SpawnReasonLimit) parser.createInstance();
             assertEquals(SpawnReason.valueOf(name.toUpperCase(Locale.ROOT)), limit.getReason());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"", "event1", "force"})
+        void invalidValues(String name) {
+            String input = String.format("spawn_reason[spawn_reason=%s]", name);
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertThrows(CommandSyntaxException.class, parser::parse);
         }
 
         @Test
@@ -189,6 +201,198 @@ class TestSpawnParserTest extends BeforeAllTest {
         void getDimensionSuggestion() throws ExecutionException, InterruptedException {
             String input = "dimension[";
             assertEquals(Collections.singleton("dim"), getSuggestions(input));
+        }
+    }
+
+    static class AndParse {
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "and[dimension[dim=overworld] spawn_reason[spawn_reason=natural]]",
+            "and[dimension[dim=overworld], spawn_reason[spawn_reason=natural]]",
+            "and[dimension[dim=overworld]spawn_reason[spawn_reason=natural]]",
+            "and[dimension[dim=overworld]spawn_reason[spawn_reason=natural], ]",
+            "and[dimension[dim=overworld], spawn_reason[spawn_reason=natural],]",
+        })
+        void parse1(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            And and = (And) parser.createInstance();
+            And expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL));
+            assertEquals(expected, and);
+        }
+
+        static String[] parse2Arg() {
+            String pos = String.format("position[minX=%1$d,maxX=%2$d,minY=%3$d,maxY=%4$d,minZ=%5$d,maxZ=%6$d]", -15, 25, 64, 123, -12, 36);
+            return new String[]{
+                "and[dimension[dim=overworld] spawn_reason[spawn_reason=natural] " + pos + "]",
+                "and[dimension[dim=overworld], spawn_reason[spawn_reason=natural], " + pos + "]",
+                "and[dimension[dim=overworld]spawn_reason[spawn_reason=natural]" + pos + "]",
+            };
+        }
+
+        @ParameterizedTest
+        @MethodSource("parse2Arg")
+        void parse2(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            And and = (And) parser.createInstance();
+            And expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL),
+                new PositionLimit(-15, 25, 64, 123, -12, 36));
+            assertEquals(expected, and);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "and[dimension[dim=overworld] not[spawn_reason[spawn_reason=natural]]]",
+            "and[dimension[dim=overworld], not[spawn_reason[spawn_reason=natural]]]",
+            "and[dimension[dim=overworld]not[spawn_reason[spawn_reason=natural]]]",
+            "and[dimension[dim=overworld]not[spawn_reason[spawn_reason=natural]], ]",
+            "and[dimension[dim=overworld], not[spawn_reason[spawn_reason=natural]],]",
+        })
+        void parse3(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            And and = (And) parser.createInstance();
+            And expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL).not());
+            assertEquals(expected, and);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "and[not[dimension[dim=overworld]] spawn_reason[spawn_reason=natural]]",
+            "and[not[dimension[dim=overworld]], spawn_reason[spawn_reason=natural]]",
+            "and[not[dimension[dim=overworld]]spawn_reason[spawn_reason=natural]]",
+            "and[not[dimension[dim=overworld]]spawn_reason[spawn_reason=natural], ]",
+            "and[not[dimension[dim=overworld]], spawn_reason[spawn_reason=natural],]",
+        })
+        void parse4(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            And and = (And) parser.createInstance();
+            And expected = new And(DimensionLimit.fromName("overworld").not(), new SpawnReasonLimit(SpawnReason.NATURAL));
+            assertEquals(expected, and);
+        }
+    }
+
+    static class OrParse {
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "or[dimension[dim=overworld] spawn_reason[spawn_reason=natural]]",
+            "or[dimension[dim=overworld], spawn_reason[spawn_reason=natural]]",
+            "or[dimension[dim=overworld]spawn_reason[spawn_reason=natural]]",
+            "or[dimension[dim=overworld]spawn_reason[spawn_reason=natural], ]",
+            "or[dimension[dim=overworld], spawn_reason[spawn_reason=natural],]",
+        })
+        void parse1(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn and = parser.createInstance();
+            Or expected = new Or(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL));
+            assertEquals(expected, and);
+        }
+
+        static String[] parse2Arg() {
+            String pos = String.format("position[minX=%1$d,maxX=%2$d,minY=%3$d,maxY=%4$d,minZ=%5$d,maxZ=%6$d]", -15, 25, 64, 123, -12, 36);
+            return new String[]{
+                "or[dimension[dim=overworld] spawn_reason[spawn_reason=natural] " + pos + "]",
+                "or[dimension[dim=overworld], spawn_reason[spawn_reason=natural], " + pos + "]",
+                "or[dimension[dim=overworld]spawn_reason[spawn_reason=natural]" + pos + "]",
+                "or[dimension[dim=overworld]spawn_reason[spawn_reason=natural]" + pos + ", ]",
+            };
+        }
+
+        @ParameterizedTest
+        @MethodSource("parse2Arg")
+        void parse2(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn and = parser.createInstance();
+            Or expected = new Or(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL),
+                new PositionLimit(-15, 25, 64, 123, -12, 36));
+            assertEquals(expected, and);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "or[dimension[dim=overworld] not[spawn_reason[spawn_reason=natural]]]",
+            "or[dimension[dim=overworld], not[spawn_reason[spawn_reason=natural]]]",
+            "or[dimension[dim=overworld]not[spawn_reason[spawn_reason=natural]]]",
+            "or[dimension[dim=overworld]not[spawn_reason[spawn_reason=natural]], ]",
+            "or[dimension[dim=overworld], not[spawn_reason[spawn_reason=natural]],]",
+        })
+        void parse3(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn and = parser.createInstance();
+            Or expected = new Or(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL).not());
+            assertEquals(expected, and);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "or[not[dimension[dim=overworld]] spawn_reason[spawn_reason=natural]]",
+            "or[not[dimension[dim=overworld]], spawn_reason[spawn_reason=natural]]",
+            "or[not[dimension[dim=overworld]]spawn_reason[spawn_reason=natural]]",
+            "or[not[dimension[dim=overworld]]spawn_reason[spawn_reason=natural], ]",
+            "or[not[dimension[dim=overworld]], spawn_reason[spawn_reason=natural],]",
+        })
+        void parse4(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn and = parser.createInstance();
+            Or expected = new Or(DimensionLimit.fromName("overworld").not(), new SpawnReasonLimit(SpawnReason.NATURAL));
+            assertEquals(expected, and);
+        }
+    }
+
+    static class NotParse {
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "not[dimension[dim=overworld]]",
+            "not[ dimension[dim=overworld]]",
+            "not[ dimension[dim=overworld] ]",
+            "not[dimension[dim=overworld] ]",
+            "not[  dimension[dim=overworld]  ]",
+        })
+        void parse1(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            Not expected = new Not(DimensionLimit.fromName("overworld"));
+            assertEquals(expected, parser.createInstance());
+        }
+
+        @Test
+        void parse2() throws CommandSyntaxException {
+            String input = String.format("not[position[minX=%1$d,maxX=%2$d,minY=%3$d,maxY=%4$d,minZ=%5$d,maxZ=%6$d]]", -15, 25, 64, 123, -12, 36);
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn expected = new PositionLimit(-15, 25, 64, 123, -12, 36).not();
+            assertEquals(expected, parser.createInstance());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "not[and[dimension[dim=overworld], spawn_reason[spawn_reason=natural]]]",
+            "not[ and[dimension[dim=overworld] spawn_reason[spawn_reason=natural]  ]   ]",
+            "not[ and[dimension[dim=overworld], spawn_reason[spawn_reason=natural],  ]   ]",
+            "not[ and[dimension[dim=overworld],   spawn_reason[spawn_reason=natural],  ]   ]",
+        })
+        void parse3(String input) throws CommandSyntaxException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL)).not();
+            assertEquals(expected, parser.createInstance());
         }
     }
 }
