@@ -148,6 +148,15 @@ class TestSpawnParserTest extends BeforeAllTest {
         }
 
         @Test
+        void createPositionType4() throws CommandSyntaxException {
+            String input = String.format("position[minX=%1$d, maxX=%2$d, minZ=%3$d, maxZ=%4$d]", -15, 25, -12, 36);
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            TestSpawn expected = new PositionLimit(-15, 25, 0, 256, -12, 36);
+            assertEquals(expected, parser.createInstance());
+        }
+
+        @Test
         void suggestPositionKeys1() throws ExecutionException, InterruptedException {
             String input = "position[";
             assertEquals(Sets.newHashSet("minX", "maxX", "minY", "maxY", "minZ", "maxZ"), getSuggestions(input));
@@ -276,6 +285,68 @@ class TestSpawnParserTest extends BeforeAllTest {
             And expected = new And(DimensionLimit.fromName("overworld").not(), new SpawnReasonLimit(SpawnReason.NATURAL));
             assertEquals(expected, and);
         }
+
+        @Test
+        void suggestType1() throws ExecutionException, InterruptedException {
+            String input = "and[";
+            Set<String> suggestions = getSuggestions(input);
+            assertAll(
+                () -> assertTrue(suggestions.contains("all")),
+                () -> assertTrue(suggestions.contains("spawn_reason")),
+                () -> assertTrue(suggestions.contains("classification")),
+                () -> assertTrue(suggestions.contains("dimension")),
+                () -> assertTrue(suggestions.contains("position"))
+            );
+        }
+
+        @Test
+        @DisplayName("suggest [")
+        void suggest2() throws ExecutionException, InterruptedException {
+            String input = "and";
+            assertEquals(Collections.singleton("["), getSuggestions(input));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "and[dimension[dim=overworld]",
+            "and[not[spawn_reason[spawn_reason=natural]]",
+            "and[spawn_reason[spawn_reason=natural]",
+        })
+        void suggestType3(String input) throws ExecutionException, InterruptedException {
+            assertEquals(Collections.singleton(","), getSuggestions(input));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "and[dimension[dim=overworld],",
+            "and[dimension[dim=overworld], ",
+            "and[not[spawn_reason[spawn_reason=natural]],",
+            "and[not[spawn_reason[spawn_reason=natural]], ",
+            "and[spawn_reason[spawn_reason=natural],",
+            "and[spawn_reason[spawn_reason=natural], ",
+        })
+        void suggestType4(String input) throws ExecutionException, InterruptedException {
+            Set<String> suggestions = getSuggestions(input);
+            assertAll(
+                () -> assertTrue(suggestions.contains("all")),
+                () -> assertTrue(suggestions.contains("spawn_reason")),
+                () -> assertTrue(suggestions.contains("classification")),
+                () -> assertTrue(suggestions.contains("dimension")),
+                () -> assertTrue(suggestions.contains("position")),
+                () -> assertFalse(suggestions.contains(",")),
+                () -> assertFalse(suggestions.contains("["))
+            );
+        }
+
+        @Test
+        void suggestType5() throws ExecutionException, InterruptedException {
+            String input = "and[dimension[dim=overworld],spawn_reason[spawn_reason=natural]";
+            Set<String> suggestions = getSuggestions(input);
+            assertAll(
+                () -> assertTrue(suggestions.contains(","), String.format("Suggestion %s", suggestions)),
+                () -> assertTrue(suggestions.contains("]"), String.format("Suggestion %s", suggestions))
+            );
+        }
     }
 
     static class OrParse {
@@ -393,6 +464,31 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::createInstance);
             TestSpawn expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL)).not();
             assertEquals(expected, parser.createInstance());
+        }
+
+        @Test
+        void suggestType1() throws ExecutionException, InterruptedException {
+            String input = "not[";
+            Set<String> suggestions = getSuggestions(input);
+            assertAll(
+                () -> assertTrue(suggestions.contains("all")),
+                () -> assertTrue(suggestions.contains("spawn_reason")),
+                () -> assertTrue(suggestions.contains("classification")),
+                () -> assertTrue(suggestions.contains("dimension")),
+                () -> assertTrue(suggestions.contains("position"))
+            );
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "not[dimension[dim=overworld]",
+            "not[ dimension[dim=overworld]",
+            "not[spawn_reason[spawn_reason=natural]",
+            "not[spawn_reason[spawn_reason=natural] ",
+        })
+        void suggestType2(String input) throws ExecutionException, InterruptedException {
+            Set<String> suggestions = getSuggestions(input);
+            assertEquals(Collections.singleton("]"), suggestions);
         }
     }
 }
