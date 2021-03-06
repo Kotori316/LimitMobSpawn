@@ -13,7 +13,7 @@ public class Creator {
     }
 
     public static TestSpawn posAtDimension(RegistryKey<World> dimension, int minX, int maxX, int minZ, int maxZ) {
-        return new PositionLimit(minX, maxX, 0, 255, minZ, maxZ).and(new DimensionLimit(dimension));
+        return new PositionLimit(minX, maxX, 0, 256, minZ, maxZ).and(new DimensionLimit(dimension));
     }
 
     public static TestSpawn entityAtDimension(RegistryKey<World> dimension, EntityType<?> entityType) {
