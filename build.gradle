@@ -23,7 +23,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: "com.matthewprenger.cursegradle"
 
-version = '16.2'
+version = '16.3'
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'LimitMobSpawn'
 
@@ -139,8 +139,6 @@ artifacts {
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('signJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-//publish.dependsOn('reobfJar')
 
 task signJar(type: net.minecraftforge.gradle.common.task.SignJar, dependsOn: 'reobfJar') {
     boolean executeCondition = project.hasProperty('keyStoreAlias') &&
@@ -165,7 +163,7 @@ curseforge {
     project {
         id = '449932'
         changelogType = 'markdown'
-        changelog = "See https://github.com/Kotori316/LimitMobSpawn/commits/master for change log.\n" +
+        changelog = "See https://github.com/Kotori316/LimitMobSpawn/commits/master for change log." + System.lineSeparator() * 2 +
                 "For Minecraft $minecraftVersion, built with $v"
         releaseType = 'release'
         addGameVersion '1.16.5'
@@ -185,11 +183,11 @@ publishing {
             artifactId = "LimitMobSpawn"
             artifact srcJar {
                 archiveClassifier.set('sources')
-                extension = 'jar'
+                archiveExtension.set('jar')
             }
             artifact deobfJar {
                 archiveClassifier.set('deobf')
-                extension = 'jar'
+                archiveExtension.set('jar')
             }
             artifact jar
             pom {
@@ -229,6 +227,16 @@ if (System.getProperty("idea.sync.active") == "true") {
 task copyToDir(type: Copy, dependsOn: "build") {
     def PATH_NAME = "destination"
     from(deobfJar.getArchiveFile())
+    into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
+    onlyIf {
+        System.getenv(PATH_NAME) != null &&
+                Files.exists(Paths.get(System.getenv(PATH_NAME)))
+    }
+}
+
+task copyToDrive(type: Copy, dependsOn: "build") {
+    def PATH_NAME = "destination"
+    from(jar.getArchiveFile(), deobfJar.getArchiveFile(), srcJar.getArchiveFile())
     into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
     onlyIf {
         System.getenv(PATH_NAME) != null &&
