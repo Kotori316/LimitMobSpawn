@@ -46,27 +46,20 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
             l1.addAll(l2);
             return l1;
         }, Collector.Characteristics.IDENTITY_FINISH);
-
-        nbt.put("default", getDefaultConditions().stream().map(t -> t.to(NBTDynamicOps.INSTANCE)).collect(arrayCollector));
-        nbt.put("deny", getDenyConditions().stream().map(t -> t.to(NBTDynamicOps.INSTANCE)).collect(arrayCollector));
-        nbt.put("force", getForceConditions().stream().map(t -> t.to(NBTDynamicOps.INSTANCE)).collect(arrayCollector));
+        for (RuleType ruleType : RuleType.values()) {
+            nbt.put(ruleType.saveName(), ruleType.getRules(this).stream().map(t -> t.to(NBTDynamicOps.INSTANCE)).collect(arrayCollector));
+        }
         return nbt;
     }
 
     @Override
     default void deserializeNBT(CompoundNBT nbt) {
-        nbt.getList("default", Constants.NBT.TAG_COMPOUND).stream()
-            .map(n -> new Dynamic<>(NBTDynamicOps.INSTANCE, n))
-            .map(SpawnConditionLoader.INSTANCE::deserialize)
-            .forEach(this::addDefaultCondition);
-        nbt.getList("deny", Constants.NBT.TAG_COMPOUND).stream()
-            .map(n -> new Dynamic<>(NBTDynamicOps.INSTANCE, n))
-            .map(SpawnConditionLoader.INSTANCE::deserialize)
-            .forEach(this::addDenyCondition);
-        nbt.getList("force", Constants.NBT.TAG_COMPOUND).stream()
-            .map(n -> new Dynamic<>(NBTDynamicOps.INSTANCE, n))
-            .map(SpawnConditionLoader.INSTANCE::deserialize)
-            .forEach(this::addForceCondition);
+        for (RuleType ruleType : RuleType.values()) {
+            nbt.getList(ruleType.saveName(), Constants.NBT.TAG_COMPOUND).stream()
+                .map(n -> new Dynamic<>(NBTDynamicOps.INSTANCE, n))
+                .map(SpawnConditionLoader.INSTANCE::deserialize)
+                .forEach(t -> ruleType.add(this, t));
+        }
     }
 
     static void registerCapability() {

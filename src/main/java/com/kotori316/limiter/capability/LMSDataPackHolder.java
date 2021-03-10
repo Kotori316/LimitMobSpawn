@@ -1,6 +1,6 @@
 package com.kotori316.limiter.capability;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -9,9 +9,9 @@ import net.minecraft.nbt.CompoundNBT;
 import com.kotori316.limiter.TestSpawn;
 
 public class LMSDataPackHolder implements LMSHandler {
-    private Set<TestSpawn> denySet = new HashSet<>();
-    private Set<TestSpawn> defaultSet = new HashSet<>();
-    private Set<TestSpawn> forceSet = new HashSet<>();
+    private Set<TestSpawn> denySet = Collections.emptySet();
+    private Set<TestSpawn> defaultSet = Collections.emptySet();
+    private Set<TestSpawn> forceSet = Collections.emptySet();
 
     @Override
     @Deprecated // This class is not for each append.

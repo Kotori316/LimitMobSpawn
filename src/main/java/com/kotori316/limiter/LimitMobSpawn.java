@@ -6,8 +6,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -80,7 +80,7 @@ public class LimitMobSpawn {
 
     public static SpawnCheckResult allowSpawning(IBlockReader worldIn, BlockPos pos,
                                                  EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
-        LazyOptional<LMSHandler> maybeHandler = worldIn instanceof World ? ((World) worldIn).getCapability(Caps.getLmsCapability()) : LazyOptional.empty();
+        LazyOptional<LMSHandler> maybeHandler = worldIn instanceof ICapabilityProvider ? ((ICapabilityProvider) worldIn).getCapability(Caps.getLmsCapability()) : LazyOptional.empty();
 
         boolean matchForce = LMSHandler.getCombinedForce(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn11 -> spawn11.test(worldIn, pos, entityTypeIn, reason));
         if (matchForce) return SpawnCheckResult.FORCE;

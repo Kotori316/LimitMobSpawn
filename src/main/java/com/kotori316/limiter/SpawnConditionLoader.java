@@ -28,6 +28,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 import com.kotori316.limiter.capability.LMSDataPackHolder;
 import com.kotori316.limiter.capability.LMSHandler;
+import com.kotori316.limiter.capability.RuleType;
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
@@ -76,9 +77,9 @@ public class SpawnConditionLoader extends JsonReloadListener {
         for (JsonElement element : objectIn.values()) {
             JsonObject asObject = element.getAsJsonObject();
             if (SKIP_CONDITION || CraftingHelper.processConditions(asObject, "conditions")) {
-                defaultSet.addAll(getValues(asObject.get("default")));
-                denySet.addAll(getValues(asObject.get("deny")));
-                forceSet.addAll(getValues(asObject.get("force")));
+                defaultSet.addAll(getValues(asObject.get(RuleType.DEFAULT.saveName())));
+                denySet.addAll(getValues(asObject.get(RuleType.DENY.saveName())));
+                forceSet.addAll(getValues(asObject.get(RuleType.FORCE.saveName())));
             }
         }
         holder.setDefaultSet(defaultSet);
