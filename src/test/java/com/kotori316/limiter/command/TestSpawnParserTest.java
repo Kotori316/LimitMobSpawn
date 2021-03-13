@@ -61,7 +61,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
         assertThrows(CommandSyntaxException.class, parser::parse);
         Suggestions suggestions = parser.getSuggestion(new SuggestionsBuilder(input, 0)).get();
-        assertAll(Stream.of("all", "classification", "position", "entity").map(
+        assertAll(Stream.of("all", "classification", "position", "entity", "not", "and").map(
             s -> () -> assertTrue(suggestions.getList().stream().anyMatch(su -> su.getText().equals(s)), "Suggestion of " + s + " whole:" + suggestions)
         ));
         assertFalse(suggestions.getList().stream().map(Suggestion::getText).anyMatch(Predicate.isEqual("anonymous")));
@@ -295,6 +295,8 @@ class TestSpawnParserTest extends BeforeAllTest {
                 () -> assertTrue(suggestions.contains("spawn_reason")),
                 () -> assertTrue(suggestions.contains("classification")),
                 () -> assertTrue(suggestions.contains("dimension")),
+                () -> assertTrue(suggestions.contains("and")),
+                () -> assertTrue(suggestions.contains("not")),
                 () -> assertTrue(suggestions.contains("position"))
             );
         }
@@ -333,6 +335,8 @@ class TestSpawnParserTest extends BeforeAllTest {
                 () -> assertTrue(suggestions.contains("classification")),
                 () -> assertTrue(suggestions.contains("dimension")),
                 () -> assertTrue(suggestions.contains("position")),
+                () -> assertTrue(suggestions.contains("and")),
+                () -> assertTrue(suggestions.contains("not")),
                 () -> assertFalse(suggestions.contains(",")),
                 () -> assertFalse(suggestions.contains("["))
             );
@@ -475,7 +479,9 @@ class TestSpawnParserTest extends BeforeAllTest {
                 () -> assertTrue(suggestions.contains("spawn_reason")),
                 () -> assertTrue(suggestions.contains("classification")),
                 () -> assertTrue(suggestions.contains("dimension")),
-                () -> assertTrue(suggestions.contains("position"))
+                () -> assertTrue(suggestions.contains("and")),
+                () -> assertTrue(suggestions.contains("position")),
+                () -> assertFalse(suggestions.contains("not"))
             );
         }
 

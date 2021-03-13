@@ -11,7 +11,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.ISuggestionProvider;
 
 import com.kotori316.limiter.SpawnConditionLoader;
 
@@ -51,7 +50,7 @@ class ParseCombinedCondition implements ConditionParser {
             array.add(eachElement);
             // and[dimension[dim=a] dimension[dim=b]]
             //                     ^ <- cursor
-            suggestionSetter.accept(makeSuggestion(array.size() == 1 ? Stream.of(",") : Stream.of(",", "]")));
+            suggestionSetter.accept(ConditionParser.makeSuggestion(array.size() == 1 ? Stream.of(",") : Stream.of(",", "]")));
             while (reader.canRead() && (Character.isWhitespace(reader.peek()) || reader.peek() == ',')) {
                 reader.skip();
                 // and[dimension[dim=a] dimension[dim=b]]
@@ -63,7 +62,7 @@ class ParseCombinedCondition implements ConditionParser {
                     suggestions = Stream.concat(SpawnConditionLoader.INSTANCE.serializeKeySet().stream(),
                         Stream.of("]"));
                 }
-                suggestionSetter.accept(makeSuggestion(suggestions));
+                suggestionSetter.accept(ConditionParser.makeSuggestion(suggestions));
             }
         }
         // and[dimension[dim=a] dimension[dim=b]]
@@ -76,7 +75,4 @@ class ParseCombinedCondition implements ConditionParser {
         context.add("values", array);
     }
 
-    static Function<SuggestionsBuilder, CompletableFuture<Suggestions>> makeSuggestion(Stream<String> strings) {
-        return builder -> ISuggestionProvider.suggest(strings, builder);
-    }
 }

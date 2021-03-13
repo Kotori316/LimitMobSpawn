@@ -3,12 +3,14 @@ package com.kotori316.limiter.command;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.command.ISuggestionProvider;
 
 interface ConditionParser {
     /**
@@ -33,5 +35,9 @@ interface ConditionParser {
         if ("not".equals(typeName))
             return NOT_CONDITION;
         return ONE_CONDITION;
+    }
+
+    static Function<SuggestionsBuilder, CompletableFuture<Suggestions>> makeSuggestion(Stream<String> strings) {
+        return builder -> ISuggestionProvider.suggest(strings, builder);
     }
 }

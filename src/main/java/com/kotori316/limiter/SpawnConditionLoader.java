@@ -138,7 +138,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
     }
 
     public Set<String> serializeKeySet() {
-        Set<String> inactive = Sets.newHashSet("anonymous", "and", "not", "or");
+        Set<String> inactive = Sets.newHashSet("anonymous");
         return this.serializers.keySet().stream().filter(s -> !inactive.contains(s)).collect(Collectors.toSet());
     }
 
