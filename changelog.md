@@ -9,6 +9,11 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v16.5
+
+* Suggests and, or, not condition in command.
+* Internal API changes for GUI mod.
+
 ## v16.3
 
 * Commands can now add rules of "Add" / "Or" / "Not".
