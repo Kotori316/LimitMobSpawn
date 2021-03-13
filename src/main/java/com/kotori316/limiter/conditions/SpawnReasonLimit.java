@@ -60,4 +60,9 @@ public class SpawnReasonLimit implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        return "by " + reason.name();
+    }
+
 }

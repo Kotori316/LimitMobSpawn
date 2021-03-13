@@ -61,6 +61,11 @@ public class Not implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        return "Not{" + value.contentShort() + '}';
+    }
+
     private static class Serializer extends TestSpawn.Serializer<Not> {
 
         @Override

@@ -27,9 +27,9 @@ public interface TestSpawn {
                  EntityType<?> entityTypeIn,
                  @Nullable SpawnReason reason);
 
-    default Serializer<? extends TestSpawn> getSerializer() {
-        return EMPTY_SERIALIZER;
-    }
+    Serializer<? extends TestSpawn> getSerializer();
+
+    String contentShort();
 
     default TestSpawn and(TestSpawn other) {
         return new And(this, other);
@@ -73,6 +73,16 @@ public interface TestSpawn {
         @Override
         public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
             return false;
+        }
+
+        @Override
+        public Serializer<? extends TestSpawn> getSerializer() {
+            return EMPTY_SERIALIZER;
+        }
+
+        @Override
+        public String contentShort() {
+            return getSerializer().getType();
         }
     }
 

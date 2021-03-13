@@ -69,6 +69,12 @@ public class EntityLimit implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        if (type == null) return String.valueOf(key);
+        else return String.valueOf(EntityType.getKey(type));
+    }
+
     private static class Serializer extends TestSpawn.Serializer<EntityLimit> {
         @Override
         public String getType() {

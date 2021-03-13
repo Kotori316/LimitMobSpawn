@@ -36,6 +36,11 @@ public class All implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        return toString();
+    }
+
     private static class Serializer extends TestSpawn.Serializer<All> {
         @Override
         public String getType() {

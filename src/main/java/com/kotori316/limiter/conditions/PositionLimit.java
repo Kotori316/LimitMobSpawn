@@ -75,6 +75,11 @@ public class PositionLimit implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        return '(' + minX + ", " + minY + ", " + minZ + ") -> (" + maxX + ", " + maxY + ", " + maxZ + ')' + '}';
+    }
+
     private static class Serializer extends TestSpawn.Serializer<PositionLimit> {
         @Override
         public String getType() {

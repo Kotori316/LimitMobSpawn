@@ -59,4 +59,9 @@ public class EntityClassificationLimit implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        return "classification=" + classification.name();
+    }
+
 }

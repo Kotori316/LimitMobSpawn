@@ -71,4 +71,9 @@ public class DimensionLimit implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        return "dim " + type.getLocation();
+    }
+
 }

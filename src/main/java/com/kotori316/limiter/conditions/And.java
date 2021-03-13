@@ -77,6 +77,16 @@ public class And implements TestSpawn {
         return SERIALIZER;
     }
 
+    @Override
+    public String contentShort() {
+        StringBuilder builder = new StringBuilder("And{t1=" + t1);
+        for (int i = 0; i < ts.size(); i++) {
+            builder.append(", t").append(i + 2).append('=').append(ts.get(i).contentShort());
+        }
+        builder.append('}');
+        return builder.toString();
+    }
+
     private static class Serializer extends TestSpawn.Serializer<And> {
 
         @Override
