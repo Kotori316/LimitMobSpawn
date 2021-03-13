@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import javax.annotation.Nullable;
 
 import com.kotori316.limiter.TestSpawn;
 
@@ -53,7 +54,7 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
     public static <Type extends TestSpawn, Value> StringLimitSerializer<Type, Value> fromFunction(
         Function<Type, Value> getter, Function<Value, Type> instance,
         Function<Value, String> asString, Function<String, Value> fromString,
-        String saveKey, String typeName, Value[] values
+        String saveKey, String typeName, @Nullable Value[] values
     ) {
         return new StringLimitSerializer<Type, Value>() {
             @Override
@@ -88,7 +89,7 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
 
             @Override
             public Set<String> possibleValues(String property, boolean suggesting) {
-                if (property.equals(saveKey())) {
+                if (values != null && property.equals(saveKey())) {
                     if (!suggesting && Enum.class.isAssignableFrom(values.getClass().getComponentType())) {
                         return Arrays.stream(values).flatMap(v -> Stream.of(valueToString(v), ((Enum<?>) v).name())).collect(Collectors.toSet());
                     } else {
