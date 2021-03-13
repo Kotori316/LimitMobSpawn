@@ -36,6 +36,12 @@ public class Or implements TestSpawn {
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}, {}", t1, ts);
     }
 
+    public Or(List<TestSpawn> list) {
+        this.t1 = list.get(0);
+        this.ts = list.subList(1, list.size());
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", list);
+    }
+
     @Override
     public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
         return t1.test(worldIn, pos, entityTypeIn, reason) || ts.stream().anyMatch(t -> t.test(worldIn, pos, entityTypeIn, reason));
@@ -78,9 +84,9 @@ public class Or implements TestSpawn {
 
     @Override
     public String contentShort() {
-        StringBuilder builder = new StringBuilder("Or{t1=" + t1);
-        for (int i = 0; i < ts.size(); i++) {
-            builder.append(", t").append(i + 2).append('=').append(ts.get(i).contentShort());
+        StringBuilder builder = new StringBuilder("Or{" + t1.contentShort());
+        for (TestSpawn t : ts) {
+            builder.append(", ").append(t.contentShort());
         }
         builder.append('}');
         return builder.toString();

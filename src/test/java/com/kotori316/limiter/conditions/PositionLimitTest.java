@@ -19,6 +19,7 @@ import com.kotori316.limiter.SpawnConditionLoader;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PositionLimitTest extends BeforeAllTest {
     static final BlockPos[] POS = {
@@ -93,5 +94,12 @@ class PositionLimitTest extends BeforeAllTest {
         PositionLimit limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
         PositionLimit ans = new PositionLimit(45, 123, 0, 256, 8, 45);
         assertEquals(ans, limit);
+    }
+
+    @Test
+    void shortString() {
+        PositionLimit limit = new PositionLimit(BlockPos.ZERO, new BlockPos(15, 23, -9));
+        String expect = "(0, 0, -9) -> (15, 23, 0)";
+        assertTrue(limit.contentShort().contains(expect), String.format("Expect: %s, Actual: %s", expect, limit.contentShort()));
     }
 }

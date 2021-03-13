@@ -1,6 +1,7 @@
 package com.kotori316.limiter.conditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.JsonArray;
@@ -9,6 +10,7 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -18,6 +20,7 @@ import com.kotori316.limiter.TestSpawn;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CombinationTest extends BeforeAllTest {
     static final TestSpawn[] testSpawns = {new DimensionLimit(World.THE_NETHER),
@@ -126,5 +129,55 @@ class CombinationTest extends BeforeAllTest {
             () -> assertEquals(or, SpawnConditionLoader.INSTANCE.deserialize(object1)),
             () -> assertEquals(or, SpawnConditionLoader.INSTANCE.deserialize(object2))
         );
+    }
+
+    @Test
+    void createAndFromList1() {
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        TestSpawn expect = new And(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        assertEquals(expect, new And(list), String.format("And from %s", list));
+    }
+
+    @Test
+    void createAndFromList2() {
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
+            new EntityClassificationLimit(EntityClassification.CREATURE));
+        TestSpawn expect = new And(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
+            new EntityClassificationLimit(EntityClassification.CREATURE));
+        assertEquals(expect, new And(list), String.format("And from %s", list));
+    }
+
+    @Test
+    void andShortString() {
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
+            new EntityClassificationLimit(EntityClassification.CREATURE));
+        String shortString = new And(list).contentShort();
+        assertAll(list.stream().map(TestSpawn::contentShort).map(s ->
+            () -> assertTrue(shortString.contains(s), "Contains " + s + " in " + shortString)));
+    }
+
+    @Test
+    void orShortString() {
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
+            new EntityClassificationLimit(EntityClassification.CREATURE));
+        String shortString = new Or(list).contentShort();
+        assertAll(list.stream().map(TestSpawn::contentShort).map(s ->
+            () -> assertTrue(shortString.contains(s), "Contains " + s + " in " + shortString)));
+    }
+
+    @Test
+    void createOrFromList1() {
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        TestSpawn expect = new Or(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        assertEquals(expect, new Or(list), String.format("And from %s", list));
+    }
+
+    @Test
+    void createOrFromList2() {
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
+            new EntityClassificationLimit(EntityClassification.CREATURE));
+        TestSpawn expect = new Or(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
+            new EntityClassificationLimit(EntityClassification.CREATURE));
+        assertEquals(expect, new Or(list), String.format("And from %s", list));
     }
 }

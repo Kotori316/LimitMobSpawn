@@ -36,6 +36,12 @@ public class And implements TestSpawn {
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}, {}", t1, ts);
     }
 
+    public And(List<TestSpawn> list) {
+        this.t1 = list.get(0);
+        this.ts = list.subList(1, list.size());
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", list);
+    }
+
     @Override
     public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
         return t1.test(worldIn, pos, entityTypeIn, reason) &&
@@ -79,9 +85,9 @@ public class And implements TestSpawn {
 
     @Override
     public String contentShort() {
-        StringBuilder builder = new StringBuilder("And{t1=" + t1);
-        for (int i = 0; i < ts.size(); i++) {
-            builder.append(", t").append(i + 2).append('=').append(ts.get(i).contentShort());
+        StringBuilder builder = new StringBuilder("And{" + t1.contentShort());
+        for (TestSpawn t : ts) {
+            builder.append(", ").append(t.contentShort());
         }
         builder.append('}');
         return builder.toString();
