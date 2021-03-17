@@ -85,7 +85,7 @@ repositories {
 }
 
 def getForgeVersionToBuild() {
-    return 'net.minecraftforge:forge:1.16.5-36.0.46'
+    return 'net.minecraftforge:forge:1.16.5-36.1.0'
 }
 
 dependencies {
