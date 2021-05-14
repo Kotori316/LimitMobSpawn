@@ -79,6 +79,17 @@ class TestSpawnParserTest extends BeforeAllTest {
         }
 
         @Test
+        @DisplayName("All suggests the end of statement.")
+        void suggestRightBracket() throws ExecutionException, InterruptedException {
+            TestSpawnParser parser = new TestSpawnParser(new StringReader("all["));
+            assertThrows(CommandSyntaxException.class, parser::parse);
+            assertEquals("all", parser.foundRuleName());
+            Suggestions suggestions = parser.getSuggestion(new SuggestionsBuilder("all[", 0)).get();
+            assertTrue(suggestions.getList().size() > 0, "Suggests something");
+            assertEquals("]", suggestions.getList().get(0).getText());
+        }
+
+        @Test
         void createAllType() throws CommandSyntaxException {
             String input = "all[]";
             TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
@@ -113,6 +124,12 @@ class TestSpawnParserTest extends BeforeAllTest {
         void suggestSpawnType1() throws ExecutionException, InterruptedException {
             String input = "spawn_reason[";
             assertEquals(Collections.singleton("spawn_reason"), getSuggestions(input));
+        }
+
+        @Test
+        void suggestEnd() throws ExecutionException, InterruptedException {
+            String input = "spawn_reason[spawn_reason=natural";
+            assertEquals(Collections.singleton("]"), getSuggestions(input));
         }
     }
 
@@ -184,6 +201,12 @@ class TestSpawnParserTest extends BeforeAllTest {
         @ValueSource(strings = {"position[minX=1,minY=3,", "position[minX=1,minY=3, ", "position[minX=1, minY=4,", "position[minX=1, minY=4, "})
         void suggestPositionRestKey2(String input) throws ExecutionException, InterruptedException {
             assertEquals(Sets.newHashSet("maxX", "maxY", "minZ", "maxZ"), getSuggestions(input));
+        }
+
+        @Test
+        void suggestEnd() throws ExecutionException, InterruptedException {
+            String input = String.format("position[minX=%1$d, maxY=%4$d, maxX=%2$d, minZ=%5$d, maxZ=%6$d, minY=%3$d", -15, 25, 64, 1232654, -12, 36);
+            assertEquals(Collections.singleton("]"), getSuggestions(input));
         }
     }
 

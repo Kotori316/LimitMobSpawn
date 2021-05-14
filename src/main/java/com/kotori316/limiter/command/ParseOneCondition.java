@@ -41,6 +41,9 @@ class ParseOneCondition implements ConditionParser {
         if (reader.canRead() && reader.peek() == ']') {
             reader.skip();
         } else {
+            if (SpawnConditionLoader.INSTANCE.getSerializer(typeName).propertyKeys().isEmpty())
+                // Case that the type doesn't have any properties, such as "ALL".
+                suggestionSetter.accept(TestSpawnParser::suggestEndProperties);
             throw FAILED_CREATE_INSTANCE.createWithContext(reader, "Not finished statement.");
         }
     }
