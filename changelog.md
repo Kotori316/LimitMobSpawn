@@ -13,6 +13,12 @@
 
 * Added config option to change required permission level to execute commands of LimitMobSpawn.
   [#1](https://github.com/Kotori316/LimitMobSpawn/issues/1)
+  * Config file is saved at `saves/(world name)/serverconfig/limit-mob-spawn-server.toml`, the same dir
+    where `forge-server.toml` is saved.
+  * The setting is saved for each world, including server world. The config will be synced with client when player logs
+    in.
+  * I highly recommend the value to be **0 or 2**. Any other values are not tested.
+* Fixed the suggestion of condition "all" was wrong.
 
 ## v16.5
 
