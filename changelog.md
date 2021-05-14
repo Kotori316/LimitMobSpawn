@@ -9,6 +9,11 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v16.6
+
+* Added config option to change required permission level to execute commands of LimitMobSpawn.
+  [#1](https://github.com/Kotori316/LimitMobSpawn/issues/1)
+
 ## v16.5
 
 * Suggests and, or, not condition in command.

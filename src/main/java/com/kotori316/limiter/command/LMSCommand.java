@@ -16,6 +16,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
+import com.kotori316.limiter.Config;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.SpawnConditionLoader;
 import com.kotori316.limiter.TestSpawn;
@@ -52,7 +53,7 @@ public class LMSCommand {
         }
         {
             // add
-            LiteralArgumentBuilder<CommandSource> add = Commands.literal("add").requires(s -> s.hasPermissionLevel(2));
+            LiteralArgumentBuilder<CommandSource> add = Commands.literal("add").requires(s -> s.hasPermissionLevel(Config.getInstance().getPermission()));
             for (RuleType ruleType : RuleType.values()) {
                 add.then(Commands.literal(ruleType.saveName()).then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
                     List<LMSHandler> list = getAllLmsHandlers(context);
@@ -66,7 +67,7 @@ public class LMSCommand {
         }
         {
             // remove
-            LiteralArgumentBuilder<CommandSource> remove = Commands.literal("remove").requires(s -> s.hasPermissionLevel(2));
+            LiteralArgumentBuilder<CommandSource> remove = Commands.literal("remove").requires(s -> s.hasPermissionLevel(Config.getInstance().getPermission()));
             for (RuleType ruleType : RuleType.values()) {
                 remove.then(Commands.literal(ruleType.saveName()).executes(context -> {
                     getAllLmsHandlers(context).forEach(ruleType::removeAll);
