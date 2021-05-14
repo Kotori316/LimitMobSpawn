@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -50,6 +51,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class SpawnConditionLoaderTest extends BeforeAllTest {
+    @Test
+    void dummy() {
+        assertTrue(Register.serializers().length > 0);
+        assertTrue(LoadJson.emptyElements().length > 0);
+        assertTrue(LoadJson.stupids().length > 0);
+    }
 
     static class Register {
         static TestSpawn.Serializer<?>[] serializers() {
@@ -262,7 +269,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Gson gson = new Gson();
             try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/no_bats.json");
-                 Reader reader = new InputStreamReader(stream)) {
+                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
                 JsonObject object = gson.fromJson(reader, JsonObject.class);
                 Map<ResourceLocation, JsonElement> map = new HashMap<>();
                 map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "no_bats"), object);
@@ -283,7 +290,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Gson gson = new Gson();
             try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/peaceful.json");
-                 Reader reader = new InputStreamReader(stream)) {
+                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
                 JsonObject object = gson.fromJson(reader, JsonObject.class);
                 Map<ResourceLocation, JsonElement> map = new HashMap<>();
                 map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "peaceful"), object);
@@ -304,7 +311,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Gson gson = new Gson();
             try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/test1.json");
-                 Reader reader = new InputStreamReader(stream)) {
+                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
                 JsonObject object = gson.fromJson(reader, JsonObject.class);
                 Map<ResourceLocation, JsonElement> map = new HashMap<>();
                 map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "test1"), object);

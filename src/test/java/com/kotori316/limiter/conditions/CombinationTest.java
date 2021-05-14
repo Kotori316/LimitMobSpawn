@@ -59,6 +59,12 @@ class CombinationTest extends BeforeAllTest {
         return list;
     }
 
+    @Test
+    void dummy() {
+        assertTrue(get2Conditions().size() > 0);
+        assertTrue(get3Conditions().size() > 0);
+    }
+
     @ParameterizedTest
     @MethodSource("get2Conditions")
     void and2CycleConsistency(TestSpawn t1, TestSpawn t2) {

@@ -67,6 +67,12 @@ class TestSpawnParserTest extends BeforeAllTest {
         assertFalse(suggestions.getList().stream().map(Suggestion::getText).anyMatch(Predicate.isEqual("anonymous")));
     }
 
+    @Test
+    void dummy() {
+        assertTrue(AndParse.parse2Arg().length > 0);
+        assertTrue(OrParse.parse2Arg().length > 0);
+    }
+
     static class AllParse {
         @Test
         @DisplayName("All type serialization")
@@ -118,6 +124,14 @@ class TestSpawnParserTest extends BeforeAllTest {
             String input = String.format("spawn_reason[spawn_reason=%s]", name);
             TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
             assertThrows(CommandSyntaxException.class, parser::parse);
+        }
+
+        @Test
+        void invalidEnd() {
+            String input = "spawn_reason[]";
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertThrows(CommandSyntaxException.class, parser::createInstance);
         }
 
         @Test

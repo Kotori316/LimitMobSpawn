@@ -98,6 +98,7 @@ class PositionLimitTest extends BeforeAllTest {
 
     @Test
     void shortString() {
+        assertTrue(poses().size() > 0);
         PositionLimit limit = new PositionLimit(BlockPos.ZERO, new BlockPos(15, 23, -9));
         String expect = "(0, 0, -9) -> (15, 23, 0)";
         assertTrue(limit.contentShort().contains(expect), String.format("Expect: %s, Actual: %s", expect, limit.contentShort()));

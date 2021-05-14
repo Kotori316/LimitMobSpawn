@@ -10,6 +10,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -18,10 +19,16 @@ import com.kotori316.limiter.SpawnConditionLoader;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NotTest extends BeforeAllTest {
     static Stream<DynamicOps<?>> opsStream() {
         return Stream.of(JsonOps.COMPRESSED, JsonOps.INSTANCE, NBTDynamicOps.INSTANCE);
+    }
+
+    @Test
+    void dummy() {
+        assertTrue(opsStream().count() > 0);
     }
 
     @ParameterizedTest
