@@ -83,7 +83,8 @@ public class EntityLimit implements TestSpawn {
 
         @Override
         public <T> EntityLimit from(Dynamic<T> dynamic) {
-            EntityType<?> type = EntityType.byKey(dynamic.get("entity").asString("INVALID")).orElseThrow(() -> new RuntimeException("Error " + dynamic.getValue()));
+            EntityType<?> type = EntityType.byKey(dynamic.get("entity").asString("INVALID")).orElseThrow(() ->
+                new IllegalArgumentException("Invalid entity name: " + dynamic.getValue()));
             return new EntityLimit(type);
         }
 
