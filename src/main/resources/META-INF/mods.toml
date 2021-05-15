@@ -1,12 +1,14 @@
 modLoader = "javafml"
 loaderVersion = "[36,)"
 license = "All rights reserved"
+issueTrackerURL="https://github.com/Kotori316/LimitMobSpawn/issues"
 [[mods]]
 modId = "limit-mob-spawn"
 version = "${file.jarVersion}"
 displayName = "Limit Mob Spawn"
 credits = "Kotori316"
 authors = "Kotori316"
+displayURL="https://github.com/Kotori316/LimitMobSpawn"
 description = '''
 Prevent mobs from spawning.
 '''
