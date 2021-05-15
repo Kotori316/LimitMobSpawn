@@ -46,7 +46,7 @@
 * Internal changes
   * Use JUnit to test commands
     * To test commands can be successfully parsed.
-    * To test commands can suggest proper items.
+    * To test commands can suggest proper words.
   * Test in CI.
 
 ## v16.1
