@@ -18,7 +18,7 @@ public class DimensionLimit implements TestSpawn {
     public static final TestSpawn.Serializer<DimensionLimit> SERIALIZER = StringLimitSerializer.fromFunction(
         DimensionLimit::getType, DimensionLimit::new,
         key -> key.getLocation().toString(), s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(s)),
-        "dim", "dimension", null
+        "dim", "dimension"
     );
 
     private final RegistryKey<World> type;

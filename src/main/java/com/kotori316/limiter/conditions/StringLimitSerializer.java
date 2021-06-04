@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.kotori316.limiter.TestSpawn;
@@ -54,7 +56,23 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
     public static <Type extends TestSpawn, Value> StringLimitSerializer<Type, Value> fromFunction(
         Function<Type, Value> getter, Function<Value, Type> instance,
         Function<Value, String> asString, Function<String, Value> fromString,
+        String saveKey, String typeName
+    ) {
+        return fromFunction(getter, instance, asString, fromString, saveKey, typeName, () -> null);
+    }
+
+    public static <Type extends TestSpawn, Value> StringLimitSerializer<Type, Value> fromFunction(
+        Function<Type, Value> getter, Function<Value, Type> instance,
+        Function<Value, String> asString, Function<String, Value> fromString,
         String saveKey, String typeName, @Nullable Value[] values
+    ) {
+        return fromFunction(getter, instance, asString, fromString, saveKey, typeName, () -> values);
+    }
+
+    public static <Type extends TestSpawn, Value> StringLimitSerializer<Type, Value> fromFunction(
+        Function<Type, Value> getter, Function<Value, Type> instance,
+        Function<Value, String> asString, Function<String, Value> fromString,
+        String saveKey, String typeName, @Nonnull Supplier<Value[]> valueSupplier
     ) {
         return new StringLimitSerializer<Type, Value>() {
             @Override
@@ -89,6 +107,7 @@ abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpa
 
             @Override
             public Set<String> possibleValues(String property, boolean suggesting) {
+                Value[] values = valueSupplier.get();
                 if (values != null && property.equals(saveKey())) {
                     if (!suggesting && Enum.class.isAssignableFrom(values.getClass().getComponentType())) {
                         return Arrays.stream(values).flatMap(v -> Stream.of(valueToString(v), ((Enum<?>) v).name())).collect(Collectors.toSet());
