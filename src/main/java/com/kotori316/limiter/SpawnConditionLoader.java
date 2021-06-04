@@ -40,7 +40,7 @@ import com.kotori316.limiter.conditions.PositionLimit;
 import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 public class SpawnConditionLoader extends JsonReloadListener {
-    private static final Marker MARKER = MarkerManager.getMarker("LimitMobSpawn/SpawnConditionLoader");
+    private static final Marker MARKER = MarkerManager.getMarker("SpawnConditionLoader");
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private final Map<String, TestSpawn.Serializer<?>> serializers = new HashMap<>();
     public static final SpawnConditionLoader INSTANCE = new SpawnConditionLoader();

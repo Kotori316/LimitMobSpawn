@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.kotori316.limiter.LMSEventHandler;
 import com.kotori316.limiter.LimitMobSpawn;
 
 @SuppressWarnings("DuplicatedCode")
@@ -29,8 +30,12 @@ public class WorldEntitySpawnerMixin {
     ) {
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(worldIn, pos, entityTypeIn, null);
         if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY) {
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMSEventHandler.LMS_MARKER,
+                "WorldEntitySpawner#canCreatureTypeSpawnAtLocation denied spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.FALSE);
         } else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE) {
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMSEventHandler.LMS_MARKER,
+                "WorldEntitySpawner#canCreatureTypeSpawnAtLocation forced spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.TRUE);
         }
     }
@@ -44,10 +49,12 @@ public class WorldEntitySpawnerMixin {
     ) {
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(worldIn, pos, entityTypeIn, null);
         if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY) {
-            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "WorldEntitySpawner#func_234968_a_ denied spawning of {} at {}.", entityTypeIn, pos);
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMSEventHandler.LMS_MARKER,
+                "WorldEntitySpawner#func_234968_a_ denied spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.FALSE);
         } else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE) {
-            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "WorldEntitySpawner#func_234968_a_ forced spawning of {} at {}.", entityTypeIn, pos);
+            LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMSEventHandler.LMS_MARKER,
+                "WorldEntitySpawner#func_234968_a_ forced spawning of {} at {}.", entityTypeIn, pos);
             cir.setReturnValue(Boolean.TRUE);
         }
     }

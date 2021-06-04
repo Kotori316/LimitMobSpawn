@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.kotori316.limiter.LMSEventHandler;
 import com.kotori316.limiter.LimitMobSpawn;
 
 @Mixin(EntitySpawnPlacementRegistry.class)
@@ -26,11 +27,13 @@ public class EntitySpawnPlacementRegistryMixin {
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(world, pos, entityType, reason);
         if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY) {
             if (reason != SpawnReason.NATURAL)
-                LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "EntitySpawnPlacementRegistry#canSpawnEntity denied spawning of {} by {} at {}.", entityType, reason, pos);
+                LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMSEventHandler.LMS_MARKER,
+                    "EntitySpawnPlacementRegistry#canSpawnEntity denied spawning of {} by {} at {}.", entityType, reason, pos);
             cir.setReturnValue(Boolean.FALSE);
         } else if (checkResult == LimitMobSpawn.SpawnCheckResult.FORCE) {
             if (reason != SpawnReason.NATURAL)
-                LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, "EntitySpawnPlacementRegistry#canSpawnEntity forced spawning of {} by {} at {}.", entityType, reason, pos);
+                LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMSEventHandler.LMS_MARKER,
+                    "EntitySpawnPlacementRegistry#canSpawnEntity forced spawning of {} by {} at {}.", entityType, reason, pos);
             cir.setReturnValue(Boolean.TRUE);
         }
     }
