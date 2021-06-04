@@ -1,7 +1,12 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.RegistryKey;
@@ -15,11 +20,7 @@ import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class DimensionLimit implements TestSpawn {
-    public static final TestSpawn.Serializer<DimensionLimit> SERIALIZER = StringLimitSerializer.fromFunction(
-        DimensionLimit::getType, DimensionLimit::new,
-        key -> key.getLocation().toString(), s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(s)),
-        "dim", "dimension"
-    );
+    public static final TestSpawn.Serializer<DimensionLimit> SERIALIZER = new DimensionSerializer();
 
     private final RegistryKey<World> type;
 
@@ -76,4 +77,45 @@ public class DimensionLimit implements TestSpawn {
         return "dim " + type.getLocation();
     }
 
+    private static final class DimensionSerializer extends StringLimitSerializer<DimensionLimit, RegistryKey<World>> {
+        @Override
+        public String getType() {
+            return "dimension";
+        }
+
+        @Override
+        public Set<String> possibleValues(String property, boolean suggesting, @Nullable ISuggestionProvider provider) {
+            if (provider == null || !property.equals(saveKey()))
+                return Collections.emptySet();
+            return provider.func_241861_q().func_230520_a_().keySet()
+                .stream()
+                .map(ResourceLocation::toString)
+                .collect(Collectors.toSet());
+        }
+
+        @Override
+        protected RegistryKey<World> fromString(String s) {
+            return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(s));
+        }
+
+        @Override
+        protected String valueToString(RegistryKey<World> worldRegistryKey) {
+            return worldRegistryKey.getLocation().toString();
+        }
+
+        @Override
+        protected String saveKey() {
+            return "dim";
+        }
+
+        @Override
+        protected DimensionLimit instance(RegistryKey<World> worldRegistryKey) {
+            return new DimensionLimit(worldRegistryKey);
+        }
+
+        @Override
+        protected RegistryKey<World> getter(DimensionLimit dimensionLimit) {
+            return dimensionLimit.getType();
+        }
+    }
 }
