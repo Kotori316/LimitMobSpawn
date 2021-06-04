@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.ResourceLocation;
@@ -107,7 +108,7 @@ public class EntityLimit implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting) {
+        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
             if (property.equals("entity")) {
                 return ForgeRegistries.ENTITIES.getKeys().stream().map(ResourceLocation::toString).collect(Collectors.toSet());
             }

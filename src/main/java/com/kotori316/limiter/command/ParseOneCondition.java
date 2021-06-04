@@ -10,6 +10,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import javax.annotation.Nullable;
 import net.minecraft.command.ISuggestionProvider;
 
 import com.kotori316.limiter.SpawnConditionLoader;
@@ -19,7 +20,11 @@ import static com.kotori316.limiter.command.TestSpawnParser.FAILED_CREATE_INSTAN
 class ParseOneCondition implements ConditionParser {
 
     @Override
-    public void parse(String typeName, StringReader reader, JsonObject context, Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter)
+    public void parse(String typeName,
+                      StringReader reader,
+                      JsonObject context,
+                      Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter,
+                      @Nullable ISuggestionProvider provider)
         throws CommandSyntaxException {
         // Step 2
         while (reader.canRead() && reader.peek() != ']') {
@@ -28,7 +33,7 @@ class ParseOneCondition implements ConditionParser {
             while (reader.canRead() && reader.peek() != ',' && reader.peek() != ']') {
                 reader.skip();
             }
-            readRuleProperties(typeName, reader, pairStart, reader.getCursor(), context, suggestionSetter);
+            readRuleProperties(typeName, reader, pairStart, reader.getCursor(), context, suggestionSetter, provider);
             if (reader.canRead()) {
                 if (reader.peek() == ',') {
                     reader.skip(); // Skip ,
@@ -50,20 +55,21 @@ class ParseOneCondition implements ConditionParser {
 
     // Step 2: Get rule properties
     void readRuleProperties(String ruleName, StringReader reader, int first, int endExclusive, JsonObject object,
-                            Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter) throws CommandSyntaxException {
+                            Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter,
+                            @Nullable ISuggestionProvider provider) throws CommandSyntaxException {
         String pair = reader.getString().substring(first, endExclusive);
         if (!pair.contains("=")) {
             reader.setCursor(first);
             throw FAILED_CREATE_INSTANCE.createWithContext(reader, "= expected after key");
         } else {
-            suggestionSetter.accept(generateSuggestPropertyValues(ruleName, pair.substring(0, pair.indexOf("="))));
+            suggestionSetter.accept(generateSuggestPropertyValues(ruleName, pair.substring(0, pair.indexOf("=")), provider));
         }
         try {
             String[] split = pair.split("=", 2);
             try {
                 object.addProperty(split[0], Integer.parseInt(split[1]));
             } catch (NumberFormatException ignore) {
-                Set<String> possibleValues = SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(split[0], false);
+                Set<String> possibleValues = SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(split[0], false, provider);
                 if (possibleValues.isEmpty() || possibleValues.contains(split[1])) {
                     object.addProperty(split[0], split[1]);
                 } else {
@@ -89,9 +95,9 @@ class ParseOneCondition implements ConditionParser {
         }
     }
 
-    private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String ruleName, String key) {
+    private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String ruleName, String key, ISuggestionProvider provider) {
         return builder -> ISuggestionProvider.suggest(
-            SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(key, true),
+            SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(key, true, provider),
             builder);
     }
 

@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -107,7 +108,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
                 }
 
                 @Override
-                public Set<String> possibleValues(String property, boolean suggesting) {
+                public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
                     return Collections.emptySet();
                 }
             };

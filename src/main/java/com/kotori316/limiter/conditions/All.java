@@ -6,6 +6,7 @@ import java.util.Set;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
@@ -62,7 +63,7 @@ public class All implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting) {
+        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
             return Collections.emptySet();
         }
     }

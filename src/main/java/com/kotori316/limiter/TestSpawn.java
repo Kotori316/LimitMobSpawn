@@ -8,6 +8,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import javax.annotation.Nullable;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +65,7 @@ public interface TestSpawn {
 
         public abstract Set<String> propertyKeys();
 
-        public abstract Set<String> possibleValues(String property, boolean suggesting);
+        public abstract Set<String> possibleValues(String property, boolean suggesting, @Nullable ISuggestionProvider provider);
     }
 
     enum Empty implements TestSpawn {
@@ -108,7 +109,7 @@ public interface TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting) {
+        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
             return Collections.emptySet();
         }
     };

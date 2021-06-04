@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
@@ -129,7 +130,7 @@ public class And implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting) {
+        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
             return Collections.emptySet();
         }
     }

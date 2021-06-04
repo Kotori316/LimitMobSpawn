@@ -15,6 +15,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import javax.annotation.Nullable;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
@@ -43,7 +44,7 @@ public class TestSpawnArgument implements ArgumentType<TestSpawn> {
         stringreader.setCursor(builder.getStart());
         TestSpawnParser parser = new TestSpawnParser(stringreader);
         try {
-            parser.parse();
+            parser.parseWithProvider((ISuggestionProvider) context.getSource());
         } catch (CommandSyntaxException ignore) {
         }
         return parser.getSuggestion(builder);
@@ -109,6 +110,10 @@ class TestSpawnParser {
     }
 
     void parse() throws CommandSyntaxException {
+        parseWithProvider(null);
+    }
+
+    void parseWithProvider(@Nullable ISuggestionProvider provider) throws CommandSyntaxException {
         {
             // Step 1
             this.suggestion = TestSpawnParser::suggestRuleName;
@@ -128,7 +133,7 @@ class TestSpawnParser {
         }
 
         ConditionParser parser = ConditionParser.findParser(ruleName);
-        parser.parse(ruleName, reader, object, this::setSuggestion);
+        parser.parse(ruleName, reader, object, this::setSuggestion, provider);
     }
 
     private void setSuggestion(Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestion) {

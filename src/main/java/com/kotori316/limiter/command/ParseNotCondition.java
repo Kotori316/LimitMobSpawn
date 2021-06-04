@@ -10,6 +10,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import javax.annotation.Nullable;
+import net.minecraft.command.ISuggestionProvider;
 
 import com.kotori316.limiter.SpawnConditionLoader;
 
@@ -18,7 +20,11 @@ import static com.kotori316.limiter.command.TestSpawnParser.PROPERTY_NOT_FOUND;
 
 class ParseNotCondition implements ConditionParser {
     @Override
-    public void parse(String typeName, StringReader reader, JsonObject context, Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter)
+    public void parse(String typeName,
+                      StringReader reader,
+                      JsonObject context,
+                      Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter,
+                      @Nullable ISuggestionProvider provider)
         throws CommandSyntaxException {
         suggestionSetter.accept(ConditionParser.makeSuggestion(
             SpawnConditionLoader.INSTANCE.serializeKeySet().stream()
@@ -45,7 +51,7 @@ class ParseNotCondition implements ConditionParser {
         // not[dimension[dim=a]]
         //               ^ <- cursor
         ConditionParser parser = ConditionParser.findParser(typeNameInside);
-        parser.parse(typeNameInside, reader, eachElement, suggestionSetter);
+        parser.parse(typeNameInside, reader, eachElement, suggestionSetter, provider);
         eachElement.addProperty("type", typeNameInside);
         reader.skipWhitespace();
         // not[dimension[dim=a]]
