@@ -18,7 +18,7 @@ import net.minecraft.command.ISuggestionProvider;
 
 import com.kotori316.limiter.TestSpawn;
 
-abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpawn.Serializer<T> {
+public abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpawn.Serializer<T> {
     protected abstract Value fromString(String s);
 
     protected abstract String valueToString(Value value);
