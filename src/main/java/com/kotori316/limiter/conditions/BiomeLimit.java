@@ -1,9 +1,13 @@
 package com.kotori316.limiter.conditions;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.RegistryKey;
@@ -17,10 +21,7 @@ import net.minecraft.world.biome.Biome;
 import com.kotori316.limiter.TestSpawn;
 
 public class BiomeLimit implements TestSpawn {
-    public static final TestSpawn.Serializer<BiomeLimit> SERIALIZER = StringLimitSerializer.fromFunction(
-        b -> b.biomeRegistryKey.getLocation(), BiomeLimit::new, ResourceLocation::toString, ResourceLocation::new,
-        "biome", "biome"
-    );
+    public static final TestSpawn.Serializer<BiomeLimit> SERIALIZER = new BiomeSerializer();
     @Nonnull
     private final RegistryKey<Biome> biomeRegistryKey;
 
@@ -74,5 +75,49 @@ public class BiomeLimit implements TestSpawn {
     @Override
     public String contentShort() {
         return "biome " + biomeRegistryKey.getLocation();
+    }
+
+    private static final class BiomeSerializer extends StringLimitSerializer<BiomeLimit, RegistryKey<Biome>> {
+        @Override
+        public String getType() {
+            return "biome";
+        }
+
+        @Override
+        public Set<String> possibleValues(String property, boolean suggesting, @Nullable ISuggestionProvider provider) {
+            if (provider == null || !property.equals(saveKey()))
+                return Collections.emptySet();
+            return provider.func_241861_q()
+                .getRegistry(Registry.BIOME_KEY)
+                .keySet()
+                .stream()
+                .map(ResourceLocation::toString)
+                .collect(Collectors.toSet());
+        }
+
+        @Override
+        protected RegistryKey<Biome> fromString(String s) {
+            return RegistryKey.getOrCreateKey(Registry.BIOME_KEY, new ResourceLocation(s));
+        }
+
+        @Override
+        protected String valueToString(RegistryKey<Biome> biomeRegistryKey) {
+            return biomeRegistryKey.getLocation().toString();
+        }
+
+        @Override
+        protected String saveKey() {
+            return "biome";
+        }
+
+        @Override
+        protected BiomeLimit instance(RegistryKey<Biome> biomeRegistryKey) {
+            return new BiomeLimit(biomeRegistryKey);
+        }
+
+        @Override
+        protected RegistryKey<Biome> getter(BiomeLimit dimensionLimit) {
+            return dimensionLimit.biomeRegistryKey;
+        }
     }
 }
