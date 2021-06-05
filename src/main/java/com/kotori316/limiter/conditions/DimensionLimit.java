@@ -94,27 +94,27 @@ public class DimensionLimit implements TestSpawn {
         }
 
         @Override
-        protected RegistryKey<World> fromString(String s) {
+        public RegistryKey<World> fromString(String s) {
             return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(s));
         }
 
         @Override
-        protected String valueToString(RegistryKey<World> worldRegistryKey) {
+        public String valueToString(RegistryKey<World> worldRegistryKey) {
             return worldRegistryKey.getLocation().toString();
         }
 
         @Override
-        protected String saveKey() {
+        public String saveKey() {
             return "dim";
         }
 
         @Override
-        protected DimensionLimit instance(RegistryKey<World> worldRegistryKey) {
+        public DimensionLimit instance(RegistryKey<World> worldRegistryKey) {
             return new DimensionLimit(worldRegistryKey);
         }
 
         @Override
-        protected RegistryKey<World> getter(DimensionLimit dimensionLimit) {
+        public RegistryKey<World> getter(DimensionLimit dimensionLimit) {
             return dimensionLimit.getType();
         }
     }

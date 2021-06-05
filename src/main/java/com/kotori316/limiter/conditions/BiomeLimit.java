@@ -96,27 +96,27 @@ public class BiomeLimit implements TestSpawn {
         }
 
         @Override
-        protected RegistryKey<Biome> fromString(String s) {
+        public RegistryKey<Biome> fromString(String s) {
             return RegistryKey.getOrCreateKey(Registry.BIOME_KEY, new ResourceLocation(s));
         }
 
         @Override
-        protected String valueToString(RegistryKey<Biome> biomeRegistryKey) {
+        public String valueToString(RegistryKey<Biome> biomeRegistryKey) {
             return biomeRegistryKey.getLocation().toString();
         }
 
         @Override
-        protected String saveKey() {
+        public String saveKey() {
             return "biome";
         }
 
         @Override
-        protected BiomeLimit instance(RegistryKey<Biome> biomeRegistryKey) {
+        public BiomeLimit instance(RegistryKey<Biome> biomeRegistryKey) {
             return new BiomeLimit(biomeRegistryKey);
         }
 
         @Override
-        protected RegistryKey<Biome> getter(BiomeLimit dimensionLimit) {
+        public RegistryKey<Biome> getter(BiomeLimit dimensionLimit) {
             return dimensionLimit.biomeRegistryKey;
         }
     }

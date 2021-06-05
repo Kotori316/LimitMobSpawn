@@ -19,15 +19,15 @@ import net.minecraft.command.ISuggestionProvider;
 import com.kotori316.limiter.TestSpawn;
 
 public abstract class StringLimitSerializer<T extends TestSpawn, Value> extends TestSpawn.Serializer<T> {
-    protected abstract Value fromString(String s);
+    public abstract Value fromString(String s);
 
-    protected abstract String valueToString(Value value);
+    public abstract String valueToString(Value value);
 
-    protected abstract String saveKey();
+    public abstract String saveKey();
 
-    protected abstract T instance(Value value);
+    public abstract T instance(Value value);
 
-    protected abstract Value getter(T t);
+    public abstract Value getter(T t);
 
     @Override
     public Set<String> propertyKeys() {
@@ -77,27 +77,27 @@ public abstract class StringLimitSerializer<T extends TestSpawn, Value> extends 
     ) {
         return new StringLimitSerializer<Type, Value>() {
             @Override
-            protected Value fromString(String s) {
+            public Value fromString(String s) {
                 return fromString.apply(s);
             }
 
             @Override
-            protected String valueToString(Value value) {
+            public String valueToString(Value value) {
                 return asString.apply(value);
             }
 
             @Override
-            protected String saveKey() {
+            public String saveKey() {
                 return saveKey;
             }
 
             @Override
-            protected Type instance(Value value) {
+            public Type instance(Value value) {
                 return instance.apply(value);
             }
 
             @Override
-            protected Value getter(Type type) {
+            public Value getter(Type type) {
                 return getter.apply(type);
             }
 
