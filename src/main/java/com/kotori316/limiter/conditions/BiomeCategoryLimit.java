@@ -10,6 +10,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.biome.Biome;
 
+import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class BiomeCategoryLimit implements TestSpawn {
@@ -21,6 +22,7 @@ public class BiomeCategoryLimit implements TestSpawn {
 
     public BiomeCategoryLimit(Biome.Category category) {
         this.category = category;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", category);
     }
 
     @Override

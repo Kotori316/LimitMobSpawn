@@ -18,6 +18,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.biome.Biome;
 
+import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class BiomeLimit implements TestSpawn {
@@ -27,6 +28,7 @@ public class BiomeLimit implements TestSpawn {
 
     public BiomeLimit(@Nonnull RegistryKey<Biome> biomeRegistryKey) {
         this.biomeRegistryKey = biomeRegistryKey;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", biomeRegistryKey);
     }
 
     public BiomeLimit(@Nonnull ResourceLocation biome) {

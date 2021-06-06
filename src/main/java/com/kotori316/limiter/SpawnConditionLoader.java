@@ -71,6 +71,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
         TestSpawn.Serializer<?> put = this.serializers.put(serializer.getType(), serializer);
         if (put != null)
             throw new IllegalArgumentException(String.format("Duplicated keys: %s, TYPE: %s, Map: %s", serializer.getType(), serializer.getClass(), serializers));
+        LimitMobSpawn.LOGGER.debug(MARKER, "Registered a new serializer. {}:{}", serializer.getType(), serializer);
     }
 
     @Override
