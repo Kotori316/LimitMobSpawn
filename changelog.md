@@ -9,6 +9,17 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v16.7
+
+* Added new rules of Biome and Biome Category.
+  * Biome is like `minecraft:ocean`.
+  * Category is like NETHER, TAIGA, FOREST and so on.
+* Implemented command suggestions for Dimension and Biome.
+* Fixed the condition of SpawnReasonLimit was wrong.
+* Internal - Changed error message of Entity rule.
+* Internal - Added log marker.
+* Internal - changes for GUI mod.
+
 ## v16.6
 
 * Added config option to change required permission level to execute commands of LimitMobSpawn.
