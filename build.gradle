@@ -103,6 +103,15 @@ mixin {
     add sourceSets.main, "mixins.limit-mob-spawn.refmap.json"
 }
 
+test {
+    useJUnitPlatform()
+    int cpus = Runtime.runtime.availableProcessors()
+    setMaxParallelForks(cpus > 1 ? cpus - 1 : 1)
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
+    }
+}
+
 // Example for how to get properties into the manifest for reading by the runtime..
 def jarAttributeMap = [
         "Specification-Title"     : "limit-mob-spawn",
