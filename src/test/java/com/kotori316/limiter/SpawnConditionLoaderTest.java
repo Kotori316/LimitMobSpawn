@@ -59,7 +59,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         assertTrue(LoadJson.stupids().length > 0);
     }
 
-    static class Register {
+    static class Register extends BeforeAllTest {
         static TestSpawn.Serializer<?>[] serializers() {
             return new TestSpawn.Serializer[]{
                 TestSpawn.EMPTY_SERIALIZER,
@@ -116,7 +116,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         }
     }
 
-    static class LoadJson {
+    static class LoadJson extends BeforeAllTest {
         @Test
         @DisplayName("Load from strange json map")
         void loadFromJsonObject() {

@@ -73,7 +73,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         assertTrue(OrParse.parse2Arg().length > 0);
     }
 
-    static class AllParse {
+    static class AllParse extends BeforeAllTest {
         @Test
         @DisplayName("All type serialization")
         void findType() throws ExecutionException, InterruptedException {
@@ -106,7 +106,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         }
     }
 
-    static class SpawnParse {
+    static class SpawnParse extends BeforeAllTest {
         @ParameterizedTest
         @ValueSource(strings = {"NATURAL", "natural", "event", "SPAWNER"})
         void createSpawnType(String name) throws CommandSyntaxException {
@@ -147,7 +147,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         }
     }
 
-    static class PositionParse {
+    static class PositionParse extends BeforeAllTest {
         @Test
         void createPositionType() throws CommandSyntaxException {
             String input = String.format("position[minX=%1$d,maxX=%2$d,minY=%3$d,maxY=%4$d,minZ=%5$d,maxZ=%6$d]", -15, 25, 64, 123, -12, 36);
@@ -231,7 +231,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         return parser.getSuggestion(new SuggestionsBuilder(input, 0)).get().getList().stream().map(Suggestion::getText).collect(Collectors.toSet());
     }
 
-    static class DimensionParse {
+    static class DimensionParse extends BeforeAllTest {
         @ParameterizedTest
         @ValueSource(strings = {"overworld", "minecraft:overworld", "the_nether", "minecraft:the_end"})
         void createDimensionType(String dim) throws CommandSyntaxException {
@@ -250,7 +250,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         }
     }
 
-    static class AndParse {
+    static class AndParse extends BeforeAllTest {
         @ParameterizedTest
         @ValueSource(strings = {
             "and[dimension[dim=overworld] spawn_reason[spawn_reason=natural]]",
@@ -390,7 +390,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         }
     }
 
-    static class OrParse {
+    static class OrParse extends BeforeAllTest {
         @ParameterizedTest
         @ValueSource(strings = {
             "or[dimension[dim=overworld] spawn_reason[spawn_reason=natural]]",
@@ -465,7 +465,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         }
     }
 
-    static class NotParse {
+    static class NotParse extends BeforeAllTest {
         @ParameterizedTest
         @ValueSource(strings = {
             "not[dimension[dim=overworld]]",

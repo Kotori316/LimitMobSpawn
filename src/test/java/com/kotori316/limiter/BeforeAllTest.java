@@ -23,10 +23,10 @@ public abstract class BeforeAllTest {
 
     @BeforeAll
     static void beforeAll() {
-        BeforeAllTest.setup();
+        BeforeAllTest.initialize();
     }
 
-    public static synchronized void setup() {
+    public static synchronized void initialize() {
         if (!INITIALIZED.getAndSet(true)) {
             initLoader();
             changeDist();
