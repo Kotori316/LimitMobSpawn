@@ -39,6 +39,8 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
 
     void clearForceConditions();
 
+    SpawnerControl getSpawnerControl();
+
     @Override
     default CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
@@ -49,6 +51,7 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
         for (RuleType ruleType : RuleType.values()) {
             nbt.put(ruleType.saveName(), ruleType.getRules(this).stream().map(t -> t.to(NBTDynamicOps.INSTANCE)).collect(arrayCollector));
         }
+        nbt.put("SpawnerControl", getSpawnerControl().serializeNBT());
         return nbt;
     }
 
@@ -60,6 +63,7 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
                 .map(SpawnConditionLoader.INSTANCE::deserialize)
                 .forEach(t -> ruleType.add(this, t));
         }
+        getSpawnerControl().deserializeNBT(nbt.getCompound("SpawnerControl"));
     }
 
     static void registerCapability() {

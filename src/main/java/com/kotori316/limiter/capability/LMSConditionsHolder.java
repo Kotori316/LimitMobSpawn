@@ -7,6 +7,7 @@ import com.kotori316.limiter.TestSpawn;
 
 public class LMSConditionsHolder implements LMSHandler {
     private final Set<TestSpawn> defaultConditions = new HashSet<>(), denyConditions = new HashSet<>(), forceConditions = new HashSet<>();
+    private final SpawnerControl spawnerControl = new SpawnerControl();
 
     @Override
     public void addDefaultCondition(TestSpawn condition) {
@@ -51,6 +52,11 @@ public class LMSConditionsHolder implements LMSHandler {
     @Override
     public void clearForceConditions() {
         forceConditions.clear();
+    }
+
+    @Override
+    public SpawnerControl getSpawnerControl() {
+        return spawnerControl;
     }
 
     @Override

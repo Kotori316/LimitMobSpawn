@@ -6,7 +6,8 @@
   "mixins": [
     "WorldEntitySpawnerMixin",
     "EntitySpawnPlacementRegistryMixin",
-    "MobEntityMixin"
+    "MobEntityMixin",
+    "SpawnerMixin"
   ],
   "client": [ ],
   "server": [ ],

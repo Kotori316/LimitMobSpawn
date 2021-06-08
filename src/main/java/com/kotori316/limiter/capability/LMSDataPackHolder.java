@@ -44,6 +44,11 @@ public class LMSDataPackHolder implements LMSHandler {
     }
 
     @Override
+    public SpawnerControl getSpawnerControl() {
+        return new SpawnerControl();
+    }
+
+    @Override
     public Set<TestSpawn> getDefaultConditions() {
         return defaultSet;
     }

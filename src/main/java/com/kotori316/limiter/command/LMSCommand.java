@@ -8,6 +8,7 @@ import java.util.function.Function;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import javax.annotation.Nonnull;
@@ -48,6 +49,7 @@ public class LMSCommand {
                     sendMessage(context, "Defaults", Sets.union(lmsHandler.getDefaultConditions(), SpawnConditionLoader.INSTANCE.getHolder().getDefaultConditions()));
                     sendMessage(context, "Denies", Sets.union(lmsHandler.getDenyConditions(), SpawnConditionLoader.INSTANCE.getHolder().getDenyConditions()));
                     sendMessage(context, "Forces", Sets.union(lmsHandler.getForceConditions(), SpawnConditionLoader.INSTANCE.getHolder().getForceConditions()));
+                    context.getSource().sendFeedback(new StringTextComponent("SpawnCount: " + lmsHandler.getSpawnerControl().getSpawnCount()), true);
                     return Command.SINGLE_SUCCESS;
                 }));
         }
@@ -76,6 +78,17 @@ public class LMSCommand {
                 }));
             }
             literal.then(remove);
+        }
+        {
+            // Spawner
+            LiteralArgumentBuilder<CommandSource> spawner = Commands.literal("spawner").requires(s -> s.hasPermissionLevel(Config.getInstance().getPermission()));
+            spawner.then(Commands.literal("spawnCount").then(Commands.argument("spawnCount", IntegerArgumentType.integer(0)).executes(context -> {
+                Integer spawnCount = context.getArgument("spawnCount", Integer.class);
+                getAllLmsHandlers(context).forEach(l -> l.getSpawnerControl().setSpawnCount(spawnCount));
+                context.getSource().sendFeedback(new StringTextComponent("Changed spawnCount to " + spawnCount), true);
+                return Command.SINGLE_SUCCESS;
+            })));
+            literal.then(spawner);
         }
         dispatcher.register(literal);
     }
