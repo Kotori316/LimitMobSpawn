@@ -107,9 +107,9 @@ test {
     useJUnitPlatform()
     int cpus = Runtime.getRuntime().availableProcessors()
     printf("CPU: %d, Memory: %fMB%n", cpus, Runtime.getRuntime().totalMemory() / Math.pow(2, 20))
-    setMaxParallelForks(cpus > 1 ? cpus - 1 : 1)
+    // setMaxParallelForks(cpus > 1 ? cpus - 1 : 1)
     testLogging {
-        events "PASSED", "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
+        events "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
         // exceptionFormat 'full' // No need because we can get test report html.
     }
 }
