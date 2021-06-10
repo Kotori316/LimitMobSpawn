@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.capability.Caps;
 import com.kotori316.limiter.capability.LMSHandler;
 import com.kotori316.limiter.capability.SpawnerControl;
@@ -29,8 +28,6 @@ public abstract class SpawnerMixin {
     @SuppressWarnings("SpellCheckingInspection")
     @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/spawner/AbstractSpawner;spawnCount:I"), allow = 1)
     public void spawnCountHead(CallbackInfo ci) {
-        LimitMobSpawn.LOGGER.info("spawnCountHead v {} {}, d {} {}, c {} {}",
-            spawnCount, maxNearbyEntities, lmsDefaultSpawnCount, lmsDefaultMaxNearbyEntities, lmsCacheSpawnCount, lmsCacheMaxNearbyEntities);
         if (!shadow$getWorld().isRemote() && spawnCount == 4) {
             // 4 is the default spawn count. If not 4, the spawner is modifies by others.
             lmsDefaultSpawnCount = spawnCount;
@@ -50,8 +47,6 @@ public abstract class SpawnerMixin {
     @SuppressWarnings("SpellCheckingInspection")
     @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/spawner/AbstractSpawner;spawnCount:I", shift = At.Shift.AFTER))
     public void spawnCountTail(CallbackInfo ci) {
-        LimitMobSpawn.LOGGER.info("spawnCountTail v {} {}, d {} {}, c {} {}",
-            spawnCount, maxNearbyEntities, lmsDefaultSpawnCount, lmsDefaultMaxNearbyEntities, lmsCacheSpawnCount, lmsCacheMaxNearbyEntities);
         if (!shadow$getWorld().isRemote() && lmsDefaultSpawnCount == 4) {
             spawnCount = lmsDefaultSpawnCount;
             lmsDefaultSpawnCount = 0;
@@ -61,8 +56,6 @@ public abstract class SpawnerMixin {
     @SuppressWarnings("SpellCheckingInspection")
     @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/spawner/AbstractSpawner;maxNearbyEntities:I"), allow = 1)
     public void maxNearbyEntitiesHead(CallbackInfo ci) {
-        LimitMobSpawn.LOGGER.info("maxNearbyEntitiesHead v {} {}, d {} {}, c {} {}",
-            spawnCount, maxNearbyEntities, lmsDefaultSpawnCount, lmsDefaultMaxNearbyEntities, lmsCacheSpawnCount, lmsCacheMaxNearbyEntities);
         if (!shadow$getWorld().isRemote() && maxNearbyEntities == 6) {
             lmsDefaultMaxNearbyEntities = maxNearbyEntities;
 
@@ -82,8 +75,6 @@ public abstract class SpawnerMixin {
     @SuppressWarnings("SpellCheckingInspection")
     @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/spawner/AbstractSpawner;maxNearbyEntities:I", shift = At.Shift.AFTER))
     public void maxNearbyEntitiesTail(CallbackInfo ci) {
-        LimitMobSpawn.LOGGER.info("maxNearbyEntitiesTail v {} {}, d {} {}, c {} {}",
-            spawnCount, maxNearbyEntities, lmsDefaultSpawnCount, lmsDefaultMaxNearbyEntities, lmsCacheSpawnCount, lmsCacheMaxNearbyEntities);
         if (!shadow$getWorld().isRemote() && lmsDefaultMaxNearbyEntities == 6) {
             maxNearbyEntities = lmsDefaultMaxNearbyEntities;
             lmsDefaultMaxNearbyEntities = 0;
