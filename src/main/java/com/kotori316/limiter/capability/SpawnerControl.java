@@ -1,11 +1,15 @@
 package com.kotori316.limiter.capability;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class SpawnerControl implements INBTSerializable<CompoundNBT> {
+    public static final String KEY_SPAWN_COUNT = "spawnCount";
     private int spawnCount = 0;
 
     public SpawnerControl() {
@@ -22,13 +26,13 @@ public class SpawnerControl implements INBTSerializable<CompoundNBT> {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putInt("spawnCount", spawnCount);
+        nbt.putInt(KEY_SPAWN_COUNT, spawnCount);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        setSpawnCount(nbt.getInt("spawnCount"));
+        setSpawnCount(nbt.getInt(KEY_SPAWN_COUNT));
     }
 
     @Override
@@ -36,5 +40,12 @@ public class SpawnerControl implements INBTSerializable<CompoundNBT> {
         return "SpawnerControl{" +
             "spawnCount=" + spawnCount +
             '}';
+    }
+
+    public List<StringTextComponent> getMessages() {
+        return Arrays.asList(
+            new StringTextComponent("SpawnerControl"),
+            new StringTextComponent("SpawnCount: " + getSpawnCount())
+        );
     }
 }
