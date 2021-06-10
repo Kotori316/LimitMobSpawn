@@ -9,6 +9,14 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v16.8
+
+* Added function to change spawn count of Monster Spawner.
+  * Default - OFF
+  * Change by command only, `limit-mob-spawn spawner spawnCount <count>`
+  * Execute `limit-mob-spawn spawner query` to get current configuration.
+  * No way to change this from data packs now.
+
 ## v16.7
 
 * Added new rules of Biome and Biome Category.
