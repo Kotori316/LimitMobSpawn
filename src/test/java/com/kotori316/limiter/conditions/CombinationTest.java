@@ -20,6 +20,7 @@ import com.kotori316.limiter.TestSpawn;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CombinationTest extends BeforeAllTest {
@@ -184,6 +185,28 @@ class CombinationTest extends BeforeAllTest {
             new EntityClassificationLimit(EntityClassification.CREATURE));
         TestSpawn expect = new Or(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
             new EntityClassificationLimit(EntityClassification.CREATURE));
-        assertEquals(expect, new Or(list), String.format("And from %s", list));
+        assertEquals(expect, new Or(list), String.format("Or from %s", list));
+    }
+
+    @Test
+    void isDeterministic1() {
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        TestSpawn or = new Or(list);
+        TestSpawn and = new And(list);
+        assertAll(
+            () -> assertTrue(or.isDeterministic()),
+            () -> assertTrue(and.isDeterministic())
+        );
+    }
+
+    @Test
+    void isDeterministic2() {
+        List<TestSpawn> list = Arrays.asList(new RandomLimit(0.5d), new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        TestSpawn or = new Or(list);
+        TestSpawn and = new And(list);
+        assertAll(
+            () -> assertFalse(or.isDeterministic()),
+            () -> assertFalse(and.isDeterministic())
+        );
     }
 }

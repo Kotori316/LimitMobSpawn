@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.kotori316.limiter.BeforeAllTest;
 import com.kotori316.limiter.SpawnConditionLoader;
+import com.kotori316.limiter.TestSpawn;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,7 +66,7 @@ class PositionLimitTest extends BeforeAllTest {
         object.addProperty("maxY", 95);
         object.addProperty("minZ", 12);
         object.addProperty("maxZ", 45);
-        PositionLimit limit = PositionLimit.SERIALIZER.from(new Dynamic<>(JsonOps.INSTANCE, object));
+        TestSpawn limit = PositionLimit.SERIALIZER.from(new Dynamic<>(JsonOps.INSTANCE, object));
         PositionLimit ans = new PositionLimit(45, 123, 54, 95, 12, 45);
         assertEquals(ans, limit);
     }
@@ -79,7 +80,7 @@ class PositionLimitTest extends BeforeAllTest {
         nbt.putInt("maxY", 95);
         nbt.putInt("minZ", 8);
         nbt.putInt("maxZ", 45);
-        PositionLimit limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
+        TestSpawn limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
         PositionLimit ans = new PositionLimit(45, 123, 54, 95, 8, 45);
         assertEquals(ans, limit);
     }
@@ -91,7 +92,7 @@ class PositionLimitTest extends BeforeAllTest {
         nbt.putInt("maxX", 123);
         nbt.putInt("minZ", 8);
         nbt.putInt("maxZ", 45);
-        PositionLimit limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
+        TestSpawn limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
         PositionLimit ans = new PositionLimit(45, 123, 0, 256, 8, 45);
         assertEquals(ans, limit);
     }

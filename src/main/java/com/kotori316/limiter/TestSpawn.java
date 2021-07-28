@@ -44,6 +44,10 @@ public interface TestSpawn {
         return new Not(this);
     }
 
+    default boolean isDeterministic() {
+        return true;
+    }
+
     default JsonObject toJson() {
         JsonObject object = getSerializer().to(this, JsonOps.INSTANCE).getAsJsonObject();
         object.addProperty("type", getSerializer().getType());

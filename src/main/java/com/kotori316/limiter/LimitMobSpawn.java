@@ -63,11 +63,14 @@ public class LimitMobSpawn {
                                                  EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
         LazyOptional<LMSHandler> maybeHandler = worldIn instanceof ICapabilityProvider ? ((ICapabilityProvider) worldIn).getCapability(Caps.getLmsCapability()) : LazyOptional.empty();
 
-        boolean matchForce = LMSHandler.getCombinedForce(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
+        boolean matchForce = LMSHandler.getCombinedForce(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).filter(TestSpawn::isDeterministic)
+            .anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchForce) return SpawnCheckResult.FORCE;
-        boolean matchDefault = LMSHandler.getCombinedDefault(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
+        boolean matchDefault = LMSHandler.getCombinedDefault(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).filter(TestSpawn::isDeterministic)
+            .anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchDefault) return SpawnCheckResult.DEFAULT;
-        boolean matchDeny = LMSHandler.getCombinedDeny(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
+        boolean matchDeny = LMSHandler.getCombinedDeny(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).filter(TestSpawn::isDeterministic)
+            .anyMatch(spawn -> spawn.test(worldIn, pos, entityTypeIn, reason));
         if (matchDeny) return SpawnCheckResult.DENY;
         else return SpawnCheckResult.DEFAULT;
     }

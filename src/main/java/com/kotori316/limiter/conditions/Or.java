@@ -30,17 +30,20 @@ public class Or implements TestSpawn {
     private static final Pattern KEY_PATTERN = Pattern.compile("t(\\d+)");
     private final TestSpawn t1;
     private final List<TestSpawn> ts;
+    private final boolean deterministic;
 
     public Or(TestSpawn t1, TestSpawn... ts) {
         this.t1 = t1;
         this.ts = Arrays.asList(ts);
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}, {}", t1, ts);
+        deterministic = t1.isDeterministic() && Arrays.stream(ts).allMatch(TestSpawn::isDeterministic);
     }
 
     public Or(List<TestSpawn> list) {
         this.t1 = list.get(0);
         this.ts = list.subList(1, list.size());
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", list);
+        deterministic = t1.isDeterministic() && ts.stream().allMatch(TestSpawn::isDeterministic);
     }
 
     @Override
@@ -91,6 +94,11 @@ public class Or implements TestSpawn {
         }
         builder.append('}');
         return builder.toString();
+    }
+
+    @Override
+    public boolean isDeterministic() {
+        return deterministic;
     }
 
     private static class Serializer extends TestSpawn.Serializer<Or> {
