@@ -75,9 +75,9 @@ public class Not implements TestSpawn {
         }
 
         @Override
-        public <T> Not from(Dynamic<T> dynamic) {
+        public <T> TestSpawn from(Dynamic<T> dynamic) {
             TestSpawn t1 = SpawnConditionLoader.INSTANCE.deserialize(dynamic.get("value").orElseEmptyMap());
-            return new Not(t1);
+            return t1.not();
         }
 
         @Override
