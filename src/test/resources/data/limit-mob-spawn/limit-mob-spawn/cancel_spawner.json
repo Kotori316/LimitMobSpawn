@@ -1,0 +1,9 @@
+{
+  "_comment": "Cancel all spawns from Monster Spawner",
+  "deny": [
+    {
+      "spawn_reason": "spawner",
+      "type": "spawn_reason"
+    }
+  ]
+}

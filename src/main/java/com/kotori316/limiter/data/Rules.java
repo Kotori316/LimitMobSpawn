@@ -161,6 +161,13 @@ class Rules {
         return object;
     }
 
+    JsonObject cancel_spawner() {
+        JsonObject object = new JsonObject();
+        object.addProperty("_comment", "Cancel all spawns from Monster Spawner");
+        object.add("deny", as(new SpawnReasonLimit(SpawnReason.SPAWNER)));
+        return object;
+    }
+
     JsonObject mining_dim() {
         JsonObject object = new JsonObject();
         {
