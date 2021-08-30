@@ -31,7 +31,7 @@ class DimensionLimitTest extends BeforeAllTest {
 
     @Test
     void dummy() {
-        assertTrue(registryKeys().count() > 0);
+        assertTrue(registryKeys().findAny().isPresent());
     }
 
     @ParameterizedTest

@@ -28,7 +28,7 @@ class NotTest extends BeforeAllTest {
 
     @Test
     void dummy() {
-        assertTrue(opsStream().count() > 0);
+        assertTrue(opsStream().findAny().isPresent());
     }
 
     @ParameterizedTest

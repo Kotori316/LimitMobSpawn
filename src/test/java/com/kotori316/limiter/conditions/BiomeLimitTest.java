@@ -28,7 +28,7 @@ class BiomeLimitTest extends BeforeAllTest {
 
     @Test
     void dummy() {
-        assertTrue(registeredBiomes().count() > 0);
+        assertTrue(registeredBiomes().findAny().isPresent());
     }
 
     @ParameterizedTest

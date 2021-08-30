@@ -42,6 +42,7 @@ import com.kotori316.limiter.conditions.EntityLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
+import com.kotori316.limiter.conditions.RandomLimit;
 import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -319,17 +320,43 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
                 loader.apply(map, IResourceManager.Instance.INSTANCE, EmptyProfiler.INSTANCE);
 
                 assertEquals(Sets.newHashSet(
-                    Creator.entityAtDimension(World.THE_NETHER, EntityType.PIGLIN),
-                    new EntityClassificationLimit(EntityClassification.CREATURE).or(new EntityClassificationLimit(EntityClassification.MISC)),
-                    Creator.posAtDimension(World.THE_END, -500, 500, -500, 500)),
+                        Creator.entityAtDimension(World.THE_NETHER, EntityType.PIGLIN),
+                        new EntityClassificationLimit(EntityClassification.CREATURE).or(new EntityClassificationLimit(EntityClassification.MISC)),
+                        Creator.posAtDimension(World.THE_END, -500, 500, -500, 500)),
                     loader.getHolder().getDefaultConditions());
                 assertEquals(Sets.newHashSet(
-                    new DimensionLimit(World.OVERWORLD),
-                    new DimensionLimit(World.THE_NETHER),
-                    new DimensionLimit(World.THE_END),
-                    new EntityLimit(EntityType.BAT)),
+                        new DimensionLimit(World.OVERWORLD),
+                        new DimensionLimit(World.THE_NETHER),
+                        new DimensionLimit(World.THE_END),
+                        new EntityLimit(EntityType.BAT)),
                     loader.getHolder().getDenyConditions());
                 assertTrue(loader.getHolder().getForceConditions().isEmpty());
+            } catch (IOException e) {
+                fail(e);
+            }
+        }
+
+        @Test
+        @DisplayName("Random Limit")
+        void loadRandomLimit() {
+            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
+            Gson gson = new Gson();
+            try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/cancel_70.json");
+                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
+                JsonObject object = gson.fromJson(reader, JsonObject.class);
+                Map<ResourceLocation, JsonElement> map = new HashMap<>();
+                map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "cancel_70"), object);
+                loader.apply(map, IResourceManager.Instance.INSTANCE, EmptyProfiler.INSTANCE);
+
+                assertEquals(Collections.singleton(
+                        new And(
+                            new RandomLimit(0.7),
+                            new Or(new SpawnReasonLimit(SpawnReason.NATURAL), new SpawnReasonLimit(SpawnReason.REINFORCEMENT))
+                        )
+                    ),
+                    loader.getHolder().getDenyConditions());
+                assertTrue(loader.getHolder().getForceConditions().isEmpty());
+                assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
             } catch (IOException e) {
                 fail(e);
             }
