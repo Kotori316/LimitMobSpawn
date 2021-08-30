@@ -30,6 +30,7 @@ import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
+import com.kotori316.limiter.conditions.RandomLimit;
 import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -532,6 +533,29 @@ class TestSpawnParserTest extends BeforeAllTest {
         void suggestType2(String input) throws ExecutionException, InterruptedException {
             Set<String> suggestions = getSuggestions(input);
             assertEquals(Collections.singleton("]"), suggestions);
+        }
+    }
+
+    static class RandomParse extends BeforeAllTest {
+        @Test
+        void parse() throws CommandSyntaxException {
+            String input = "random[p=0.8]";
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn expected = new RandomLimit(0.8);
+            assertEquals(expected, parser.createInstance());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"0.0", "1.0", "0.25", "0.5", "0.11"})
+        void parse2(String p) throws CommandSyntaxException {
+            String input = String.format("random[p=%s]", p);
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            assertDoesNotThrow(parser::createInstance);
+            TestSpawn expected = new RandomLimit(Double.parseDouble(p));
+            assertEquals(expected, parser.createInstance());
         }
     }
 }

@@ -22,11 +22,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 import com.kotori316.limiter.conditions.All;
+import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityClassificationLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
 import com.kotori316.limiter.conditions.Or;
+import com.kotori316.limiter.conditions.RandomLimit;
 import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 @SuppressWarnings("unused")
@@ -165,6 +167,16 @@ class Rules {
         JsonObject object = new JsonObject();
         object.addProperty("_comment", "Cancel all spawns from Monster Spawner");
         object.add("deny", as(new SpawnReasonLimit(SpawnReason.SPAWNER)));
+        return object;
+    }
+
+    JsonObject cancel_70() {
+        JsonObject object = new JsonObject();
+        object.addProperty("_comment", "Cancel 70% of spawning.");
+        object.add("deny", as(new And(
+            new RandomLimit(0.7),
+            new Or(new SpawnReasonLimit(SpawnReason.NATURAL), new SpawnReasonLimit(SpawnReason.REINFORCEMENT))
+        )));
         return object;
     }
 

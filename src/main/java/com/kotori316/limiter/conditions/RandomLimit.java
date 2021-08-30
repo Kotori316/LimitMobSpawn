@@ -3,6 +3,7 @@ package com.kotori316.limiter.conditions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -42,7 +43,25 @@ public class RandomLimit implements TestSpawn {
 
     @Override
     public String contentShort() {
+        return "random " + this.p;
+    }
+
+    @Override
+    public String toString() {
         return "Random{p=" + this.p + "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RandomLimit that = (RandomLimit) o;
+        return Double.compare(that.p, this.p) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.p);
     }
 
     @Override
@@ -64,7 +83,9 @@ public class RandomLimit implements TestSpawn {
 
         @Override
         public <T> RandomLimit from(Dynamic<T> dynamic) {
-            double p = dynamic.get("p").asDouble(1);
+            double p = dynamic.get("p").asNumber().map(Number::doubleValue)
+                .result()
+                .orElseGet(() -> Double.parseDouble(dynamic.get("p").asString("1")));
             return new RandomLimit(p);
         }
 
