@@ -1,12 +1,11 @@
 package com.kotori316.limiter.capability;
 
-import java.util.logging.Level;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
