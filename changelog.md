@@ -9,6 +9,14 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v17.0
+
+* Update for 1.17.1
+* **Changed mod id to `limitmobspawn`**. (before: `limit-mob-spawn`)
+  * Due to limitation of module loading introduced with new Forge.
+* Improved command suggestion. ("=" will be inserted.)
+* Removed old format compatibility of "And" and "Or".
+
 ## v16.8
 
 * Added function to change spawn count of Monster Spawner.
@@ -72,7 +80,7 @@
 
 * Serialization was improved to use Dynamic, which can accept both Json and NBT.
 * Serialization of And/Or condition was changed to use array, instead of map of "t1", "t2"...
-  * The map type object can still be used.
+  * ~~The map type object can still be used.~~ Removed in v17.0
 * Fixed an issue where deserialization fails in some cases.
 * Added "All" and "Spawn Reason" limitations.
 * Reduced spams of log.
