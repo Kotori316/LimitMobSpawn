@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import javax.annotation.Nullable;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -109,8 +110,13 @@ public class EntityLimit implements TestSpawn {
 
         @Override
         public Set<String> possibleValues(String property, boolean suggesting, SharedSuggestionProvider provider) {
+            return suggestions(property, provider).stream().map(ResourceLocation::toString).collect(Collectors.toSet());
+        }
+
+        @Override
+        public Set<ResourceLocation> suggestions(String property, @Nullable SharedSuggestionProvider provider) {
             if (property.equals("entity")) {
-                return ForgeRegistries.ENTITIES.getKeys().stream().map(ResourceLocation::toString).collect(Collectors.toSet());
+                return ForgeRegistries.ENTITIES.getKeys();
             }
             return Collections.emptySet();
         }

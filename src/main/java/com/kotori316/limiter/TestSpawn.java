@@ -16,6 +16,7 @@ import com.mojang.serialization.JsonOps;
 import javax.annotation.Nullable;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.BlockGetter;
@@ -76,6 +77,10 @@ public interface TestSpawn {
         public abstract Set<String> propertyKeys();
 
         public abstract Set<String> possibleValues(String property, boolean suggesting, @Nullable SharedSuggestionProvider provider);
+
+        public Set<ResourceLocation> suggestions(String property, @Nullable SharedSuggestionProvider provider) {
+            return Collections.emptySet();
+        }
 
         protected <T> Map<T, T> writeMap(DynamicOps<T> ops, Stream<TestSpawn> tsStream) {
             Map<T, T> map = new HashMap<>();

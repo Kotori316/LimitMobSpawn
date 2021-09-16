@@ -59,12 +59,19 @@ public record DimensionLimit(ResourceKey<Level> type) implements TestSpawn {
 
         @Override
         public Set<String> possibleValues(String property, boolean suggesting, @Nullable SharedSuggestionProvider provider) {
+            return suggestions(property, provider)
+                .stream()
+                .map(ResourceLocation::toString)
+                .collect(Collectors.toSet());
+        }
+
+        @Override
+        public Set<ResourceLocation> suggestions(String property, @Nullable SharedSuggestionProvider provider) {
             if (provider == null || !property.equals(saveKey()))
                 return Collections.emptySet();
             return provider.levels()
                 .stream()
                 .map(ResourceKey::location)
-                .map(ResourceLocation::toString)
                 .collect(Collectors.toSet());
         }
 

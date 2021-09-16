@@ -41,7 +41,6 @@ public record PositionLimit(int minX, int maxX, int minY, int maxY, int minZ, in
             Math.min(pos1.getZ(), pos2.getZ()),  // minZ
             Math.max(pos1.getZ(), pos2.getZ())   // maxZ
         );
-        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with ({}),({})", pos1, pos2);
     }
 
     @Override

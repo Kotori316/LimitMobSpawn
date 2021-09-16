@@ -96,9 +96,14 @@ class ParseOneCondition implements ConditionParser {
     }
 
     private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String ruleName, String key, SharedSuggestionProvider provider) {
-        return builder -> SharedSuggestionProvider.suggest(
-            SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(key, true, provider),
-            builder);
+        var serializer = SpawnConditionLoader.INSTANCE.getSerializer(ruleName);
+        var locationSuggestion = serializer.suggestions(key, provider);
+        if (!locationSuggestion.isEmpty()) {
+            // The possible value of the rule is Resource Location. Give better suggestion.
+            return builder -> SharedSuggestionProvider.suggestResource(locationSuggestion, builder);
+        } else {
+            return builder -> SharedSuggestionProvider.suggest(serializer.possibleValues(key, true, provider), builder);
+        }
     }
 
 }
