@@ -87,10 +87,9 @@ public class DimensionLimit implements TestSpawn {
         public Set<String> possibleValues(String property, boolean suggesting, @Nullable SharedSuggestionProvider provider) {
             if (provider == null || !property.equals(saveKey()))
                 return Collections.emptySet();
-            return provider.registryAccess()
-                .registryOrThrow(Registry.DIMENSION_REGISTRY)
-                .keySet()
+            return provider.levels()
                 .stream()
+                .map(ResourceKey::location)
                 .map(ResourceLocation::toString)
                 .collect(Collectors.toSet());
         }
