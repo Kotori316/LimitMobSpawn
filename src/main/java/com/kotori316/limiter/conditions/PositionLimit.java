@@ -92,8 +92,8 @@ public class PositionLimit implements TestSpawn {
             Map<String, Dynamic<T>> map = dynamic.asMap(d -> d.asString(""), Function.identity());
             if (map.containsKey("pos1") && map.containsKey("pos2")) {
                 return BlockPos.CODEC.decode(map.get("pos1")).flatMap(pos1 ->
-                    BlockPos.CODEC.decode(map.get("pos2")).map(pos2 ->
-                        new PositionLimit(pos1.getFirst(), pos2.getFirst())))
+                        BlockPos.CODEC.decode(map.get("pos2")).map(pos2 ->
+                            new PositionLimit(pos1.getFirst(), pos2.getFirst())))
                     .getOrThrow(true, s -> LimitMobSpawn.LOGGER.error("Erred when loading PositionLimit, {}", s));
             } else {
                 // Map of minX, maxX, etc.

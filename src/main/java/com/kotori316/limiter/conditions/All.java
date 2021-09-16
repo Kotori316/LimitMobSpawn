@@ -57,6 +57,7 @@ public class All implements TestSpawn {
         public <T> T to(TestSpawn a, DynamicOps<T> ops) {
             return ops.emptyMap();
         }
+
         @Override
         public Set<String> propertyKeys() {
             return Collections.emptySet();

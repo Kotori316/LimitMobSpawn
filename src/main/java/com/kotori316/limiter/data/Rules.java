@@ -25,11 +25,11 @@ import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
-import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.MobCategoryLimit;
+import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.RandomLimit;
-import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 
 @SuppressWarnings("unused")
 class Rules {
