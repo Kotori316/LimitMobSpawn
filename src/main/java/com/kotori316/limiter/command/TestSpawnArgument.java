@@ -90,7 +90,10 @@ class TestSpawnParser {
 
     static Set<String> getPropertyKeysRest(String ruleName, JsonObject object) {
         return SpawnConditionLoader.INSTANCE.getSerializer(ruleName).propertyKeys()
-            .stream().filter(aKey -> !GsonHelper.isValidNode(object, aKey)).collect(Collectors.toSet());
+            .stream()
+            .filter(aKey -> !GsonHelper.isValidNode(object, aKey))
+            .map(s -> s + "=")
+            .collect(Collectors.toSet());
     }
 
     static Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestPropertyKeys(String ruleName, JsonObject object) {

@@ -138,7 +138,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         @Test
         void suggestSpawnType1() throws ExecutionException, InterruptedException {
             String input = "spawn_reason[";
-            assertEquals(Collections.singleton("spawn_reason"), getSuggestions(input));
+            assertEquals(Collections.singleton("spawn_reason="), getSuggestions(input));
         }
 
         @Test
@@ -191,13 +191,13 @@ class TestSpawnParserTest extends BeforeAllTest {
         @Test
         void suggestPositionKeys1() throws ExecutionException, InterruptedException {
             String input = "position[";
-            assertEquals(Sets.newHashSet("minX", "maxX", "minY", "maxY", "minZ", "maxZ"), getSuggestions(input));
+            assertEquals(Sets.newHashSet("minX=", "maxX=", "minY=", "maxY=", "minZ=", "maxZ="), getSuggestions(input));
         }
 
         @ParameterizedTest
         @ValueSource(strings = {"position[minX=1,", "position[minX=1, "})
         void suggestPositionRestKeys(String input) throws ExecutionException, InterruptedException {
-            assertEquals(Sets.newHashSet("maxX", "minY", "maxY", "minZ", "maxZ"), getSuggestions(input));
+            assertEquals(Sets.newHashSet("maxX=", "minY=", "maxY=", "minZ=", "maxZ="), getSuggestions(input));
         }
 
         @ParameterizedTest
@@ -215,7 +215,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         @ParameterizedTest
         @ValueSource(strings = {"position[minX=1,minY=3,", "position[minX=1,minY=3, ", "position[minX=1, minY=4,", "position[minX=1, minY=4, "})
         void suggestPositionRestKey2(String input) throws ExecutionException, InterruptedException {
-            assertEquals(Sets.newHashSet("maxX", "maxY", "minZ", "maxZ"), getSuggestions(input));
+            assertEquals(Sets.newHashSet("maxX=", "maxY=", "minZ=", "maxZ="), getSuggestions(input));
         }
 
         @Test
@@ -247,7 +247,7 @@ class TestSpawnParserTest extends BeforeAllTest {
         @Test
         void getDimensionSuggestion() throws ExecutionException, InterruptedException {
             String input = "dimension[";
-            assertEquals(Collections.singleton("dim"), getSuggestions(input));
+            assertEquals(Collections.singleton("dim="), getSuggestions(input));
         }
     }
 
