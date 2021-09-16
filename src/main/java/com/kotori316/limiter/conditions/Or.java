@@ -2,12 +2,9 @@ package com.kotori316.limiter.conditions;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
@@ -19,7 +16,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.BlockGetter;
 
 import com.kotori316.limiter.LimitMobSpawn;
-import com.kotori316.limiter.SpawnConditionLoader;
 import com.kotori316.limiter.TestSpawn;
 
 public class Or implements TestSpawn {
@@ -106,19 +102,13 @@ public class Or implements TestSpawn {
 
         @Override
         public <T> Or from(Dynamic<T> dynamic) {
-            return dynamic.get("values").map(d -> d.asList(SpawnConditionLoader.INSTANCE::deserialize)).result()
-                .filter(Predicate.not(List::isEmpty))
-                .map(Or::new)
-                .orElseThrow(() -> new IllegalStateException("Or object has no child conditions. " + dynamic.getValue()));
+            return getCombinationFrom(dynamic, Or::new);
         }
 
         @Override
         public <T> T to(TestSpawn t, DynamicOps<T> ops) {
             Or or = (Or) t;
-            Map<T, T> map = new HashMap<>();
-            map.put(ops.createString("values"),
-                ops.createList(Stream.concat(Stream.of(or.t1), or.ts.stream()).map(ts -> ts.to(ops))));
-            return ops.createMap(map);
+            return ops.createMap(writeMap(ops, Stream.concat(Stream.of(or.t1), or.ts.stream())));
         }
 
         @Override

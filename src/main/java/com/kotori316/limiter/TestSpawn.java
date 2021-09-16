@@ -1,7 +1,13 @@
 package com.kotori316.limiter;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
@@ -70,6 +76,19 @@ public interface TestSpawn {
         public abstract Set<String> propertyKeys();
 
         public abstract Set<String> possibleValues(String property, boolean suggesting, @Nullable SharedSuggestionProvider provider);
+
+        protected <T> Map<T, T> writeMap(DynamicOps<T> ops, Stream<TestSpawn> tsStream) {
+            Map<T, T> map = new HashMap<>();
+            map.put(ops.createString("values"), ops.createList(tsStream.map(ts -> ts.to(ops))));
+            return map;
+        }
+
+        protected <T, S> S getCombinationFrom(Dynamic<T> dynamic, Function<List<TestSpawn>, S> listFunction) {
+            return dynamic.get("values").map(d -> d.asList(SpawnConditionLoader.INSTANCE::deserialize)).result()
+                .filter(Predicate.not(List::isEmpty))
+                .map(listFunction)
+                .orElseThrow(() -> new IllegalStateException(getType() + " object has no child conditions. " + dynamic.getValue()));
+        }
     }
 
     enum Empty implements TestSpawn {
