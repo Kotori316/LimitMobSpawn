@@ -27,7 +27,7 @@ class MobSpawnTypeLimitTest extends BeforeAllTest {
         assertAll(
             Arrays.stream(MobSpawnType.values())
                 .map(r -> Pair.of(r, new MobSpawnTypeLimit(r)))
-                .map(p -> () -> assertEquals(p.getLeft(), p.getRight().getReason(), p.toString()))
+                .map(p -> () -> assertEquals(p.getLeft(), p.getRight().reason(), p.toString()))
         );
     }
 

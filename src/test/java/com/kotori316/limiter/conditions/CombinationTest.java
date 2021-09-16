@@ -97,11 +97,6 @@ class CombinationTest extends BeforeAllTest {
     @ParameterizedTest
     @MethodSource("get2Conditions")
     void andFromObjectAndArray(TestSpawn t1, TestSpawn t2) {
-        JsonObject object1 = new JsonObject();
-        object1.addProperty("type", "and");
-        object1.add("t1", t1.toJson());
-        object1.add("t2", t2.toJson());
-
         JsonObject object2 = new JsonObject();
         object2.addProperty("type", "and");
         JsonArray array = new JsonArray();
@@ -110,20 +105,12 @@ class CombinationTest extends BeforeAllTest {
         object2.add("values", array);
 
         And and = new And(t1, t2);
-        assertAll(
-            () -> assertEquals(and, SpawnConditionLoader.INSTANCE.deserialize(object1)),
-            () -> assertEquals(and, SpawnConditionLoader.INSTANCE.deserialize(object2))
-        );
+        assertEquals(and, SpawnConditionLoader.INSTANCE.deserialize(object2));
     }
 
     @ParameterizedTest
     @MethodSource("get2Conditions")
     void orFromObjectAndArray(TestSpawn t1, TestSpawn t2) {
-        JsonObject object1 = new JsonObject();
-        object1.addProperty("type", "or");
-        object1.add("t1", t1.toJson());
-        object1.add("t2", t2.toJson());
-
         JsonObject object2 = new JsonObject();
         object2.addProperty("type", "or");
         JsonArray array = new JsonArray();
@@ -132,10 +119,7 @@ class CombinationTest extends BeforeAllTest {
         object2.add("values", array);
 
         Or or = new Or(t1, t2);
-        assertAll(
-            () -> assertEquals(or, SpawnConditionLoader.INSTANCE.deserialize(object1)),
-            () -> assertEquals(or, SpawnConditionLoader.INSTANCE.deserialize(object2))
-        );
+        assertEquals(or, SpawnConditionLoader.INSTANCE.deserialize(object2));
     }
 
     @Test

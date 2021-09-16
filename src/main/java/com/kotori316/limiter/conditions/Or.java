@@ -2,15 +2,12 @@ package com.kotori316.limiter.conditions;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
@@ -27,7 +24,6 @@ import com.kotori316.limiter.TestSpawn;
 
 public class Or implements TestSpawn {
     public static final TestSpawn.Serializer<Or> SERIALIZER = new Serializer();
-    private static final Pattern KEY_PATTERN = Pattern.compile("t(\\d+)");
     private final TestSpawn t1;
     private final List<TestSpawn> ts;
     private final boolean deterministic;
@@ -110,16 +106,10 @@ public class Or implements TestSpawn {
 
         @Override
         public <T> Or from(Dynamic<T> dynamic) {
-            List<TestSpawn> list = dynamic.get("values").map(d -> d.asList(SpawnConditionLoader.INSTANCE::deserialize)).result()
-                .orElseGet(() ->
-                    dynamic.asMap(d -> d.asString(""), Function.identity()).entrySet().stream()
-                        .filter(e -> KEY_PATTERN.matcher(e.getKey()).matches())
-                        .sorted(Comparator.comparingInt(e -> Integer.parseInt(e.getKey().substring(1))))
-                        .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue()))
-                        .collect(Collectors.toList()));
-            if (list.size() < 1)
-                throw new IllegalStateException("And object has no child conditions. " + dynamic.getValue());
-            return new Or(list.get(0), list.subList(1, list.size()).toArray(new TestSpawn[0]));
+            return dynamic.get("values").map(d -> d.asList(SpawnConditionLoader.INSTANCE::deserialize)).result()
+                .filter(Predicate.not(List::isEmpty))
+                .map(Or::new)
+                .orElseThrow(() -> new IllegalStateException("Or object has no child conditions. " + dynamic.getValue()));
         }
 
         @Override

@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -87,7 +88,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         @Test
         void outNormal() {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
-            TestSpawn.Serializer<?> serializer = new TestSpawn.Serializer<TestSpawn>() {
+            TestSpawn.Serializer<?> serializer = new TestSpawn.Serializer<>() {
                 @Override
                 public String getType() {
                     return "newType";
@@ -265,101 +266,128 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             return array;
         }
 
+    }
+
+    static class FromJsonFile extends BeforeAllTest {
+
+        /**
+         * @param name resource name without extension.
+         */
+        SpawnConditionLoader loadFile(String name) {
+            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
+            Gson gson = new Gson();
+            try (InputStream stream = getClass().getResourceAsStream("/data/%s/%s/%s.json".formatted(LimitMobSpawn.MOD_ID, LimitMobSpawn.MOD_ID, name));
+                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream, "Stream of %s is NULL!".formatted(name)))) {
+                JsonObject object = gson.fromJson(reader, JsonObject.class);
+                Map<ResourceLocation, JsonElement> map = new HashMap<>();
+                map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, name), object);
+                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
+                return loader;
+            } catch (IOException e) {
+                return fail(e);
+            }
+        }
+
         @Test
         @DisplayName("From Json, Bat")
         void loadFromFile1() {
-            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
-            Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/no_bats.json");
-                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
-                JsonObject object = gson.fromJson(reader, JsonObject.class);
-                Map<ResourceLocation, JsonElement> map = new HashMap<>();
-                map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "no_bats"), object);
-                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
+            SpawnConditionLoader loader = loadFile("no_bats");
 
-                assertEquals(Collections.singleton(new EntityLimit(EntityType.BAT).and(new MobSpawnTypeLimit(MobSpawnType.SPAWN_EGG).not())),
-                    loader.getHolder().getDenyConditions());
-                assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
-                assertTrue(loader.getHolder().getForceConditions().isEmpty());
-            } catch (IOException e) {
-                fail(e);
-            }
+            assertEquals(Collections.singleton(new EntityLimit(EntityType.BAT).and(new MobSpawnTypeLimit(MobSpawnType.SPAWN_EGG).not())),
+                loader.getHolder().getDenyConditions());
+            assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
+            assertTrue(loader.getHolder().getForceConditions().isEmpty());
         }
 
         @Test
         @DisplayName("From Json, Peaceful")
         void loadFromFile2() {
-            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
-            Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/peaceful.json");
-                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
-                JsonObject object = gson.fromJson(reader, JsonObject.class);
-                Map<ResourceLocation, JsonElement> map = new HashMap<>();
-                map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "peaceful"), object);
-                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
+            SpawnConditionLoader loader = loadFile("peaceful");
 
-                assertEquals(Collections.singleton(new MobCategoryLimit(MobCategory.MONSTER)),
-                    loader.getHolder().getDenyConditions());
-                assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
-                assertTrue(loader.getHolder().getForceConditions().isEmpty());
-            } catch (IOException e) {
-                fail(e);
-            }
+            assertEquals(Collections.singleton(new MobCategoryLimit(MobCategory.MONSTER)),
+                loader.getHolder().getDenyConditions());
+            assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
+            assertTrue(loader.getHolder().getForceConditions().isEmpty());
         }
 
         @Test
         @DisplayName("From Json, Test1")
         void loadFromFile3() {
-            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
-            Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/test1.json");
-                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
-                JsonObject object = gson.fromJson(reader, JsonObject.class);
-                Map<ResourceLocation, JsonElement> map = new HashMap<>();
-                map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "test1"), object);
-                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
+            SpawnConditionLoader loader = loadFile("test1");
 
-                assertEquals(Sets.newHashSet(
-                        Creator.entityAtDimension(Level.NETHER, EntityType.PIGLIN),
-                        new MobCategoryLimit(MobCategory.CREATURE).or(new MobCategoryLimit(MobCategory.MISC)),
-                        Creator.posAtDimension(Level.END, -500, 500, -500, 500)),
-                    loader.getHolder().getDefaultConditions());
-                assertEquals(Sets.newHashSet(
-                        new DimensionLimit(Level.OVERWORLD),
-                        new DimensionLimit(Level.NETHER),
-                        new DimensionLimit(Level.END),
-                        new EntityLimit(EntityType.BAT)),
-                    loader.getHolder().getDenyConditions());
-                assertTrue(loader.getHolder().getForceConditions().isEmpty());
-            } catch (IOException e) {
-                fail(e);
-            }
+            assertEquals(Sets.newHashSet(
+                    Creator.entityAtDimension(Level.NETHER, EntityType.PIGLIN),
+                    new MobCategoryLimit(MobCategory.CREATURE).or(new MobCategoryLimit(MobCategory.MISC)),
+                    Creator.posAtDimension(Level.END, -500, 500, -500, 500)),
+                loader.getHolder().getDefaultConditions());
+            assertEquals(Sets.newHashSet(
+                    new DimensionLimit(Level.OVERWORLD),
+                    new DimensionLimit(Level.NETHER),
+                    new DimensionLimit(Level.END),
+                    new EntityLimit(EntityType.BAT)),
+                loader.getHolder().getDenyConditions());
+            assertTrue(loader.getHolder().getForceConditions().isEmpty());
         }
 
         @Test
         @DisplayName("Random Limit")
         void loadRandomLimit() {
-            SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
-            Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/cancel_70.json");
-                 Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
-                JsonObject object = gson.fromJson(reader, JsonObject.class);
-                Map<ResourceLocation, JsonElement> map = new HashMap<>();
-                map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "cancel_70"), object);
-                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
+            SpawnConditionLoader loader = loadFile("cancel_70");
 
-                assertEquals(Collections.singleton(
-                        new And(
-                            new RandomLimit(0.7),
-                            new Or(new MobSpawnTypeLimit(MobSpawnType.NATURAL), new MobSpawnTypeLimit(MobSpawnType.REINFORCEMENT))
-                        )
-                    ),
-                    loader.getHolder().getDenyConditions());
-                assertTrue(loader.getHolder().getForceConditions().isEmpty());
-                assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
-            } catch (IOException e) {
-                fail(e);
-            }
+            assertEquals(Collections.singleton(
+                    new And(
+                        new RandomLimit(0.7),
+                        new Or(new MobSpawnTypeLimit(MobSpawnType.NATURAL), new MobSpawnTypeLimit(MobSpawnType.REINFORCEMENT))
+                    )
+                ),
+                loader.getHolder().getDenyConditions());
+            assertTrue(loader.getHolder().getForceConditions().isEmpty());
+            assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
+        }
+
+        @Test
+        @DisplayName("From Json, Enderman only")
+        void loadFromFile4() {
+            SpawnConditionLoader loader = loadFile("enderman_only");
+
+            assertEquals(
+                Collections.singleton(new EntityLimit(EntityType.ENDERMAN)),
+                loader.getHolder().getForceConditions()
+            );
+            assertEquals(
+                Collections.singleton(All.getInstance()),
+                loader.getHolder().getDenyConditions()
+            );
+            assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
+        }
+    }
+
+    static class LoadAnd extends BeforeAllTest {
+        static JsonObject makeObject(String type, JsonElement value) {
+            JsonObject condition = new JsonObject();
+            condition.addProperty("type", type);
+            condition.add("values", value);
+            return condition;
+        }
+
+        @Test
+        void contains1And() {
+            JsonArray value = new JsonArray();
+            value.add(All.getInstance().toJson());
+            JsonObject andJson = makeObject("and", value);
+
+            TestSpawn and = SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.INSTANCE, andJson));
+            assertEquals(new And(All.getInstance()), and);
+        }
+
+        @Test
+        void contains1Or() {
+            JsonArray value = new JsonArray();
+            value.add(All.getInstance().toJson());
+            JsonObject orJson = makeObject("or", value);
+
+            TestSpawn or = Or.SERIALIZER.from(new Dynamic<>(JsonOps.INSTANCE, orJson));
+            assertEquals(new Or(All.getInstance()), or);
         }
     }
 }

@@ -30,6 +30,7 @@ import com.kotori316.limiter.command.TestSpawnArgument;
 
 @Mod(LimitMobSpawn.MOD_ID)
 public class LimitMobSpawn {
+    @SuppressWarnings("SpellCheckingInspection")
     public static final String MOD_ID = "limitmobspawn";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static final Level LOG_LEVEL = Boolean.getBoolean("limit-mob-spawn") ? Level.DEBUG : Level.TRACE;

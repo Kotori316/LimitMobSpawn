@@ -22,7 +22,7 @@ class MobCategoryLimitTest extends BeforeAllTest {
         assertAll(
             Arrays.stream(MobCategory.values())
                 .map(r -> Pair.of(r, new MobCategoryLimit(r)))
-                .map(p -> () -> assertEquals(p.getLeft(), p.getRight().getClassification(), p.toString()))
+                .map(p -> () -> assertEquals(p.getLeft(), p.getRight().classification(), p.toString()))
         );
     }
 

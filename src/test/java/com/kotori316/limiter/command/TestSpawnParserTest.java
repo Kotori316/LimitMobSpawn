@@ -116,7 +116,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             MobSpawnTypeLimit limit = (MobSpawnTypeLimit) parser.createInstance();
-            assertEquals(MobSpawnType.valueOf(name.toUpperCase(Locale.ROOT)), limit.getReason());
+            assertEquals(MobSpawnType.valueOf(name.toUpperCase(Locale.ROOT)), limit.reason());
         }
 
         @ParameterizedTest
