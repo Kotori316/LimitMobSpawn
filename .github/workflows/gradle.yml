@@ -14,19 +14,20 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    container:
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.17.1
+      credentials:
+        username: kotori316
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 16
-      uses: actions/setup-java@v1
-      with:
-        java-version: 16
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Test with Gradle
-      run: ./gradlew test
-    - name: Upload failed test report
-      if: failure()
-      uses: actions/upload-artifact@v2
-      with:
-        path: build/reports/tests/*
-        name: Test-Report
+      - uses: actions/checkout@v2
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Test with Gradle
+        run: ./gradlew test
+      - name: Upload failed test report
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/reports/tests/*
+          name: Test-Report
