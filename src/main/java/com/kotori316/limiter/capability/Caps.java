@@ -32,7 +32,7 @@ public class Caps {
             new LMSCapProvider(new LMSConditionsHolder()));
     }
 
-    public static class LMSCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+    private static class LMSCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
         private final LMSHandler handler;
         private final LazyOptional<LMSHandler> optional;
 

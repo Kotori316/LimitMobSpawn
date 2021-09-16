@@ -1,7 +1,6 @@
 package com.kotori316.limiter.conditions;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,10 +20,8 @@ import net.minecraft.world.level.biome.Biome;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
-public class BiomeLimit implements TestSpawn {
+public record BiomeLimit(@Nonnull ResourceKey<Biome> biomeResourceKey) implements TestSpawn {
     public static final TestSpawn.Serializer<BiomeLimit> SERIALIZER = new BiomeSerializer();
-    @Nonnull
-    private final ResourceKey<Biome> biomeResourceKey;
 
     public BiomeLimit(@Nonnull ResourceKey<Biome> biomeResourceKey) {
         this.biomeResourceKey = biomeResourceKey;
@@ -37,8 +34,7 @@ public class BiomeLimit implements TestSpawn {
 
     @Override
     public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable MobSpawnType reason) {
-        if (worldIn instanceof LevelReader) {
-            LevelReader worldReader = (LevelReader) worldIn;
+        if (worldIn instanceof LevelReader worldReader) {
             Biome biome = worldReader.getBiome(pos);
             return test(biome);
         }
@@ -47,26 +43,6 @@ public class BiomeLimit implements TestSpawn {
 
     public boolean test(Biome biome) {
         return biomeResourceKey.location().equals(biome.getRegistryName());
-    }
-
-    @Override
-    public String toString() {
-        return "BiomeLimit{" +
-            "biome=" + biomeResourceKey +
-            '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BiomeLimit that = (BiomeLimit) o;
-        return Objects.equals(biomeResourceKey, that.biomeResourceKey);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(biomeResourceKey);
     }
 
     @Override

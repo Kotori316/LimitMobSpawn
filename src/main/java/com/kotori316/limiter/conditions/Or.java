@@ -114,7 +114,7 @@ public class Or implements TestSpawn {
                 .orElseGet(() ->
                     dynamic.asMap(d -> d.asString(""), Function.identity()).entrySet().stream()
                         .filter(e -> KEY_PATTERN.matcher(e.getKey()).matches())
-                        .sorted(Comparator.comparing(e -> Integer.parseInt(e.getKey().substring(1))))
+                        .sorted(Comparator.comparingInt(e -> Integer.parseInt(e.getKey().substring(1))))
                         .map(e -> SpawnConditionLoader.INSTANCE.deserialize(e.getValue()))
                         .collect(Collectors.toList()));
             if (list.size() < 1)

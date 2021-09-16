@@ -18,7 +18,7 @@ interface ConditionParser {
      * Parse the argument in reader and push read data into the context.
      *
      * @param typeName the name of type.
-     * @param reader   command argument. If parsing finished, the cursor should be the end of one condition.
+     * @param reader   Command argument. If parsing finished, the cursor should be the end of one condition.
      *                 If failed, the cursor should be the first.
      * @param context  the holder of data
      * @param provider {@link net.minecraft.commands.CommandSourceStack} in real environment. In test, {@code null}.

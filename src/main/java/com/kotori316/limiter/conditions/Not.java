@@ -3,7 +3,6 @@ package com.kotori316.limiter.conditions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import com.mojang.serialization.Dynamic;
@@ -18,33 +17,12 @@ import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.SpawnConditionLoader;
 import com.kotori316.limiter.TestSpawn;
 
-public class Not implements TestSpawn {
-    public static final TestSpawn.Serializer<Not> SERIALIZER = new Serializer();
-    private final TestSpawn value;
+public record Not(TestSpawn value) implements TestSpawn {
+    public static final TestSpawn.Serializer<TestSpawn> SERIALIZER = new Serializer();
 
     public Not(TestSpawn value) {
         this.value = value;
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", value);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        com.kotori316.limiter.conditions.Not not = (com.kotori316.limiter.conditions.Not) o;
-        return Objects.equals(value, not.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
-    public String toString() {
-        return "Not{" +
-            "value=" + value +
-            '}';
     }
 
     @Override
@@ -67,7 +45,7 @@ public class Not implements TestSpawn {
         return "Not{" + value.contentShort() + '}';
     }
 
-    private static class Serializer extends TestSpawn.Serializer<Not> {
+    private static class Serializer extends TestSpawn.Serializer<TestSpawn> {
 
         @Override
         public String getType() {
@@ -77,7 +55,7 @@ public class Not implements TestSpawn {
         @Override
         public <T> TestSpawn from(Dynamic<T> dynamic) {
             TestSpawn t1 = SpawnConditionLoader.INSTANCE.deserialize(dynamic.get("value").orElseEmptyMap());
-            return t1.not();
+            return t1.not(); // TestSpawn#not can return not only "Not" instance but also other instance.
         }
 
         @Override

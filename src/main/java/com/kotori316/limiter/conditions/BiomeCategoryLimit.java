@@ -13,12 +13,11 @@ import net.minecraft.world.level.biome.Biome;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
-public class BiomeCategoryLimit implements TestSpawn {
+public record BiomeCategoryLimit(Biome.BiomeCategory category) implements TestSpawn {
     public static final TestSpawn.Serializer<BiomeCategoryLimit> SERIALIZER = StringLimitSerializer.fromFunction(
         BiomeCategoryLimit::getCategory, BiomeCategoryLimit::new, Biome.BiomeCategory::getName,
         Biome.BiomeCategory::byName, "category", "category",
         Biome.BiomeCategory.values());
-    private final Biome.BiomeCategory category;
 
     public BiomeCategoryLimit(Biome.BiomeCategory category) {
         this.category = category;
@@ -32,26 +31,6 @@ public class BiomeCategoryLimit implements TestSpawn {
             return category == biome.getBiomeCategory();
         }
         return false;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BiomeCategoryLimit that = (BiomeCategoryLimit) o;
-        return category == that.category;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(category);
-    }
-
-    @Override
-    public String toString() {
-        return "BiomeCategoryLimit{" +
-            "category=" + category +
-            '}';
     }
 
     @Override

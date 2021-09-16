@@ -85,7 +85,7 @@ class ParseOneCondition implements ConditionParser {
                     // Maybe int input and int is empty, then we expect numbers, but suggest nothing.
                     suggestionSetter.accept(SuggestionsBuilder::buildFuture);
                 } else {
-                    // User needs add more property. We expect ','
+                    // User needs to add more property. We expect ','
                     suggestionSetter.accept(TestSpawnParser::suggestComma);
                 }
             }

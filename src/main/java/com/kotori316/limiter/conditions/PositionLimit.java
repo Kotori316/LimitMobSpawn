@@ -3,7 +3,6 @@ package com.kotori316.limiter.conditions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -20,9 +19,8 @@ import net.minecraft.world.level.BlockGetter;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
-public class PositionLimit implements TestSpawn {
+public record PositionLimit(int minX, int maxX, int minY, int maxY, int minZ, int maxZ) implements TestSpawn {
     public static final TestSpawn.Serializer<PositionLimit> SERIALIZER = new Serializer();
-    private final int minX, maxX, minY, maxY, minZ, maxZ;
 
     public PositionLimit(int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
         this.minX = minX;
@@ -35,12 +33,14 @@ public class PositionLimit implements TestSpawn {
     }
 
     public PositionLimit(BlockPos pos1, BlockPos pos2) {
-        minX = Math.min(pos1.getX(), pos2.getX());
-        maxX = Math.max(pos1.getX(), pos2.getX());
-        minY = Math.min(pos1.getY(), pos2.getY());
-        maxY = Math.max(pos1.getY(), pos2.getY());
-        minZ = Math.min(pos1.getZ(), pos2.getZ());
-        maxZ = Math.max(pos1.getZ(), pos2.getZ());
+        this(
+            Math.min(pos1.getX(), pos2.getX()),  // minX
+            Math.max(pos1.getX(), pos2.getX()),  // maxX
+            Math.min(pos1.getY(), pos2.getY()),  // minY
+            Math.max(pos1.getY(), pos2.getY()),  // maxY
+            Math.min(pos1.getZ(), pos2.getZ()),  // minZ
+            Math.max(pos1.getZ(), pos2.getZ())   // maxZ
+        );
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with ({}),({})", pos1, pos2);
     }
 
@@ -49,19 +49,6 @@ public class PositionLimit implements TestSpawn {
         return minX <= pos.getX() && pos.getX() < maxX &&
             minY <= pos.getY() && pos.getY() < maxY &&
             minZ <= pos.getZ() && pos.getZ() < maxZ;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PositionLimit that = (PositionLimit) o;
-        return minX == that.minX && maxX == that.maxX && minY == that.minY && maxY == that.maxY && minZ == that.minZ && maxZ == that.maxZ;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(minX, maxX, minY, maxY, minZ, maxZ);
     }
 
     @Override

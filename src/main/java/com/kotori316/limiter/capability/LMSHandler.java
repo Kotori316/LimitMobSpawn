@@ -1,5 +1,6 @@
 package com.kotori316.limiter.capability;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collector;
@@ -69,22 +70,14 @@ public interface LMSHandler extends INBTSerializable<CompoundTag> {
     }
 
     static Stream<TestSpawn> getCombinedDefault(LMSHandler h1, LazyOptional<LMSHandler> h2) {
-        return Stream.concat(h1.getDefaultConditions().stream(), h2.map(LMSHandler::getDefaultConditions).map(Set::stream).orElse(Stream.empty()));
+        return Stream.concat(h1.getDefaultConditions().stream(), h2.map(LMSHandler::getDefaultConditions).stream().flatMap(Collection::stream));
     }
 
     static Stream<TestSpawn> getCombinedDeny(LMSHandler h1, LazyOptional<LMSHandler> h2) {
-        return Stream.concat(h1.getDenyConditions().stream(), h2.map(LMSHandler::getDenyConditions).map(Set::stream).orElse(Stream.empty()));
+        return Stream.concat(h1.getDenyConditions().stream(), h2.map(LMSHandler::getDenyConditions).stream().flatMap(Collection::stream));
     }
 
     static Stream<TestSpawn> getCombinedForce(LMSHandler h1, LazyOptional<LMSHandler> h2) {
-        return Stream.concat(h1.getForceConditions().stream(), h2.map(LMSHandler::getForceConditions).map(Set::stream).orElse(Stream.empty()));
-    }
-}
-
-final class LMSCapability implements Callable<LMSHandler> {
-
-    @Override
-    public LMSHandler call() {
-        return new LMSConditionsHolder();
+        return Stream.concat(h1.getForceConditions().stream(), h2.map(LMSHandler::getForceConditions).stream().flatMap(Collection::stream));
     }
 }

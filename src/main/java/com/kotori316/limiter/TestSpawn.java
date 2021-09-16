@@ -63,7 +63,7 @@ public interface TestSpawn {
     abstract class Serializer<A extends TestSpawn> {
         public abstract String getType();
 
-        public abstract <T> TestSpawn from(Dynamic<T> dynamic);
+        public abstract <T> A from(Dynamic<T> dynamic);
 
         public abstract <T> T to(TestSpawn a, DynamicOps<T> ops);
 
@@ -91,14 +91,14 @@ public interface TestSpawn {
         }
     }
 
-    Serializer<Empty> EMPTY_SERIALIZER = new Serializer<Empty>() {
+    Serializer<Empty> EMPTY_SERIALIZER = new Serializer<>() {
         @Override
         public String getType() {
             return "anonymous";
         }
 
         @Override
-        public <T> TestSpawn from(Dynamic<T> dynamic) {
+        public <T> Empty from(Dynamic<T> dynamic) {
             return Empty.INSTANCE;
         }
 

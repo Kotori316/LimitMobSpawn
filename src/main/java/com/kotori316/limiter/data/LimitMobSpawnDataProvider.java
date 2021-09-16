@@ -27,12 +27,7 @@ public class LimitMobSpawnDataProvider {
         }
     }
 
-    private static class TestSpawnProvider implements DataProvider {
-        private final DataGenerator dataGenerator;
-
-        private TestSpawnProvider(DataGenerator dataGenerator) {
-            this.dataGenerator = dataGenerator;
-        }
+    private record TestSpawnProvider(DataGenerator dataGenerator) implements DataProvider {
 
         @Override
         public void run(HashCache cache) throws IOException {

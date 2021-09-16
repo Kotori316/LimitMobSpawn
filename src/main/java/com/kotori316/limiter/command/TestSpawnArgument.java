@@ -43,9 +43,11 @@ public class TestSpawnArgument implements ArgumentType<TestSpawn> {
         StringReader stringreader = new StringReader(builder.getInput());
         stringreader.setCursor(builder.getStart());
         TestSpawnParser parser = new TestSpawnParser(stringreader);
-        try {
-            parser.parseWithProvider((SharedSuggestionProvider) context.getSource());
-        } catch (CommandSyntaxException ignore) {
+        if (context.getSource() instanceof SharedSuggestionProvider provider) {
+            try {
+                parser.parseWithProvider(provider);
+            } catch (CommandSyntaxException ignore) {
+            }
         }
         return parser.getSuggestion(builder);
     }

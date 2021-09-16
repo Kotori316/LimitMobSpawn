@@ -1,7 +1,6 @@
 package com.kotori316.limiter.conditions;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,10 +18,8 @@ import net.minecraft.world.level.Level;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
-public class DimensionLimit implements TestSpawn {
+public record DimensionLimit(ResourceKey<Level> type) implements TestSpawn {
     public static final TestSpawn.Serializer<DimensionLimit> SERIALIZER = new DimensionSerializer();
-
-    private final ResourceKey<Level> type;
 
     public DimensionLimit(ResourceKey<Level> type) {
         this.type = type;
@@ -36,35 +33,12 @@ public class DimensionLimit implements TestSpawn {
     @Override
     public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, MobSpawnType reason) {
         ResourceKey<Level> type;
-        if (worldIn instanceof Level) {
-            Level world = (Level) worldIn;
-            type = world.dimension();
+        if (worldIn instanceof Level level) {
+            type = level.dimension();
         } else {
             type = Level.OVERWORLD;
         }
         return this.type == type;
-    }
-
-    public ResourceKey<Level> getType() {
-        return type;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        com.kotori316.limiter.conditions.DimensionLimit that = (com.kotori316.limiter.conditions.DimensionLimit) o;
-        return Objects.equals(type, that.type);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type);
-    }
-
-    @Override
-    public String toString() {
-        return "DimensionLimit{" + "type=" + type + '}';
     }
 
     @Override
@@ -116,7 +90,7 @@ public class DimensionLimit implements TestSpawn {
 
         @Override
         public ResourceKey<Level> getter(DimensionLimit dimensionLimit) {
-            return dimensionLimit.getType();
+            return dimensionLimit.type();
         }
     }
 }
