@@ -4,33 +4,33 @@ import java.util.Locale;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
-public class SpawnReasonLimit implements TestSpawn {
-    public static final TestSpawn.Serializer<SpawnReasonLimit> SERIALIZER = StringLimitSerializer.fromFunction(
-        SpawnReasonLimit::getReason, SpawnReasonLimit::new, r -> r.toString().toLowerCase(Locale.ROOT),
-        s -> SpawnReason.valueOf(s.toUpperCase(Locale.ROOT)), "spawn_reason", "spawn_reason",
-        SpawnReason.values()
+public class MobSpawnTypeLimit implements TestSpawn {
+    public static final TestSpawn.Serializer<MobSpawnTypeLimit> SERIALIZER = StringLimitSerializer.fromFunction(
+        MobSpawnTypeLimit::getReason, MobSpawnTypeLimit::new, r -> r.toString().toLowerCase(Locale.ROOT),
+        s -> MobSpawnType.valueOf(s.toUpperCase(Locale.ROOT)), "spawn_reason", "spawn_reason",
+        MobSpawnType.values()
     );
-    private final SpawnReason reason;
+    private final MobSpawnType reason;
 
-    public SpawnReasonLimit(SpawnReason reason) {
+    public MobSpawnTypeLimit(MobSpawnType reason) {
         this.reason = reason;
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", reason);
     }
 
-    public SpawnReason getReason() {
+    public MobSpawnType getReason() {
         return reason;
     }
 
     @Override
-    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
+    public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable MobSpawnType reason) {
         // Pass if reason isn't available.
         return reason != null && reason == this.reason;
     }
@@ -39,7 +39,7 @@ public class SpawnReasonLimit implements TestSpawn {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SpawnReasonLimit that = (SpawnReasonLimit) o;
+        MobSpawnTypeLimit that = (MobSpawnTypeLimit) o;
         return reason == that.reason;
     }
 
@@ -50,7 +50,7 @@ public class SpawnReasonLimit implements TestSpawn {
 
     @Override
     public String toString() {
-        return "SpawnReasonLimit{" +
+        return "MobSpawnTypeLimit{" +
             "reason=" + reason +
             '}';
     }

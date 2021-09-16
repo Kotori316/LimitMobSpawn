@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -52,7 +52,7 @@ class PositionLimitTest extends BeforeAllTest {
     @MethodSource("poses")
     void consistency(BlockPos pos1, BlockPos pos2) {
         PositionLimit limit = new PositionLimit(pos1, pos2);
-        assertAll(Stream.of(JsonOps.INSTANCE, JsonOps.COMPRESSED, NBTDynamicOps.INSTANCE).map(
+        assertAll(Stream.of(JsonOps.INSTANCE, JsonOps.COMPRESSED, NbtOps.INSTANCE).map(
             ops -> () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic(ops, limit.to(ops))))
         ));
     }
@@ -72,27 +72,27 @@ class PositionLimitTest extends BeforeAllTest {
     }
 
     @Test
-    void fromCompoundNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    void fromCompoundTag() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt("minX", 45);
         nbt.putInt("maxX", 123);
         nbt.putInt("minY", 54);
         nbt.putInt("maxY", 95);
         nbt.putInt("minZ", 8);
         nbt.putInt("maxZ", 45);
-        TestSpawn limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
+        TestSpawn limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NbtOps.INSTANCE, nbt));
         PositionLimit ans = new PositionLimit(45, 123, 54, 95, 8, 45);
         assertEquals(ans, limit);
     }
 
     @Test
-    void fromCompoundNBT2() {
-        CompoundNBT nbt = new CompoundNBT();
+    void fromCompoundTag2() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt("minX", 45);
         nbt.putInt("maxX", 123);
         nbt.putInt("minZ", 8);
         nbt.putInt("maxZ", 45);
-        TestSpawn limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
+        TestSpawn limit = PositionLimit.SERIALIZER.from(new Dynamic<>(NbtOps.INSTANCE, nbt));
         PositionLimit ans = new PositionLimit(45, 123, 0, 256, 8, 45);
         assertEquals(ans, limit);
     }

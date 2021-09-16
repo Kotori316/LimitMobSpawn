@@ -1,7 +1,7 @@
 package com.kotori316.limiter;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,17 +22,17 @@ public class LMSEventHandler {
      */
     @SubscribeEvent
     public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        // MISCs(item frame, ender pearl, potion cloud, etc) should be allowed to be spawned.
+        // MISCs(item frame, ender pearl, potion cloud, etc.) should be allowed to be spawned.
         // Boss monsters(Ender Dragon, Wither) should be spawned.
         Entity entity = event.getEntity();
-        if (entity.getType().getClassification() == EntityClassification.MISC || !entity.isNonBoss())
+        if (entity.getType().getCategory() == MobCategory.MISC || !entity.canChangeDimensions())
             return;
         LazyOptional<LMSHandler> maybeHandler = event.getWorld().getCapability(Caps.getLmsCapability());
 
-        if (LMSHandler.getCombinedForce(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), entity.getPosition(), entity.getType(), null)) ||
-            LMSHandler.getCombinedDefault(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn -> spawn.test(event.getWorld(), entity.getPosition(), entity.getType(), null)))
+        if (LMSHandler.getCombinedForce(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), entity.blockPosition(), entity.getType(), null)) ||
+            LMSHandler.getCombinedDefault(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn -> spawn.test(event.getWorld(), entity.blockPosition(), entity.getType(), null)))
             return; // SKIP
-        if (LMSHandler.getCombinedDeny(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), entity.getPosition(), entity.getType(), null))) {
+        if (LMSHandler.getCombinedDeny(SpawnConditionLoader.INSTANCE.getHolder(), maybeHandler).anyMatch(spawn1 -> spawn1.test(event.getWorld(), entity.blockPosition(), entity.getType(), null))) {
             LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMS_MARKER, "onEntityJoinWorld denied spawning of {}.", entity);
             event.setCanceled(true);
         }

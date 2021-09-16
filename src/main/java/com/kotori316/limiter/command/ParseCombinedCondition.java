@@ -12,7 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 import com.kotori316.limiter.SpawnConditionLoader;
 
@@ -25,7 +25,7 @@ class ParseCombinedCondition implements ConditionParser {
                       StringReader reader,
                       JsonObject context,
                       Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter,
-                      @Nullable ISuggestionProvider provider)
+                      @Nullable SharedSuggestionProvider provider)
         throws CommandSyntaxException {
         JsonArray array = new JsonArray();
         suggestionSetter.accept(TestSpawnParser::suggestRuleName);

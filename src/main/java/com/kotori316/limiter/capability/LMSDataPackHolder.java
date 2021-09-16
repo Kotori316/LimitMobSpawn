@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import com.kotori316.limiter.TestSpawn;
 
@@ -77,13 +77,13 @@ public class LMSDataPackHolder implements LMSHandler {
 
     @Override
     @Deprecated // No need as data pack saves the data.
-    public CompoundNBT serializeNBT() {
-        return new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        return new CompoundTag();
     }
 
     @Override
     @Deprecated // The set directly replaced to loaded data.
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
     }
 
     @Override

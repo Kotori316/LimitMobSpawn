@@ -15,7 +15,7 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nonnull;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,11 +27,11 @@ import com.kotori316.limiter.TestSpawn;
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
+import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
 import com.kotori316.limiter.conditions.RandomLimit;
-import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -115,8 +115,8 @@ class TestSpawnParserTest extends BeforeAllTest {
             TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
-            SpawnReasonLimit limit = (SpawnReasonLimit) parser.createInstance();
-            assertEquals(SpawnReason.valueOf(name.toUpperCase(Locale.ROOT)), limit.getReason());
+            MobSpawnTypeLimit limit = (MobSpawnTypeLimit) parser.createInstance();
+            assertEquals(MobSpawnType.valueOf(name.toUpperCase(Locale.ROOT)), limit.getReason());
         }
 
         @ParameterizedTest
@@ -265,7 +265,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             And and = (And) parser.createInstance();
-            And expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL));
+            And expected = new And(DimensionLimit.fromName("overworld"), new MobSpawnTypeLimit(MobSpawnType.NATURAL));
             assertEquals(expected, and);
         }
 
@@ -285,7 +285,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             And and = (And) parser.createInstance();
-            And expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL),
+            And expected = new And(DimensionLimit.fromName("overworld"), new MobSpawnTypeLimit(MobSpawnType.NATURAL),
                 new PositionLimit(-15, 25, 64, 123, -12, 36));
             assertEquals(expected, and);
         }
@@ -303,7 +303,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             And and = (And) parser.createInstance();
-            And expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL).not());
+            And expected = new And(DimensionLimit.fromName("overworld"), new MobSpawnTypeLimit(MobSpawnType.NATURAL).not());
             assertEquals(expected, and);
         }
 
@@ -320,7 +320,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             And and = (And) parser.createInstance();
-            And expected = new And(DimensionLimit.fromName("overworld").not(), new SpawnReasonLimit(SpawnReason.NATURAL));
+            And expected = new And(DimensionLimit.fromName("overworld").not(), new MobSpawnTypeLimit(MobSpawnType.NATURAL));
             assertEquals(expected, and);
         }
 
@@ -405,7 +405,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             TestSpawn and = parser.createInstance();
-            Or expected = new Or(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL));
+            Or expected = new Or(DimensionLimit.fromName("overworld"), new MobSpawnTypeLimit(MobSpawnType.NATURAL));
             assertEquals(expected, and);
         }
 
@@ -426,7 +426,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             TestSpawn and = parser.createInstance();
-            Or expected = new Or(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL),
+            Or expected = new Or(DimensionLimit.fromName("overworld"), new MobSpawnTypeLimit(MobSpawnType.NATURAL),
                 new PositionLimit(-15, 25, 64, 123, -12, 36));
             assertEquals(expected, and);
         }
@@ -444,7 +444,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             TestSpawn and = parser.createInstance();
-            Or expected = new Or(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL).not());
+            Or expected = new Or(DimensionLimit.fromName("overworld"), new MobSpawnTypeLimit(MobSpawnType.NATURAL).not());
             assertEquals(expected, and);
         }
 
@@ -461,7 +461,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
             TestSpawn and = parser.createInstance();
-            Or expected = new Or(DimensionLimit.fromName("overworld").not(), new SpawnReasonLimit(SpawnReason.NATURAL));
+            Or expected = new Or(DimensionLimit.fromName("overworld").not(), new MobSpawnTypeLimit(MobSpawnType.NATURAL));
             assertEquals(expected, and);
         }
     }
@@ -504,7 +504,7 @@ class TestSpawnParserTest extends BeforeAllTest {
             TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
             assertDoesNotThrow(parser::parse);
             assertDoesNotThrow(parser::createInstance);
-            TestSpawn expected = new And(DimensionLimit.fromName("overworld"), new SpawnReasonLimit(SpawnReason.NATURAL)).not();
+            TestSpawn expected = new And(DimensionLimit.fromName("overworld"), new MobSpawnTypeLimit(MobSpawnType.NATURAL)).not();
             assertEquals(expected, parser.createInstance());
         }
 

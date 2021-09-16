@@ -12,10 +12,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import javax.annotation.Nonnull;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 
 import com.kotori316.limiter.Config;
 import com.kotori316.limiter.LimitMobSpawn;
@@ -28,16 +28,16 @@ import com.kotori316.limiter.capability.RuleType;
 
 public class LMSCommand {
 
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
-        LiteralArgumentBuilder<CommandSource> literal = Commands.literal(LimitMobSpawn.MOD_ID);
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> literal = Commands.literal(LimitMobSpawn.MOD_ID);
         {
             // query
-            LiteralArgumentBuilder<CommandSource> query = Commands.literal("query");
+            LiteralArgumentBuilder<CommandSourceStack> query = Commands.literal("query");
 
-            LiteralArgumentBuilder<CommandSource> world = Commands.literal("world");
+            LiteralArgumentBuilder<CommandSourceStack> world = Commands.literal("world");
             registerQuery(world, LMSCommand::getLmsHandler);
             query.then(world);
-            LiteralArgumentBuilder<CommandSource> dataPack = Commands.literal("datapack");
+            LiteralArgumentBuilder<CommandSourceStack> dataPack = Commands.literal("datapack");
             registerQuery(dataPack, c -> SpawnConditionLoader.INSTANCE.getHolder());
             query.then(dataPack);
 
@@ -45,7 +45,7 @@ public class LMSCommand {
                 .executes(context -> {
                     LMSHandler lmsHandler = getLmsHandler(context);
                     if (lmsHandler.getDefaultConditions().isEmpty() && lmsHandler.getForceConditions().isEmpty() && lmsHandler.getDenyConditions().isEmpty())
-                        context.getSource().sendErrorMessage(new StringTextComponent("No Rules found."));
+                        context.getSource().sendFailure(new TextComponent("No Rules found."));
                     sendMessage(context, "Defaults", Sets.union(lmsHandler.getDefaultConditions(), SpawnConditionLoader.INSTANCE.getHolder().getDefaultConditions()));
                     sendMessage(context, "Denies", Sets.union(lmsHandler.getDenyConditions(), SpawnConditionLoader.INSTANCE.getHolder().getDenyConditions()));
                     sendMessage(context, "Forces", Sets.union(lmsHandler.getForceConditions(), SpawnConditionLoader.INSTANCE.getHolder().getForceConditions()));
@@ -54,13 +54,13 @@ public class LMSCommand {
         }
         {
             // add
-            LiteralArgumentBuilder<CommandSource> add = Commands.literal("add").requires(s -> s.hasPermissionLevel(Config.getInstance().getPermission()));
+            LiteralArgumentBuilder<CommandSourceStack> add = Commands.literal("add").requires(s -> s.hasPermission(Config.getInstance().getPermission()));
             for (RuleType ruleType : RuleType.values()) {
                 add.then(Commands.literal(ruleType.saveName()).then(Commands.argument("rule", new TestSpawnArgument()).executes(context -> {
                     List<LMSHandler> list = getAllLmsHandlers(context);
                     TestSpawn rule = context.getArgument("rule", TestSpawn.class);
                     list.forEach(lmsHandler -> ruleType.add(lmsHandler, rule));
-                    context.getSource().sendFeedback(new StringTextComponent(String.format("Added %s to %s.", rule, ruleType.saveName())), true);
+                    context.getSource().sendSuccess(new TextComponent(String.format("Added %s to %s.", rule, ruleType.saveName())), true);
                     return Command.SINGLE_SUCCESS;
                 })));
             }
@@ -68,11 +68,11 @@ public class LMSCommand {
         }
         {
             // remove
-            LiteralArgumentBuilder<CommandSource> remove = Commands.literal("remove").requires(s -> s.hasPermissionLevel(Config.getInstance().getPermission()));
+            LiteralArgumentBuilder<CommandSourceStack> remove = Commands.literal("remove").requires(s -> s.hasPermission(Config.getInstance().getPermission()));
             for (RuleType ruleType : RuleType.values()) {
                 remove.then(Commands.literal(ruleType.saveName()).executes(context -> {
                     getAllLmsHandlers(context).forEach(ruleType::removeAll);
-                    context.getSource().sendFeedback(new StringTextComponent("Cleared " + ruleType.getCommandName()), true);
+                    context.getSource().sendSuccess(new TextComponent("Cleared " + ruleType.getCommandName()), true);
                     return Command.SINGLE_SUCCESS;
                 }));
             }
@@ -80,18 +80,18 @@ public class LMSCommand {
         }
         {
             // Spawner
-            LiteralArgumentBuilder<CommandSource> spawner = Commands.literal("spawner");
+            LiteralArgumentBuilder<CommandSourceStack> spawner = Commands.literal("spawner");
             spawner.then(Commands.literal("spawnCount")
-                .requires(s -> s.hasPermissionLevel(Config.getInstance().getPermission()))
+                .requires(s -> s.hasPermission(Config.getInstance().getPermission()))
                 .then(Commands.argument("spawnCount", IntegerArgumentType.integer(0)).executes(context -> {
                     Integer spawnCount = context.getArgument("spawnCount", Integer.class);
                     getAllLmsHandlers(context).forEach(l -> l.getSpawnerControl().setSpawnCount(spawnCount));
-                    context.getSource().sendFeedback(new StringTextComponent("Changed spawnCount to " + spawnCount), true);
+                    context.getSource().sendSuccess(new TextComponent("Changed spawnCount to " + spawnCount), true);
                     return Command.SINGLE_SUCCESS;
                 })));
             spawner.then(Commands.literal("query").executes(context -> {
                 LMSHandler lmsHandler = getLmsHandler(context);
-                lmsHandler.getSpawnerControl().getMessages().forEach(s -> context.getSource().sendFeedback(s, true));
+                lmsHandler.getSpawnerControl().getMessages().forEach(s -> context.getSource().sendSuccess(s, true));
                 return Command.SINGLE_SUCCESS;
             }));
             literal.then(spawner);
@@ -99,7 +99,7 @@ public class LMSCommand {
         dispatcher.register(literal);
     }
 
-    private static void registerQuery(LiteralArgumentBuilder<CommandSource> parent, Function<CommandContext<CommandSource>, LMSHandler> getter) {
+    private static void registerQuery(LiteralArgumentBuilder<CommandSourceStack> parent, Function<CommandContext<CommandSourceStack>, LMSHandler> getter) {
         for (RuleType ruleType : RuleType.values()) {
             parent.then(Commands.literal(ruleType.saveName()).executes(context -> {
                 LMSHandler lmsHandler = getter.apply(context);
@@ -116,20 +116,20 @@ public class LMSCommand {
         });
     }
 
-    private static void sendMessage(CommandContext<CommandSource> context, String s, Set<TestSpawn> conditions) {
-        context.getSource().sendFeedback(new StringTextComponent(s + "=" + conditions.size()), true);
-        conditions.stream().map(Object::toString).map(StringTextComponent::new).forEach(c -> context.getSource().sendFeedback(c, true));
+    private static void sendMessage(CommandContext<CommandSourceStack> context, String s, Set<TestSpawn> conditions) {
+        context.getSource().sendSuccess(new TextComponent(s + "=" + conditions.size()), true);
+        conditions.stream().map(Object::toString).map(TextComponent::new).forEach(c -> context.getSource().sendSuccess(c, true));
     }
 
     @Nonnull
-    private static LMSHandler getLmsHandler(CommandContext<CommandSource> context) {
-        World world = context.getSource().getWorld();
+    private static LMSHandler getLmsHandler(CommandContext<CommandSourceStack> context) {
+        Level world = context.getSource().getLevel();
         return world.getCapability(Caps.getLmsCapability()).orElseGet(LMSConditionsHolder::new);
     }
 
-    private static List<LMSHandler> getAllLmsHandlers(CommandContext<CommandSource> context) {
+    private static List<LMSHandler> getAllLmsHandlers(CommandContext<CommandSourceStack> context) {
         List<LMSHandler> list = new ArrayList<>();
-        for (World world : context.getSource().getServer().getWorlds()) {
+        for (Level world : context.getSource().getServer().getAllLevels()) {
             world.getCapability(Caps.getLmsCapability()).ifPresent(list::add);
         }
         return list;

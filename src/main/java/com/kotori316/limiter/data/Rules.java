@@ -8,13 +8,13 @@ import java.util.Locale;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,11 +25,11 @@ import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
-import com.kotori316.limiter.conditions.EntityClassificationLimit;
+import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.RandomLimit;
-import com.kotori316.limiter.conditions.SpawnReasonLimit;
+import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 
 @SuppressWarnings("unused")
 class Rules {
@@ -64,16 +64,16 @@ class Rules {
         object.addProperty("_comment", "Conditions in each category are combined by OR.");
         {
             object.add("default", as(
-                Creator.entityAtDimension(World.THE_NETHER, EntityType.PIGLIN),
-                new EntityClassificationLimit(EntityClassification.CREATURE).or(new EntityClassificationLimit(EntityClassification.MISC)),
-                Creator.posAtDimension(World.THE_END, -500, 500, -500, 500)
+                Creator.entityAtDimension(Level.NETHER, EntityType.PIGLIN),
+                new MobCategoryLimit(MobCategory.CREATURE).or(new MobCategoryLimit(MobCategory.MISC)),
+                Creator.posAtDimension(Level.END, -500, 500, -500, 500)
             ));
         }
         {
             object.add("deny", as(
-                new DimensionLimit(World.OVERWORLD),
-                new DimensionLimit(World.THE_NETHER),
-                new DimensionLimit(World.THE_END),
+                new DimensionLimit(Level.OVERWORLD),
+                new DimensionLimit(Level.NETHER),
+                new DimensionLimit(Level.END),
                 new EntityLimit(EntityType.BAT)
             ));
         }
@@ -90,23 +90,23 @@ class Rules {
         object.addProperty("_comment", "Conditions in each category are combined by OR.");
         {
             object.add("default", as(
-                new SpawnReasonLimit(SpawnReason.SPAWNER),
-                new SpawnReasonLimit(SpawnReason.SPAWN_EGG),
-                new DimensionLimit(World.OVERWORLD).not().and(new EntityLimit(EntityType.GHAST))
+                new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
+                new MobSpawnTypeLimit(MobSpawnType.SPAWN_EGG),
+                new DimensionLimit(Level.OVERWORLD).not().and(new EntityLimit(EntityType.GHAST))
             ));
         }
         {
             object.add("deny", as(
-                new DimensionLimit(World.OVERWORLD),
-                new DimensionLimit(World.THE_NETHER),
-                new DimensionLimit(World.THE_END)
+                new DimensionLimit(Level.OVERWORLD),
+                new DimensionLimit(Level.NETHER),
+                new DimensionLimit(Level.END)
             ));
         }
         {
             object.add("force", as(
-                Creator.posAtDimension(World.OVERWORLD, -64, 64, -64, 64)
+                Creator.posAtDimension(Level.OVERWORLD, -64, 64, -64, 64)
                     .and(new EntityLimit(EntityType.ENDERMAN)),
-                Creator.posAtDimension(World.OVERWORLD, 64, 128, -64, 64)
+                Creator.posAtDimension(Level.OVERWORLD, 64, 128, -64, 64)
                     .and(new EntityLimit(EntityType.WITCH))
             ));
         }
@@ -122,7 +122,7 @@ class Rules {
         JsonObject object = new JsonObject();
         {
             object.add("deny", as(
-                new EntityClassificationLimit(EntityClassification.MONSTER)
+                new MobCategoryLimit(MobCategory.MONSTER)
             ));
         }
         {
@@ -137,7 +137,7 @@ class Rules {
         JsonObject object = new JsonObject();
         object.addProperty("_comment", "Prevent spawning of bats, except from Spawn Egg.");
         object.add("deny", as(
-            new EntityLimit(EntityType.BAT).and(new SpawnReasonLimit(SpawnReason.SPAWN_EGG).not())
+            new EntityLimit(EntityType.BAT).and(new MobSpawnTypeLimit(MobSpawnType.SPAWN_EGG).not())
         ));
         return object;
     }
@@ -146,10 +146,10 @@ class Rules {
         JsonObject object = new JsonObject();
         object.addProperty("_comment", "In overworld, only witch spawns at night. Other monsters disappeared.");
         object.add("default", as(
-            Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)
+            Creator.entityAtDimension(Level.OVERWORLD, EntityType.WITCH)
         ));
         object.add("deny", as(
-            new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))
+            new MobCategoryLimit(MobCategory.MONSTER).and(new DimensionLimit(Level.OVERWORLD))
         ));
         return object;
     }
@@ -166,7 +166,7 @@ class Rules {
     JsonObject cancel_spawner() {
         JsonObject object = new JsonObject();
         object.addProperty("_comment", "Cancel all spawns from Monster Spawner");
-        object.add("deny", as(new SpawnReasonLimit(SpawnReason.SPAWNER)));
+        object.add("deny", as(new MobSpawnTypeLimit(MobSpawnType.SPAWNER)));
         return object;
     }
 
@@ -175,7 +175,7 @@ class Rules {
         object.addProperty("_comment", "Cancel 70% of spawning.");
         object.add("deny", as(new And(
             new RandomLimit(0.7),
-            new Or(new SpawnReasonLimit(SpawnReason.NATURAL), new SpawnReasonLimit(SpawnReason.REINFORCEMENT))
+            new Or(new MobSpawnTypeLimit(MobSpawnType.NATURAL), new MobSpawnTypeLimit(MobSpawnType.REINFORCEMENT))
         )));
         return object;
     }
@@ -185,7 +185,7 @@ class Rules {
         {
             object.add("deny", as(
                 All.getInstance()
-                    .and(new DimensionLimit(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation("mining_dimension:mining"))))
+                    .and(new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("mining_dimension:mining"))))
                     .and(new Or(
                         new EntityLimit(EntityType.ZOMBIE),
                         new EntityLimit(EntityType.SKELETON)
@@ -205,7 +205,7 @@ class Rules {
         JsonObject object = new JsonObject();
         {
             object.add("deny", as(
-                new DimensionLimit(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation("gaiadimension:gaia_dimension")))
+                new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("gaiadimension:gaia_dimension")))
                     .and(new Or(
                         new EntityLimit("gaiadimension:agate_golem            ".trim()),
                         new EntityLimit("gaiadimension:ancient_lagrahk        ".trim()),

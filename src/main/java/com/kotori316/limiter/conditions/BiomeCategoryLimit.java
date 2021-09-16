@@ -3,34 +3,33 @@ package com.kotori316.limiter.conditions;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.biome.Biome;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
 
 public class BiomeCategoryLimit implements TestSpawn {
     public static final TestSpawn.Serializer<BiomeCategoryLimit> SERIALIZER = StringLimitSerializer.fromFunction(
-        BiomeCategoryLimit::getCategory, BiomeCategoryLimit::new, Biome.Category::getName,
-        Biome.Category::byName, "category", "category",
-        Biome.Category.values());
-    private final Biome.Category category;
+        BiomeCategoryLimit::getCategory, BiomeCategoryLimit::new, Biome.BiomeCategory::getName,
+        Biome.BiomeCategory::byName, "category", "category",
+        Biome.BiomeCategory.values());
+    private final Biome.BiomeCategory category;
 
-    public BiomeCategoryLimit(Biome.Category category) {
+    public BiomeCategoryLimit(Biome.BiomeCategory category) {
         this.category = category;
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", category);
     }
 
     @Override
-    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
-        if (worldIn instanceof IWorldReader) {
-            IWorldReader worldReader = (IWorldReader) worldIn;
+    public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable MobSpawnType reason) {
+        if (worldIn instanceof LevelReader worldReader) {
             Biome biome = worldReader.getBiome(pos);
-            return category == biome.getCategory();
+            return category == biome.getBiomeCategory();
         }
         return false;
     }
@@ -65,7 +64,7 @@ public class BiomeCategoryLimit implements TestSpawn {
         return "category " + category;
     }
 
-    public Biome.Category getCategory() {
+    public Biome.BiomeCategory getCategory() {
         return category;
     }
 }

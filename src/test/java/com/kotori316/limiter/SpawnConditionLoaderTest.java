@@ -19,15 +19,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.profiler.EmptyProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.InactiveProfiler;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,13 +37,13 @@ import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
-import com.kotori316.limiter.conditions.EntityClassificationLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.MobCategoryLimit;
+import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
 import com.kotori316.limiter.conditions.RandomLimit;
-import com.kotori316.limiter.conditions.SpawnReasonLimit;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -70,9 +70,9 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
                 Not.SERIALIZER,
                 DimensionLimit.SERIALIZER,
                 EntityLimit.SERIALIZER,
-                EntityClassificationLimit.SERIALIZER,
+                MobCategoryLimit.SERIALIZER,
                 PositionLimit.SERIALIZER,
-                SpawnReasonLimit.SERIALIZER
+                MobSpawnTypeLimit.SERIALIZER
             };
         }
 
@@ -109,7 +109,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
                 }
 
                 @Override
-                public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
+                public Set<String> possibleValues(String property, boolean suggesting, SharedSuggestionProvider provider) {
                     return Collections.emptySet();
                 }
             };
@@ -153,15 +153,15 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         void loadFromJsonArray2() {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Set<TestSpawn> ans = Sets.newHashSet(
-                new DimensionLimit(World.THE_NETHER),
-                new EntityClassificationLimit(EntityClassification.CREATURE),
-                new SpawnReasonLimit(SpawnReason.SPAWNER),
+                new DimensionLimit(Level.NETHER),
+                new MobCategoryLimit(MobCategory.CREATURE),
+                new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
                 new PositionLimit(new BlockPos(-10, 5, 64), new BlockPos(24, 65, 95)),
                 new PositionLimit(-15, 263, 2, 45, 624, 964),
                 new EntityLimit("minecraft:zombie"),
-                new EntityClassificationLimit(EntityClassification.WATER_CREATURE),
-                new DimensionLimit(World.THE_END),
-                new SpawnReasonLimit(SpawnReason.CHUNK_GENERATION)
+                new MobCategoryLimit(MobCategory.WATER_CREATURE),
+                new DimensionLimit(Level.END),
+                new MobSpawnTypeLimit(MobSpawnType.CHUNK_GENERATION)
             );
 
             JsonArray a = new JsonArray();
@@ -176,16 +176,16 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             JsonObject object = new JsonObject();
             object.addProperty("_comment", "In overworld, only witch spawns at night. Other monsters disappeared.");
             object.add("default", as(
-                Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)
+                Creator.entityAtDimension(Level.OVERWORLD, EntityType.WITCH)
             ));
             object.add("deny", as(
-                new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))
+                new MobCategoryLimit(MobCategory.MONSTER).and(new DimensionLimit(Level.OVERWORLD))
             ));
 
             assertAll(
-                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)),
+                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(Level.OVERWORLD, EntityType.WITCH)),
                     loader.getValues(object.get("default"))),
-                () -> assertEquals(Collections.singleton(new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))),
+                () -> assertEquals(Collections.singleton(new MobCategoryLimit(MobCategory.MONSTER).and(new DimensionLimit(Level.OVERWORLD))),
                     loader.getValues(object.get("deny")))
             );
         }
@@ -195,13 +195,13 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             JsonObject object = new JsonObject();
             object.addProperty("_comment", "In overworld, only witch spawns at night. Other monsters disappeared.");
-            object.add("default", Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH).toJson());
-            object.add("deny", new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD)).toJson());
+            object.add("default", Creator.entityAtDimension(Level.OVERWORLD, EntityType.WITCH).toJson());
+            object.add("deny", new MobCategoryLimit(MobCategory.MONSTER).and(new DimensionLimit(Level.OVERWORLD)).toJson());
 
             assertAll(
-                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)),
+                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(Level.OVERWORLD, EntityType.WITCH)),
                     loader.getValues(object.get("default"))),
-                () -> assertEquals(Collections.singleton(new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))),
+                () -> assertEquals(Collections.singleton(new MobCategoryLimit(MobCategory.MONSTER).and(new DimensionLimit(Level.OVERWORLD))),
                     loader.getValues(object.get("deny")))
             );
         }
@@ -212,19 +212,19 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             JsonObject object = new JsonObject();
             object.addProperty("_comment", "In overworld, only witch spawns at night. Other monsters disappeared.");
             object.add("default", as(
-                Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)
+                Creator.entityAtDimension(Level.OVERWORLD, EntityType.WITCH)
             ));
             object.add("deny", as(
-                new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))
+                new MobCategoryLimit(MobCategory.MONSTER).and(new DimensionLimit(Level.OVERWORLD))
             ));
             Map<ResourceLocation, JsonElement> map = new HashMap<>();
             map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "witch_only"), object);
-            loader.apply(map, IResourceManager.Instance.INSTANCE, EmptyProfiler.INSTANCE);
+            loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
 
             assertAll(
-                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(World.OVERWORLD, EntityType.WITCH)),
+                () -> assertEquals(Collections.singleton(Creator.entityAtDimension(Level.OVERWORLD, EntityType.WITCH)),
                     loader.getHolder().getDefaultConditions()),
-                () -> assertEquals(Collections.singleton(new EntityClassificationLimit(EntityClassification.MONSTER).and(new DimensionLimit(World.OVERWORLD))),
+                () -> assertEquals(Collections.singleton(new MobCategoryLimit(MobCategory.MONSTER).and(new DimensionLimit(Level.OVERWORLD))),
                     loader.getHolder().getDenyConditions())
             );
         }
@@ -270,14 +270,14 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         void loadFromFile1() {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/no_bats.json");
+            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/no_bats.json");
                  Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
                 JsonObject object = gson.fromJson(reader, JsonObject.class);
                 Map<ResourceLocation, JsonElement> map = new HashMap<>();
                 map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "no_bats"), object);
-                loader.apply(map, IResourceManager.Instance.INSTANCE, EmptyProfiler.INSTANCE);
+                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
 
-                assertEquals(Collections.singleton(new EntityLimit(EntityType.BAT).and(new SpawnReasonLimit(SpawnReason.SPAWN_EGG).not())),
+                assertEquals(Collections.singleton(new EntityLimit(EntityType.BAT).and(new MobSpawnTypeLimit(MobSpawnType.SPAWN_EGG).not())),
                     loader.getHolder().getDenyConditions());
                 assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
                 assertTrue(loader.getHolder().getForceConditions().isEmpty());
@@ -291,14 +291,14 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         void loadFromFile2() {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/peaceful.json");
+            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/peaceful.json");
                  Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
                 JsonObject object = gson.fromJson(reader, JsonObject.class);
                 Map<ResourceLocation, JsonElement> map = new HashMap<>();
                 map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "peaceful"), object);
-                loader.apply(map, IResourceManager.Instance.INSTANCE, EmptyProfiler.INSTANCE);
+                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
 
-                assertEquals(Collections.singleton(new EntityClassificationLimit(EntityClassification.MONSTER)),
+                assertEquals(Collections.singleton(new MobCategoryLimit(MobCategory.MONSTER)),
                     loader.getHolder().getDenyConditions());
                 assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
                 assertTrue(loader.getHolder().getForceConditions().isEmpty());
@@ -312,22 +312,22 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         void loadFromFile3() {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/test1.json");
+            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/test1.json");
                  Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
                 JsonObject object = gson.fromJson(reader, JsonObject.class);
                 Map<ResourceLocation, JsonElement> map = new HashMap<>();
                 map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "test1"), object);
-                loader.apply(map, IResourceManager.Instance.INSTANCE, EmptyProfiler.INSTANCE);
+                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
 
                 assertEquals(Sets.newHashSet(
-                        Creator.entityAtDimension(World.THE_NETHER, EntityType.PIGLIN),
-                        new EntityClassificationLimit(EntityClassification.CREATURE).or(new EntityClassificationLimit(EntityClassification.MISC)),
-                        Creator.posAtDimension(World.THE_END, -500, 500, -500, 500)),
+                        Creator.entityAtDimension(Level.NETHER, EntityType.PIGLIN),
+                        new MobCategoryLimit(MobCategory.CREATURE).or(new MobCategoryLimit(MobCategory.MISC)),
+                        Creator.posAtDimension(Level.END, -500, 500, -500, 500)),
                     loader.getHolder().getDefaultConditions());
                 assertEquals(Sets.newHashSet(
-                        new DimensionLimit(World.OVERWORLD),
-                        new DimensionLimit(World.THE_NETHER),
-                        new DimensionLimit(World.THE_END),
+                        new DimensionLimit(Level.OVERWORLD),
+                        new DimensionLimit(Level.NETHER),
+                        new DimensionLimit(Level.END),
                         new EntityLimit(EntityType.BAT)),
                     loader.getHolder().getDenyConditions());
                 assertTrue(loader.getHolder().getForceConditions().isEmpty());
@@ -341,17 +341,17 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         void loadRandomLimit() {
             SpawnConditionLoader loader = SpawnConditionLoader.createInstance();
             Gson gson = new Gson();
-            try (InputStream stream = getClass().getResourceAsStream("/data/limit-mob-spawn/limit-mob-spawn/cancel_70.json");
+            try (InputStream stream = getClass().getResourceAsStream("/data/limitmobspawn/limitmobspawn/cancel_70.json");
                  Reader reader = new InputStreamReader(Objects.requireNonNull(stream))) {
                 JsonObject object = gson.fromJson(reader, JsonObject.class);
                 Map<ResourceLocation, JsonElement> map = new HashMap<>();
                 map.put(new ResourceLocation(LimitMobSpawn.MOD_ID, "cancel_70"), object);
-                loader.apply(map, IResourceManager.Instance.INSTANCE, EmptyProfiler.INSTANCE);
+                loader.apply(map, ResourceManager.Empty.INSTANCE, InactiveProfiler.INSTANCE);
 
                 assertEquals(Collections.singleton(
                         new And(
                             new RandomLimit(0.7),
-                            new Or(new SpawnReasonLimit(SpawnReason.NATURAL), new SpawnReasonLimit(SpawnReason.REINFORCEMENT))
+                            new Or(new MobSpawnTypeLimit(MobSpawnType.NATURAL), new MobSpawnTypeLimit(MobSpawnType.REINFORCEMENT))
                         )
                     ),
                     loader.getHolder().getDenyConditions());

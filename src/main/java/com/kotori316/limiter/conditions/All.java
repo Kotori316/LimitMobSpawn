@@ -6,11 +6,11 @@ import java.util.Set;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
 
 import com.kotori316.limiter.TestSpawn;
 
@@ -23,7 +23,7 @@ public class All implements TestSpawn {
     }
 
     @Override
-    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
+    public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable MobSpawnType reason) {
         return true;
     }
 
@@ -63,7 +63,7 @@ public class All implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
+        public Set<String> possibleValues(String property, boolean suggesting, SharedSuggestionProvider provider) {
             return Collections.emptySet();
         }
     }

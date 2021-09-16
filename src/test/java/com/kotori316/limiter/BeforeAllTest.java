@@ -7,8 +7,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import cpw.mods.modlauncher.Launcher;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.registry.Bootstrap;
+import net.minecraft.SharedConstants;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.Bootstrap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -28,10 +29,11 @@ public abstract class BeforeAllTest {
 
     public static synchronized void initialize() {
         if (!INITIALIZED.getAndSet(true)) {
-            initLoader();
+            SharedConstants.tryDetectVersion();
+            // initLoader();
             changeDist();
             assertEquals(Dist.CLIENT, FMLEnvironment.dist);
-            Bootstrap.register();
+            Bootstrap.bootStrap();
         }
     }
 
@@ -59,7 +61,7 @@ public abstract class BeforeAllTest {
         assertAll(
             () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.INSTANCE, limit.to(JsonOps.INSTANCE)))),
             () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(JsonOps.COMPRESSED, limit.to(JsonOps.COMPRESSED)))),
-            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(NBTDynamicOps.INSTANCE, limit.to(NBTDynamicOps.INSTANCE))))
+            () -> assertEquals(limit, SpawnConditionLoader.INSTANCE.deserialize(new Dynamic<>(NbtOps.INSTANCE, limit.to(NbtOps.INSTANCE))))
         );
     }
 

@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,15 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CombinationTest extends BeforeAllTest {
-    static final TestSpawn[] testSpawns = {new DimensionLimit(World.THE_NETHER),
-        new EntityClassificationLimit(EntityClassification.CREATURE),
-        new SpawnReasonLimit(SpawnReason.SPAWNER),
+    static final TestSpawn[] testSpawns = {new DimensionLimit(Level.NETHER),
+        new MobCategoryLimit(MobCategory.CREATURE),
+        new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
         new PositionLimit(new BlockPos(-10, 5, 64), new BlockPos(24, 65, 95)),
         new PositionLimit(-15, 263, 2, 45, 624, 964),
         new EntityLimit("minecraft:zombie"),
-        new EntityClassificationLimit(EntityClassification.WATER_CREATURE),
-        new DimensionLimit(World.THE_END),
-        new SpawnReasonLimit(SpawnReason.CHUNK_GENERATION)};
+        new MobCategoryLimit(MobCategory.WATER_CREATURE),
+        new DimensionLimit(Level.END),
+        new MobSpawnTypeLimit(MobSpawnType.CHUNK_GENERATION)};
 
     static List<TestSpawn[]> get2Conditions() {
         List<TestSpawn[]> list = new ArrayList<>();
@@ -140,24 +140,24 @@ class CombinationTest extends BeforeAllTest {
 
     @Test
     void createAndFromList1() {
-        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
-        TestSpawn expect = new And(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER));
+        TestSpawn expect = new And(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER));
         assertEquals(expect, new And(list), String.format("And from %s", list));
     }
 
     @Test
     void createAndFromList2() {
-        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
-            new EntityClassificationLimit(EntityClassification.CREATURE));
-        TestSpawn expect = new And(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
-            new EntityClassificationLimit(EntityClassification.CREATURE));
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
+            new MobCategoryLimit(MobCategory.CREATURE));
+        TestSpawn expect = new And(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
+            new MobCategoryLimit(MobCategory.CREATURE));
         assertEquals(expect, new And(list), String.format("And from %s", list));
     }
 
     @Test
     void andShortString() {
-        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
-            new EntityClassificationLimit(EntityClassification.CREATURE));
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
+            new MobCategoryLimit(MobCategory.CREATURE));
         String shortString = new And(list).contentShort();
         assertAll(list.stream().map(TestSpawn::contentShort).map(s ->
             () -> assertTrue(shortString.contains(s), "Contains " + s + " in " + shortString)));
@@ -165,8 +165,8 @@ class CombinationTest extends BeforeAllTest {
 
     @Test
     void orShortString() {
-        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
-            new EntityClassificationLimit(EntityClassification.CREATURE));
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
+            new MobCategoryLimit(MobCategory.CREATURE));
         String shortString = new Or(list).contentShort();
         assertAll(list.stream().map(TestSpawn::contentShort).map(s ->
             () -> assertTrue(shortString.contains(s), "Contains " + s + " in " + shortString)));
@@ -174,23 +174,23 @@ class CombinationTest extends BeforeAllTest {
 
     @Test
     void createOrFromList1() {
-        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
-        TestSpawn expect = new Or(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER));
+        TestSpawn expect = new Or(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER));
         assertEquals(expect, new Or(list), String.format("And from %s", list));
     }
 
     @Test
     void createOrFromList2() {
-        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
-            new EntityClassificationLimit(EntityClassification.CREATURE));
-        TestSpawn expect = new Or(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER),
-            new EntityClassificationLimit(EntityClassification.CREATURE));
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
+            new MobCategoryLimit(MobCategory.CREATURE));
+        TestSpawn expect = new Or(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER),
+            new MobCategoryLimit(MobCategory.CREATURE));
         assertEquals(expect, new Or(list), String.format("Or from %s", list));
     }
 
     @Test
     void isDeterministic1() {
-        List<TestSpawn> list = Arrays.asList(new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        List<TestSpawn> list = Arrays.asList(new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER));
         TestSpawn or = new Or(list);
         TestSpawn and = new And(list);
         assertAll(
@@ -201,7 +201,7 @@ class CombinationTest extends BeforeAllTest {
 
     @Test
     void isDeterministic2() {
-        List<TestSpawn> list = Arrays.asList(new RandomLimit(0.5d), new DimensionLimit(World.THE_NETHER), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        List<TestSpawn> list = Arrays.asList(new RandomLimit(0.5d), new DimensionLimit(Level.NETHER), new MobSpawnTypeLimit(MobSpawnType.SPAWNER));
         TestSpawn or = new Or(list);
         TestSpawn and = new And(list);
         assertAll(

@@ -23,7 +23,7 @@
   * Biome is like `minecraft:ocean`.
   * Category is like NETHER, TAIGA, FOREST and so on.
 * Implemented command suggestions for Dimension and Biome.
-* Fixed the condition of SpawnReasonLimit was wrong.
+* Fixed the condition of MobSpawnTypeLimit was wrong.
 * Internal - Changed error message of Entity rule.
 * Internal - Added log marker.
 * Internal - changes for GUI mod.

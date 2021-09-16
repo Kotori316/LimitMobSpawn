@@ -16,11 +16,11 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.command.arguments.ArgumentSerializer;
-import net.minecraft.command.arguments.ArgumentTypes;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.GsonHelper;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.SpawnConditionLoader;
@@ -28,7 +28,7 @@ import com.kotori316.limiter.TestSpawn;
 
 public class TestSpawnArgument implements ArgumentType<TestSpawn> {
     public static void registerArgumentType() {
-        ArgumentTypes.register(LimitMobSpawn.MOD_ID + ":rule", TestSpawnArgument.class, new ArgumentSerializer<>(TestSpawnArgument::new));
+        ArgumentTypes.register(LimitMobSpawn.MOD_ID + ":rule", TestSpawnArgument.class, new EmptyArgumentSerializer<>(TestSpawnArgument::new));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class TestSpawnArgument implements ArgumentType<TestSpawn> {
         stringreader.setCursor(builder.getStart());
         TestSpawnParser parser = new TestSpawnParser(stringreader);
         try {
-            parser.parseWithProvider((ISuggestionProvider) context.getSource());
+            parser.parseWithProvider((SharedSuggestionProvider) context.getSource());
         } catch (CommandSyntaxException ignore) {
         }
         return parser.getSuggestion(builder);
@@ -52,9 +52,9 @@ public class TestSpawnArgument implements ArgumentType<TestSpawn> {
 }
 
 class TestSpawnParser {
-    static final SimpleCommandExceptionType TYPE_NOT_FOUND = new SimpleCommandExceptionType(new StringTextComponent("Type not found."));
-    static final SimpleCommandExceptionType PROPERTY_NOT_FOUND = new SimpleCommandExceptionType(new StringTextComponent("Property not found."));
-    static final DynamicCommandExceptionType FAILED_CREATE_INSTANCE = new DynamicCommandExceptionType(o -> new StringTextComponent("Error " + o));
+    static final SimpleCommandExceptionType TYPE_NOT_FOUND = new SimpleCommandExceptionType(new TextComponent("Type not found."));
+    static final SimpleCommandExceptionType PROPERTY_NOT_FOUND = new SimpleCommandExceptionType(new TextComponent("Property not found."));
+    static final DynamicCommandExceptionType FAILED_CREATE_INSTANCE = new DynamicCommandExceptionType(o -> new TextComponent("Error " + o));
     private final StringReader reader;
     private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestion = SuggestionsBuilder::buildFuture;
     private String ruleName;
@@ -76,7 +76,7 @@ class TestSpawnParser {
     }
 
     static CompletableFuture<Suggestions> suggestRuleName(SuggestionsBuilder builder) {
-        return ISuggestionProvider.suggest(SpawnConditionLoader.INSTANCE.serializeKeySet(), builder);
+        return SharedSuggestionProvider.suggest(SpawnConditionLoader.INSTANCE.serializeKeySet(), builder);
     }
 
     static CompletableFuture<Suggestions> suggestStartProperties(SuggestionsBuilder builder) {
@@ -88,11 +88,11 @@ class TestSpawnParser {
 
     static Set<String> getPropertyKeysRest(String ruleName, JsonObject object) {
         return SpawnConditionLoader.INSTANCE.getSerializer(ruleName).propertyKeys()
-            .stream().filter(aKey -> !JSONUtils.hasField(object, aKey)).collect(Collectors.toSet());
+            .stream().filter(aKey -> !GsonHelper.isValidNode(object, aKey)).collect(Collectors.toSet());
     }
 
     static Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestPropertyKeys(String ruleName, JsonObject object) {
-        return (SuggestionsBuilder builder) -> ISuggestionProvider.suggest(getPropertyKeysRest(ruleName, object), builder);
+        return (SuggestionsBuilder builder) -> SharedSuggestionProvider.suggest(getPropertyKeysRest(ruleName, object), builder);
     }
 
     static CompletableFuture<Suggestions> suggestComma(SuggestionsBuilder builder) {
@@ -113,7 +113,7 @@ class TestSpawnParser {
         parseWithProvider(null);
     }
 
-    void parseWithProvider(@Nullable ISuggestionProvider provider) throws CommandSyntaxException {
+    void parseWithProvider(@Nullable SharedSuggestionProvider provider) throws CommandSyntaxException {
         {
             // Step 1
             this.suggestion = TestSpawnParser::suggestRuleName;

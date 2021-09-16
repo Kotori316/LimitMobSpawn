@@ -16,11 +16,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.Marker;
@@ -34,15 +34,15 @@ import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.BiomeCategoryLimit;
 import com.kotori316.limiter.conditions.BiomeLimit;
 import com.kotori316.limiter.conditions.DimensionLimit;
-import com.kotori316.limiter.conditions.EntityClassificationLimit;
+import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
 import com.kotori316.limiter.conditions.PositionLimit;
 import com.kotori316.limiter.conditions.RandomLimit;
-import com.kotori316.limiter.conditions.SpawnReasonLimit;
+import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 
-public class SpawnConditionLoader extends JsonReloadListener {
+public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
     private static final Marker MARKER = MarkerManager.getMarker("SpawnConditionLoader");
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private final Map<String, TestSpawn.Serializer<?>> serializers = new HashMap<>();
@@ -60,9 +60,9 @@ public class SpawnConditionLoader extends JsonReloadListener {
         register(Not.SERIALIZER);
         register(DimensionLimit.SERIALIZER);
         register(EntityLimit.SERIALIZER);
-        register(EntityClassificationLimit.SERIALIZER);
+        register(MobCategoryLimit.SERIALIZER);
         register(PositionLimit.SERIALIZER);
-        register(SpawnReasonLimit.SERIALIZER);
+        register(MobSpawnTypeLimit.SERIALIZER);
         register(BiomeLimit.SERIALIZER);
         register(BiomeCategoryLimit.SERIALIZER);
         register(RandomLimit.SERIALIZER);
@@ -77,7 +77,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn) {
+    protected void apply(Map<ResourceLocation, JsonElement> objectIn, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
         Set<TestSpawn> denySet = new HashSet<>();
         Set<TestSpawn> defaultSet = new HashSet<>();
         Set<TestSpawn> forceSet = new HashSet<>();
@@ -108,7 +108,7 @@ public class SpawnConditionLoader extends JsonReloadListener {
                 .map(this::deserialize)
                 .collect(Collectors.toSet());
         } else if (element.isJsonObject()) {
-            if (JSONUtils.hasField(element.getAsJsonObject(), "type")) {
+            if (GsonHelper.isValidNode(element.getAsJsonObject(), "type")) {
                 return Collections.singleton(this.deserialize(element.getAsJsonObject()));
             } else {
                 return element.getAsJsonObject().entrySet().stream()

@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import com.kotori316.limiter.LimitMobSpawn;
@@ -35,13 +35,13 @@ public class EntityLimit implements TestSpawn {
      * Just for data creation. Not for runtime. Use {@link EntityLimit#EntityLimit(EntityType)} instead.
      */
     public EntityLimit(String key) {
-        this.type = EntityType.byKey(key).orElse(null);
+        this.type = EntityType.byString(key).orElse(null);
         this.key = new ResourceLocation(key);
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", key);
     }
 
     @Override
-    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+    public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, MobSpawnType reason) {
         return this.type.equals(entityTypeIn);
     }
 
@@ -84,7 +84,7 @@ public class EntityLimit implements TestSpawn {
 
         @Override
         public <T> EntityLimit from(Dynamic<T> dynamic) {
-            EntityType<?> type = EntityType.byKey(dynamic.get("entity").asString("INVALID")).orElseThrow(() ->
+            EntityType<?> type = EntityType.byString(dynamic.get("entity").asString("INVALID")).orElseThrow(() ->
                 new IllegalArgumentException("Invalid entity name: " + dynamic.getValue()));
             return new EntityLimit(type);
         }
@@ -108,7 +108,7 @@ public class EntityLimit implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
+        public Set<String> possibleValues(String property, boolean suggesting, SharedSuggestionProvider provider) {
             if (property.equals("entity")) {
                 return ForgeRegistries.ENTITIES.getKeys().stream().map(ResourceLocation::toString).collect(Collectors.toSet());
             }

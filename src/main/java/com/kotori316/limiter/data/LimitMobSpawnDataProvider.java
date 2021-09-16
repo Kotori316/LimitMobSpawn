@@ -9,11 +9,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IDataProvider;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.HashCache;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.kotori316.limiter.LimitMobSpawn;
@@ -27,7 +27,7 @@ public class LimitMobSpawnDataProvider {
         }
     }
 
-    private static class TestSpawnProvider implements IDataProvider {
+    private static class TestSpawnProvider implements DataProvider {
         private final DataGenerator dataGenerator;
 
         private TestSpawnProvider(DataGenerator dataGenerator) {
@@ -35,11 +35,11 @@ public class LimitMobSpawnDataProvider {
         }
 
         @Override
-        public void act(DirectoryCache cache) throws IOException {
+        public void run(HashCache cache) throws IOException {
             Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
             Path parent = dataGenerator.getOutputFolder().resolve("data/" + LimitMobSpawn.MOD_ID + "/" + LimitMobSpawn.MOD_ID);
             for (Pair<String, JsonElement> pair : getData()) {
-                IDataProvider.save(gson, cache, pair.getRight(), parent.resolve(pair.getLeft() + ".json"));
+                DataProvider.save(gson, cache, pair.getRight(), parent.resolve(pair.getLeft() + ".json"));
             }
         }
 

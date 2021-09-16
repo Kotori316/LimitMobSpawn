@@ -11,7 +11,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 import com.kotori316.limiter.SpawnConditionLoader;
 
@@ -24,7 +24,7 @@ class ParseOneCondition implements ConditionParser {
                       StringReader reader,
                       JsonObject context,
                       Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter,
-                      @Nullable ISuggestionProvider provider)
+                      @Nullable SharedSuggestionProvider provider)
         throws CommandSyntaxException {
         // Step 2
         while (reader.canRead() && reader.peek() != ']') {
@@ -56,7 +56,7 @@ class ParseOneCondition implements ConditionParser {
     // Step 2: Get rule properties
     void readRuleProperties(String ruleName, StringReader reader, int first, int endExclusive, JsonObject object,
                             Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter,
-                            @Nullable ISuggestionProvider provider) throws CommandSyntaxException {
+                            @Nullable SharedSuggestionProvider provider) throws CommandSyntaxException {
         String pair = reader.getString().substring(first, endExclusive);
         if (!pair.contains("=")) {
             reader.setCursor(first);
@@ -95,8 +95,8 @@ class ParseOneCondition implements ConditionParser {
         }
     }
 
-    private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String ruleName, String key, ISuggestionProvider provider) {
-        return builder -> ISuggestionProvider.suggest(
+    private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> generateSuggestPropertyValues(String ruleName, String key, SharedSuggestionProvider provider) {
+        return builder -> SharedSuggestionProvider.suggest(
             SpawnConditionLoader.INSTANCE.getSerializer(ruleName).possibleValues(key, true, provider),
             builder);
     }

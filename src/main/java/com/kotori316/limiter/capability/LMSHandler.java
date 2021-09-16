@@ -6,12 +6,10 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.Dynamic;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.Direction;
-import net.minecraftforge.common.capabilities.Capability;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -20,7 +18,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import com.kotori316.limiter.SpawnConditionLoader;
 import com.kotori316.limiter.TestSpawn;
 
-public interface LMSHandler extends INBTSerializable<CompoundNBT> {
+public interface LMSHandler extends INBTSerializable<CompoundTag> {
     void addDefaultCondition(TestSpawn condition);
 
     void addDenyCondition(TestSpawn condition);
@@ -42,24 +40,24 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
     SpawnerControl getSpawnerControl();
 
     @Override
-    default CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
-        Collector<INBT, ?, ListNBT> arrayCollector = Collector.of(ListNBT::new, ListNBT::add, (l1, l2) -> {
+    default CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
+        Collector<Tag, ?, ListTag> arrayCollector = Collector.of(ListTag::new, ListTag::add, (l1, l2) -> {
             l1.addAll(l2);
             return l1;
         }, Collector.Characteristics.IDENTITY_FINISH);
         for (RuleType ruleType : RuleType.values()) {
-            nbt.put(ruleType.saveName(), ruleType.getRules(this).stream().map(t -> t.to(NBTDynamicOps.INSTANCE)).collect(arrayCollector));
+            nbt.put(ruleType.saveName(), ruleType.getRules(this).stream().map(t -> t.to(NbtOps.INSTANCE)).collect(arrayCollector));
         }
         nbt.put("SpawnerControl", getSpawnerControl().serializeNBT());
         return nbt;
     }
 
     @Override
-    default void deserializeNBT(CompoundNBT nbt) {
+    default void deserializeNBT(CompoundTag nbt) {
         for (RuleType ruleType : RuleType.values()) {
             nbt.getList(ruleType.saveName(), Constants.NBT.TAG_COMPOUND).stream()
-                .map(n -> new Dynamic<>(NBTDynamicOps.INSTANCE, n))
+                .map(n -> new Dynamic<>(NbtOps.INSTANCE, n))
                 .map(SpawnConditionLoader.INSTANCE::deserialize)
                 .forEach(t -> ruleType.add(this, t));
         }
@@ -68,7 +66,7 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
 
     static void registerCapability() {
         LMSCapability cap = new LMSCapability();
-        CapabilityManager.INSTANCE.register(LMSHandler.class, cap, cap);
+        CapabilityManager.INSTANCE.register(LMSHandler.class);
     }
 
     static Stream<TestSpawn> getCombinedDefault(LMSHandler h1, LazyOptional<LMSHandler> h2) {
@@ -84,20 +82,10 @@ public interface LMSHandler extends INBTSerializable<CompoundNBT> {
     }
 }
 
-final class LMSCapability implements Capability.IStorage<LMSHandler>, Callable<LMSHandler> {
+final class LMSCapability implements Callable<LMSHandler> {
 
     @Override
     public LMSHandler call() {
         return new LMSConditionsHolder();
-    }
-
-    @Override
-    public INBT writeNBT(Capability<LMSHandler> capability, LMSHandler instance, Direction side) {
-        return instance.serializeNBT();
-    }
-
-    @Override
-    public void readNBT(Capability<LMSHandler> capability, LMSHandler instance, Direction side, INBT nbt) {
-        instance.deserializeNBT((CompoundNBT) nbt);
     }
 }

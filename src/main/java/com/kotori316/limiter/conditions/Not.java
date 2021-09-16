@@ -8,11 +8,11 @@ import java.util.Set;
 
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.SpawnConditionLoader;
@@ -48,7 +48,7 @@ public class Not implements TestSpawn {
     }
 
     @Override
-    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+    public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, MobSpawnType reason) {
         return !value.test(worldIn, pos, entityTypeIn, reason);
     }
 
@@ -94,7 +94,7 @@ public class Not implements TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
+        public Set<String> possibleValues(String property, boolean suggesting, SharedSuggestionProvider provider) {
             return Collections.emptySet();
         }
     }

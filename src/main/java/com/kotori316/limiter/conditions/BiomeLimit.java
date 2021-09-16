@@ -7,16 +7,16 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.biome.Biome;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
@@ -24,21 +24,21 @@ import com.kotori316.limiter.TestSpawn;
 public class BiomeLimit implements TestSpawn {
     public static final TestSpawn.Serializer<BiomeLimit> SERIALIZER = new BiomeSerializer();
     @Nonnull
-    private final RegistryKey<Biome> biomeRegistryKey;
+    private final ResourceKey<Biome> biomeResourceKey;
 
-    public BiomeLimit(@Nonnull RegistryKey<Biome> biomeRegistryKey) {
-        this.biomeRegistryKey = biomeRegistryKey;
-        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", biomeRegistryKey);
+    public BiomeLimit(@Nonnull ResourceKey<Biome> biomeResourceKey) {
+        this.biomeResourceKey = biomeResourceKey;
+        LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", biomeResourceKey);
     }
 
     public BiomeLimit(@Nonnull ResourceLocation biome) {
-        this(RegistryKey.getOrCreateKey(Registry.BIOME_KEY, biome));
+        this(ResourceKey.create(Registry.BIOME_REGISTRY, biome));
     }
 
     @Override
-    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable SpawnReason reason) {
-        if (worldIn instanceof IWorldReader) {
-            IWorldReader worldReader = (IWorldReader) worldIn;
+    public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable MobSpawnType reason) {
+        if (worldIn instanceof LevelReader) {
+            LevelReader worldReader = (LevelReader) worldIn;
             Biome biome = worldReader.getBiome(pos);
             return test(biome);
         }
@@ -46,13 +46,13 @@ public class BiomeLimit implements TestSpawn {
     }
 
     public boolean test(Biome biome) {
-        return biomeRegistryKey.getLocation().equals(biome.getRegistryName());
+        return biomeResourceKey.location().equals(biome.getRegistryName());
     }
 
     @Override
     public String toString() {
         return "BiomeLimit{" +
-            "biome=" + biomeRegistryKey +
+            "biome=" + biomeResourceKey +
             '}';
     }
 
@@ -61,12 +61,12 @@ public class BiomeLimit implements TestSpawn {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BiomeLimit that = (BiomeLimit) o;
-        return Objects.equals(biomeRegistryKey, that.biomeRegistryKey);
+        return Objects.equals(biomeResourceKey, that.biomeResourceKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(biomeRegistryKey);
+        return Objects.hash(biomeResourceKey);
     }
 
     @Override
@@ -76,21 +76,21 @@ public class BiomeLimit implements TestSpawn {
 
     @Override
     public String contentShort() {
-        return "biome " + biomeRegistryKey.getLocation();
+        return "biome " + biomeResourceKey.location();
     }
 
-    private static final class BiomeSerializer extends StringLimitSerializer<BiomeLimit, RegistryKey<Biome>> {
+    private static final class BiomeSerializer extends StringLimitSerializer<BiomeLimit, ResourceKey<Biome>> {
         @Override
         public String getType() {
             return "biome";
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting, @Nullable ISuggestionProvider provider) {
+        public Set<String> possibleValues(String property, boolean suggesting, @Nullable SharedSuggestionProvider provider) {
             if (provider == null || !property.equals(saveKey()))
                 return Collections.emptySet();
-            return provider.func_241861_q()
-                .getRegistry(Registry.BIOME_KEY)
+            return provider.registryAccess()
+                .registryOrThrow(Registry.BIOME_REGISTRY)
                 .keySet()
                 .stream()
                 .map(ResourceLocation::toString)
@@ -98,13 +98,13 @@ public class BiomeLimit implements TestSpawn {
         }
 
         @Override
-        public RegistryKey<Biome> fromString(String s) {
-            return RegistryKey.getOrCreateKey(Registry.BIOME_KEY, new ResourceLocation(s));
+        public ResourceKey<Biome> fromString(String s) {
+            return ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(s));
         }
 
         @Override
-        public String valueToString(RegistryKey<Biome> biomeRegistryKey) {
-            return biomeRegistryKey.getLocation().toString();
+        public String valueToString(ResourceKey<Biome> biomeResourceKey) {
+            return biomeResourceKey.location().toString();
         }
 
         @Override
@@ -113,13 +113,13 @@ public class BiomeLimit implements TestSpawn {
         }
 
         @Override
-        public BiomeLimit instance(RegistryKey<Biome> biomeRegistryKey) {
-            return new BiomeLimit(biomeRegistryKey);
+        public BiomeLimit instance(ResourceKey<Biome> biomeResourceKey) {
+            return new BiomeLimit(biomeResourceKey);
         }
 
         @Override
-        public RegistryKey<Biome> getter(BiomeLimit dimensionLimit) {
-            return dimensionLimit.biomeRegistryKey;
+        public ResourceKey<Biome> getter(BiomeLimit dimensionLimit) {
+            return dimensionLimit.biomeResourceKey;
         }
     }
 }

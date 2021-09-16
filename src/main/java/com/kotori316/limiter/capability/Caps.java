@@ -1,11 +1,12 @@
 package com.kotori316.limiter.capability;
 
+import java.util.logging.Level;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -27,12 +28,12 @@ public class Caps {
     }
 
     @SubscribeEvent
-    public static void attachEvent(AttachCapabilitiesEvent<World> event) {
+    public static void attachEvent(AttachCapabilitiesEvent<Level> event) {
         event.addCapability(new ResourceLocation(LimitMobSpawn.MOD_ID, "world_lms_capability"),
             new LMSCapProvider(new LMSConditionsHolder()));
     }
 
-    public static class LMSCapProvider implements ICapabilityProvider, INBTSerializable<CompoundNBT> {
+    public static class LMSCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
         private final LMSHandler handler;
         private final LazyOptional<LMSHandler> optional;
 
@@ -48,12 +49,12 @@ public class Caps {
         }
 
         @Override
-        public CompoundNBT serializeNBT() {
+        public CompoundTag serializeNBT() {
             return handler.serializeNBT();
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundTag nbt) {
             handler.deserializeNBT(nbt);
         }
     }

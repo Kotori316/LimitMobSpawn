@@ -3,11 +3,11 @@ package com.kotori316.limiter.conditions;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.JsonOps;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DimensionLimitTest extends BeforeAllTest {
-    static Stream<RegistryKey<World>> registryKeys() {
+    static Stream<ResourceKey<Level>> registryKeys() {
         return Stream.of(
-            World.OVERWORLD,
-            World.THE_NETHER,
-            World.THE_END,
-            RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation("mining_dimension:mining")),
-            RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation("kick:gaia_dimension45"))
+            Level.OVERWORLD,
+            Level.NETHER,
+            Level.END,
+            ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("mining_dimension:mining")),
+            ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("kick:gaia_dimension45"))
         );
     }
 
@@ -36,19 +36,19 @@ class DimensionLimitTest extends BeforeAllTest {
 
     @ParameterizedTest
     @MethodSource("registryKeys")
-    void serialize(RegistryKey<World> worldRegistryKey) {
-        DimensionLimit limit = new DimensionLimit(worldRegistryKey);
+    void serialize(ResourceKey<Level> worldResourceKey) {
+        DimensionLimit limit = new DimensionLimit(worldResourceKey);
         assertAll(
             () -> assertDoesNotThrow(() -> limit.to(JsonOps.INSTANCE)),
             () -> assertDoesNotThrow(() -> limit.to(JsonOps.COMPRESSED)),
-            () -> assertDoesNotThrow(() -> limit.to(NBTDynamicOps.INSTANCE))
+            () -> assertDoesNotThrow(() -> limit.to(NbtOps.INSTANCE))
         );
     }
 
     @ParameterizedTest
     @MethodSource("registryKeys")
-    void cycleConsistency(RegistryKey<World> worldRegistryKey) {
-        DimensionLimit limit = new DimensionLimit(worldRegistryKey);
+    void cycleConsistency(ResourceKey<Level> worldResourceKey) {
+        DimensionLimit limit = new DimensionLimit(worldResourceKey);
         testCycle(limit);
     }
 }

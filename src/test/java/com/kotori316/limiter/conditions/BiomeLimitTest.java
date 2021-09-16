@@ -3,9 +3,9 @@ package com.kotori316.limiter.conditions;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +33,7 @@ class BiomeLimitTest extends BeforeAllTest {
 
     @ParameterizedTest
     @MethodSource("registeredBiomes")
-    void testValid(RegistryKey<Biome> key, Biome biome) {
+    void testValid(ResourceKey<Biome> key, Biome biome) {
         BiomeLimit limit = new BiomeLimit(key);
         assertAll(
             () -> assertTrue(limit.test(biome)),
@@ -43,7 +43,7 @@ class BiomeLimitTest extends BeforeAllTest {
 
     @ParameterizedTest
     @MethodSource("registeredBiomes")
-    void cycle(RegistryKey<Biome> key, Biome biome) {
+    void cycle(ResourceKey<Biome> key, Biome biome) {
         BiomeLimit limit = new BiomeLimit(key);
         testCycle(limit);
         assertEquals(limit, new BiomeLimit(Objects.requireNonNull(biome.getRegistryName())));

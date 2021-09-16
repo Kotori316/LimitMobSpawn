@@ -14,7 +14,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 import com.kotori316.limiter.TestSpawn;
 
@@ -107,7 +107,7 @@ public abstract class StringLimitSerializer<T extends TestSpawn, Value> extends 
             }
 
             @Override
-            public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
+            public Set<String> possibleValues(String property, boolean suggesting, SharedSuggestionProvider provider) {
                 Value[] values = valueSupplier.get();
                 if (values != null && property.equals(saveKey())) {
                     if (!suggesting && Enum.class.isAssignableFrom(values.getClass().getComponentType())) {

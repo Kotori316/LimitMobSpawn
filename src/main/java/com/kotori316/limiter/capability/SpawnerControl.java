@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class SpawnerControl implements INBTSerializable<CompoundNBT> {
+public class SpawnerControl implements INBTSerializable<CompoundTag> {
     public static final String KEY_SPAWN_COUNT = "spawnCount";
     private int spawnCount = 0;
 
@@ -24,14 +24,14 @@ public class SpawnerControl implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt(KEY_SPAWN_COUNT, spawnCount);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         setSpawnCount(nbt.getInt(KEY_SPAWN_COUNT));
     }
 
@@ -42,10 +42,10 @@ public class SpawnerControl implements INBTSerializable<CompoundNBT> {
             '}';
     }
 
-    public List<StringTextComponent> getMessages() {
+    public List<TextComponent> getMessages() {
         return Arrays.asList(
-            new StringTextComponent("SpawnerControl"),
-            new StringTextComponent("SpawnCount: " + getSpawnCount())
+            new TextComponent("SpawnerControl"),
+            new TextComponent("SpawnCount: " + getSpawnCount())
         );
     }
 }

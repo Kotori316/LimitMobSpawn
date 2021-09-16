@@ -7,11 +7,11 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import com.google.common.collect.Sets;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,9 +23,9 @@ import com.kotori316.limiter.capability.RuleType;
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
-import com.kotori316.limiter.conditions.EntityClassificationLimit;
+import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
-import com.kotori316.limiter.conditions.SpawnReasonLimit;
+import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,8 +38,8 @@ class HandlerTest extends BeforeAllTest {
     @BeforeEach
     void setup() {
         lmsHandler = new LMSConditionsHolder();
-        lmsHandler.addDefaultCondition(Creator.posAtDimension(World.OVERWORLD, BlockPos.ZERO, new BlockPos(64, 256, 64)));
-        lmsHandler.addDenyCondition(new DimensionLimit(World.THE_NETHER));
+        lmsHandler.addDefaultCondition(Creator.posAtDimension(Level.OVERWORLD, BlockPos.ZERO, new BlockPos(64, 256, 64)));
+        lmsHandler.addDenyCondition(new DimensionLimit(Level.NETHER));
         lmsHandler.addDenyCondition(new EntityLimit(EntityType.BAT));
         lmsHandler.addForceCondition(new EntityLimit(EntityType.ENDERMAN));
     }
@@ -47,7 +47,7 @@ class HandlerTest extends BeforeAllTest {
     @Test
     void getDefault() {
         assertAll(
-            () -> assertEquals(Collections.singleton(Creator.posAtDimension(World.OVERWORLD, BlockPos.ZERO, new BlockPos(64, 256, 64))),
+            () -> assertEquals(Collections.singleton(Creator.posAtDimension(Level.OVERWORLD, BlockPos.ZERO, new BlockPos(64, 256, 64))),
                 lmsHandler.getDefaultConditions()),
             () -> assertEquals(lmsHandler.getDefaultConditions(), RuleType.DEFAULT.getRules(lmsHandler))
         );
@@ -56,7 +56,7 @@ class HandlerTest extends BeforeAllTest {
     @Test
     void getDeny() {
         assertAll(
-            () -> assertEquals(Sets.newHashSet(new DimensionLimit(World.THE_NETHER), new EntityLimit(EntityType.BAT)), lmsHandler.getDenyConditions()),
+            () -> assertEquals(Sets.newHashSet(new DimensionLimit(Level.NETHER), new EntityLimit(EntityType.BAT)), lmsHandler.getDenyConditions()),
             () -> assertEquals(lmsHandler.getDenyConditions(), RuleType.DENY.getRules(lmsHandler))
         );
     }
@@ -90,7 +90,7 @@ class HandlerTest extends BeforeAllTest {
     @ParameterizedTest
     @EnumSource(RuleType.class)
     void addAll(RuleType ruleType) {
-        List<TestSpawn> a = Arrays.asList(All.getInstance(), new EntityClassificationLimit(EntityClassification.CREATURE), new SpawnReasonLimit(SpawnReason.SPAWNER));
+        List<TestSpawn> a = Arrays.asList(All.getInstance(), new MobCategoryLimit(MobCategory.CREATURE), new MobSpawnTypeLimit(MobSpawnType.SPAWNER));
         ruleType.addAll(lmsHandler, a);
 
         assertTrue(ruleType.getRules(lmsHandler).containsAll(a));

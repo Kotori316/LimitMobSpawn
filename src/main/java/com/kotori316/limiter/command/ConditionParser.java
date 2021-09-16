@@ -11,7 +11,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 interface ConditionParser {
     /**
@@ -21,14 +21,14 @@ interface ConditionParser {
      * @param reader   command argument. If parsing finished, the cursor should be the end of one condition.
      *                 If failed, the cursor should be the first.
      * @param context  the holder of data
-     * @param provider {@link net.minecraft.command.CommandSource} in real environment. {@code null} in test.
+     * @param provider {@link net.minecraft.commands.CommandSourceStack} in real environment. In test, {@code null}.
      * @throws CommandSyntaxException command parse failed.
      */
     void parse(String typeName,
                StringReader reader,
                JsonObject context,
                Consumer<Function<SuggestionsBuilder, CompletableFuture<Suggestions>>> suggestionSetter,
-               @Nullable ISuggestionProvider provider)
+               @Nullable SharedSuggestionProvider provider)
         throws CommandSyntaxException;
 
     ConditionParser ONE_CONDITION = new ParseOneCondition();
@@ -44,6 +44,6 @@ interface ConditionParser {
     }
 
     static Function<SuggestionsBuilder, CompletableFuture<Suggestions>> makeSuggestion(Stream<String> strings) {
-        return builder -> ISuggestionProvider.suggest(strings, builder);
+        return builder -> SharedSuggestionProvider.suggest(strings, builder);
     }
 }

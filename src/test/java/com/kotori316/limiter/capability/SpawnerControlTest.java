@@ -2,7 +2,7 @@ package com.kotori316.limiter.capability;
 
 import java.util.Optional;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -18,13 +18,13 @@ class SpawnerControlTest extends BeforeAllTest {
     void serializeNBT() {
         SpawnerControl control = new SpawnerControl();
         control.setSpawnCount(10);
-        CompoundNBT nbt = control.serializeNBT();
+        CompoundTag nbt = control.serializeNBT();
         assertEquals(10, nbt.getInt(SpawnerControl.KEY_SPAWN_COUNT));
     }
 
     @Test
     void deserializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+        CompoundTag nbt = new CompoundTag();
         {
             nbt.putInt(SpawnerControl.KEY_SPAWN_COUNT, 15);
         }

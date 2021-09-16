@@ -8,11 +8,11 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -23,10 +23,10 @@ import com.kotori316.limiter.conditions.Or;
 public interface TestSpawn {
     Marker MARKER = MarkerManager.getMarker("TestSpawn");
 
-    boolean test(IBlockReader worldIn,
+    boolean test(BlockGetter worldIn,
                  BlockPos pos,
                  EntityType<?> entityTypeIn,
-                 @Nullable SpawnReason reason);
+                 @Nullable MobSpawnType reason);
 
     Serializer<? extends TestSpawn> getSerializer();
 
@@ -69,14 +69,14 @@ public interface TestSpawn {
 
         public abstract Set<String> propertyKeys();
 
-        public abstract Set<String> possibleValues(String property, boolean suggesting, @Nullable ISuggestionProvider provider);
+        public abstract Set<String> possibleValues(String property, boolean suggesting, @Nullable SharedSuggestionProvider provider);
     }
 
     enum Empty implements TestSpawn {
         INSTANCE;
 
         @Override
-        public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
+        public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, MobSpawnType reason) {
             return false;
         }
 
@@ -113,7 +113,7 @@ public interface TestSpawn {
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting, ISuggestionProvider provider) {
+        public Set<String> possibleValues(String property, boolean suggesting, SharedSuggestionProvider provider) {
             return Collections.emptySet();
         }
     };

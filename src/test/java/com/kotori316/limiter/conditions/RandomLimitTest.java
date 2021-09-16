@@ -1,7 +1,7 @@
 package com.kotori316.limiter.conditions;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.EmptyBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.EmptyBlockGetter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -46,7 +46,7 @@ class RandomLimitTest extends BeforeAllTest {
     void test0() {
         RandomLimit limit = new RandomLimit(0);
         for (int i = 0; i < 10000; i++) {
-            if (limit.test(EmptyBlockReader.INSTANCE, BlockPos.ZERO, null, null)) {
+            if (limit.test(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, null, null)) {
                 fail("p is 0!, but succeeded");
             }
         }
@@ -56,7 +56,7 @@ class RandomLimitTest extends BeforeAllTest {
     void test1() {
         RandomLimit limit = new RandomLimit(1);
         for (int i = 0; i < 10000; i++) {
-            if (!limit.test(EmptyBlockReader.INSTANCE, BlockPos.ZERO, null, null)) {
+            if (!limit.test(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, null, null)) {
                 fail("p is 1!, but failed.");
             }
         }

@@ -6,15 +6,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
@@ -22,30 +22,30 @@ import com.kotori316.limiter.TestSpawn;
 public class DimensionLimit implements TestSpawn {
     public static final TestSpawn.Serializer<DimensionLimit> SERIALIZER = new DimensionSerializer();
 
-    private final RegistryKey<World> type;
+    private final ResourceKey<Level> type;
 
-    public DimensionLimit(RegistryKey<World> type) {
+    public DimensionLimit(ResourceKey<Level> type) {
         this.type = type;
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", type);
     }
 
     public static DimensionLimit fromName(String name) {
-        return new DimensionLimit(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(name)));
+        return new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(name)));
     }
 
     @Override
-    public boolean test(IBlockReader worldIn, BlockPos pos, EntityType<?> entityTypeIn, SpawnReason reason) {
-        RegistryKey<World> type;
-        if (worldIn instanceof World) {
-            World world = (World) worldIn;
-            type = world.getDimensionKey();
+    public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, MobSpawnType reason) {
+        ResourceKey<Level> type;
+        if (worldIn instanceof Level) {
+            Level world = (Level) worldIn;
+            type = world.dimension();
         } else {
-            type = World.OVERWORLD;
+            type = Level.OVERWORLD;
         }
         return this.type == type;
     }
 
-    public RegistryKey<World> getType() {
+    public ResourceKey<Level> getType() {
         return type;
     }
 
@@ -74,21 +74,21 @@ public class DimensionLimit implements TestSpawn {
 
     @Override
     public String contentShort() {
-        return "dim " + type.getLocation();
+        return "dim " + type.location();
     }
 
-    private static final class DimensionSerializer extends StringLimitSerializer<DimensionLimit, RegistryKey<World>> {
+    private static final class DimensionSerializer extends StringLimitSerializer<DimensionLimit, ResourceKey<Level>> {
         @Override
         public String getType() {
             return "dimension";
         }
 
         @Override
-        public Set<String> possibleValues(String property, boolean suggesting, @Nullable ISuggestionProvider provider) {
+        public Set<String> possibleValues(String property, boolean suggesting, @Nullable SharedSuggestionProvider provider) {
             if (provider == null || !property.equals(saveKey()))
                 return Collections.emptySet();
-            return provider.func_241861_q()
-                .func_230520_a_()
+            return provider.registryAccess()
+                .registryOrThrow(Registry.DIMENSION_REGISTRY)
                 .keySet()
                 .stream()
                 .map(ResourceLocation::toString)
@@ -96,13 +96,13 @@ public class DimensionLimit implements TestSpawn {
         }
 
         @Override
-        public RegistryKey<World> fromString(String s) {
-            return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(s));
+        public ResourceKey<Level> fromString(String s) {
+            return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(s));
         }
 
         @Override
-        public String valueToString(RegistryKey<World> worldRegistryKey) {
-            return worldRegistryKey.getLocation().toString();
+        public String valueToString(ResourceKey<Level> worldResourceKey) {
+            return worldResourceKey.location().toString();
         }
 
         @Override
@@ -111,12 +111,12 @@ public class DimensionLimit implements TestSpawn {
         }
 
         @Override
-        public DimensionLimit instance(RegistryKey<World> worldRegistryKey) {
-            return new DimensionLimit(worldRegistryKey);
+        public DimensionLimit instance(ResourceKey<Level> worldResourceKey) {
+            return new DimensionLimit(worldResourceKey);
         }
 
         @Override
-        public RegistryKey<World> getter(DimensionLimit dimensionLimit) {
+        public ResourceKey<Level> getter(DimensionLimit dimensionLimit) {
             return dimensionLimit.getType();
         }
     }
