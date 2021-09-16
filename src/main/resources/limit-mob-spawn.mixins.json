@@ -1,11 +1,11 @@
 {
   "required": true,
-  "minVersion": "0.8",
+  "minVersion": "0.8.4",
   "package": "com.kotori316.limiter.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "WorldEntitySpawnerMixin",
-    "EntitySpawnPlacementRegistryMixin",
+    "NaturalSpawnerMixin",
+    "SpawnPlacementsMixin",
     "MobEntityMixin",
     "SpawnerMixin"
   ],
