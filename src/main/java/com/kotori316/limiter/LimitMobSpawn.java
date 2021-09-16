@@ -39,12 +39,12 @@ public class LimitMobSpawn {
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(LMSHandler::registerCapability);
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.getInstance().setup(common));
     }
 
     public void setup(FMLCommonSetupEvent event) {
-        LMSHandler.registerCapability();
         TestSpawnArgument.registerArgumentType();
     }
 

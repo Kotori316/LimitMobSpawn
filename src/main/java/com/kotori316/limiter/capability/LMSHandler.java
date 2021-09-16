@@ -10,7 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -64,9 +64,8 @@ public interface LMSHandler extends INBTSerializable<CompoundTag> {
         getSpawnerControl().deserializeNBT(nbt.getCompound("SpawnerControl"));
     }
 
-    static void registerCapability() {
-        LMSCapability cap = new LMSCapability();
-        CapabilityManager.INSTANCE.register(LMSHandler.class);
+    static void registerCapability(RegisterCapabilitiesEvent event) {
+        event.register(LMSHandler.class);
     }
 
     static Stream<TestSpawn> getCombinedDefault(LMSHandler h1, LazyOptional<LMSHandler> h2) {
