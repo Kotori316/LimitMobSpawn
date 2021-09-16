@@ -75,7 +75,7 @@ public abstract class StringLimitSerializer<T extends TestSpawn, Value> extends 
         Function<Value, String> asString, Function<String, Value> fromString,
         String saveKey, String typeName, @Nonnull Supplier<Value[]> valueSupplier
     ) {
-        return new StringLimitSerializer<Type, Value>() {
+        return new StringLimitSerializer<>() {
             @Override
             public Value fromString(String s) {
                 return fromString.apply(s);

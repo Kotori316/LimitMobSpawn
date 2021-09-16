@@ -1,7 +1,5 @@
 package com.kotori316.limiter.conditions;
 
-import java.util.Objects;
-
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
