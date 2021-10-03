@@ -13,6 +13,7 @@ import net.minecraft.server.Bootstrap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.targets.FMLDataUserdevLaunchHandler;
 import org.junit.jupiter.api.BeforeAll;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -32,6 +33,7 @@ public abstract class BeforeAllTest {
             SharedConstants.tryDetectVersion();
             // initLoader();
             changeDist();
+            setHandler();
             assertEquals(Dist.CLIENT, FMLEnvironment.dist);
             Bootstrap.bootStrap();
         }
@@ -42,6 +44,15 @@ public abstract class BeforeAllTest {
             Field dist = FMLLoader.class.getDeclaredField("dist");
             dist.setAccessible(true);
             dist.set(null, Dist.CLIENT);
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+    private static void setHandler() {
+        try {
+            Field handler = FMLLoader.class.getDeclaredField("commonLaunchHandler");
+            handler.setAccessible(true);
+            handler.set(null, new FMLDataUserdevLaunchHandler());
         } catch (Exception e) {
             fail(e);
         }
