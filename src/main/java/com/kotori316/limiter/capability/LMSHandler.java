@@ -2,7 +2,6 @@ package com.kotori316.limiter.capability;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 

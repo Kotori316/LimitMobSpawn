@@ -15,7 +15,7 @@ Prevent mobs from spawning.
 [[dependencies.limitmobspawn]]
 modId = "forge"
 mandatory = true
-versionRange = "[37,)"
+versionRange = "[37.0.75,)"
 ordering = "NONE"
 side = "BOTH"
 

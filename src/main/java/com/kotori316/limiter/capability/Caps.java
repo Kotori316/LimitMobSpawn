@@ -7,7 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -19,8 +20,8 @@ import com.kotori316.limiter.LimitMobSpawn;
 
 @Mod.EventBusSubscriber(modid = LimitMobSpawn.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Caps {
-    @CapabilityInject(LMSHandler.class)
-    public static final Capability<LMSHandler> LMS_CAPABILITY = null;
+    public static final Capability<LMSHandler> LMS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
     public static Capability<LMSHandler> getLmsCapability() {
         return LMS_CAPABILITY;
