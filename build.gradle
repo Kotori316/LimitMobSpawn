@@ -123,7 +123,8 @@ def jarAttributeMap = [
         "Implementation-Version"  : project.version,
         "Implementation-Vendor"   : "Kotori316",
         "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-        "MixinConfigs"            : "limit-mob-spawn.mixins.json"
+        "MixinConfigs"            : "limit-mob-spawn.mixins.json",
+        'Automatic-Module-Name'   : 'limitmobspawn',
 ]
 jar {
     manifest {
