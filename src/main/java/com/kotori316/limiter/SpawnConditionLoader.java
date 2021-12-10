@@ -47,7 +47,7 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
     private final Map<String, TestSpawn.Serializer<?>> serializers = new HashMap<>();
     public static final SpawnConditionLoader INSTANCE = new SpawnConditionLoader();
     private final LMSDataPackHolder holder = new LMSDataPackHolder();
-    private static final boolean SKIP_CONDITION = System.getenv("limit_mob_spawn_data_gen") != null;
+    private static final boolean SKIP_CONDITION = System.getProperty("limit_mob_spawn_data_gen") != null;
 
     private SpawnConditionLoader() {
         super(GSON, LimitMobSpawn.MOD_ID);
