@@ -22,7 +22,6 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -48,8 +47,7 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
     private final Map<String, TestSpawn.Serializer<?>> serializers = new HashMap<>();
     public static final SpawnConditionLoader INSTANCE = new SpawnConditionLoader();
     private final LMSDataPackHolder holder = new LMSDataPackHolder();
-    private static final boolean SKIP_CONDITION =
-        !FMLLoader.isProduction() && System.getenv("target") == null;
+    private static final boolean SKIP_CONDITION = System.getenv("limit_mob_spawn_data_gen") != null;
 
     private SpawnConditionLoader() {
         super(GSON, LimitMobSpawn.MOD_ID);

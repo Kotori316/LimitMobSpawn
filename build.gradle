@@ -44,6 +44,7 @@ minecraft {
             property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
             property("mixin.debug", "true")
             property 'forge.logging.console.level', 'debug'
+            forceExit false
 
             mods {
                 "limitmobspawn" {
@@ -56,6 +57,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'info'
+            forceExit false
 
             mods {
                 "limitmobspawn" {
@@ -68,8 +70,10 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'info'
+            property 'limit_mob_spawn_data_gen', 'true'
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             args '--mod', 'limitmobspawn', '--all', '--output', file('src/test/resources/'), '--existing', file('src/main/resources/')
+            forceExit false
 
             mods {
                 "limitmobspawn" {
