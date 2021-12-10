@@ -11,7 +11,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -56,7 +55,7 @@ public interface LMSHandler extends INBTSerializable<CompoundTag> {
     @Override
     default void deserializeNBT(CompoundTag nbt) {
         for (RuleType ruleType : RuleType.values()) {
-            nbt.getList(ruleType.saveName(), Constants.NBT.TAG_COMPOUND).stream()
+            nbt.getList(ruleType.saveName(), Tag.TAG_COMPOUND).stream()
                 .map(n -> new Dynamic<>(NbtOps.INSTANCE, n))
                 .map(SpawnConditionLoader.INSTANCE::deserialize)
                 .forEach(t -> ruleType.add(this, t));
