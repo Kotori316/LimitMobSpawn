@@ -33,7 +33,7 @@ println('Java: ' + System.getProperty('java.version') +
         '(' + System.getProperty('java.vendor') + ') ' +
         'Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.18'
+    mappings channel: 'official', version: '1.18.1'
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
@@ -187,7 +187,7 @@ curseforge {
         changelog = file.exists() ? file.text : "See https://github.com/Kotori316/LimitMobSpawn/commits/master for change log." + System.lineSeparator() * 2 +
                 "For Minecraft $minecraftVersion, built with $v"
         releaseType = 'release'
-        addGameVersion '1.18'
+        addGameVersion '1.18.1'
         addGameVersion 'Forge'
         mainArtifact jar
         addArtifact deobfJar
