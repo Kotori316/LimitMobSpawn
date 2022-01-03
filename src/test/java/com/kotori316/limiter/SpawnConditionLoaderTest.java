@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -29,6 +32,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,6 +43,7 @@ import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.LightLevelLimit;
 import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Not;
@@ -49,19 +54,22 @@ import com.kotori316.limiter.conditions.RandomLimit;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class SpawnConditionLoaderTest extends BeforeAllTest {
     @Test
-    void dummy() {
-        assertTrue(Register.serializers().length > 0);
-        assertTrue(LoadJson.emptyElements().length > 0);
-        assertTrue(LoadJson.stupids().length > 0);
+    void dummy() throws Exception {
+        assertTrue(RegisterTest.serializers().length > 0);
+        assertTrue(LoadJsonTest.emptyElements().length > 0);
+        assertTrue(LoadJsonTest.stupids().length > 0);
+        assertTrue(FromJsonFileTest.loadAll().findAny().isPresent());
     }
 
-    static class Register extends BeforeAllTest {
+    static class RegisterTest extends BeforeAllTest {
         static TestSpawn.Serializer<?>[] serializers() {
             return new TestSpawn.Serializer[]{
                 TestSpawn.EMPTY_SERIALIZER,
@@ -118,7 +126,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         }
     }
 
-    static class LoadJson extends BeforeAllTest {
+    static class LoadJsonTest extends BeforeAllTest {
         @Test
         @DisplayName("Load from strange json map")
         void loadFromJsonObject() {
@@ -268,7 +276,7 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
 
     }
 
-    static class FromJsonFile extends BeforeAllTest {
+    static class FromJsonFileTest extends BeforeAllTest {
 
         /**
          * @param name resource name without extension.
@@ -360,9 +368,39 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
             );
             assertTrue(loader.getHolder().getDefaultConditions().isEmpty());
         }
+
+        @Test
+        @DisplayName("From Json, Light")
+        void loadFromFile5() {
+            SpawnConditionLoader loader = loadFile("allow_only_0");
+
+            assertEquals(
+                Collections.singleton(new And(
+                    new MobCategoryLimit(MobCategory.MONSTER),
+                    new LightLevelLimit(LightLayer.BLOCK, 0)
+                )),
+                loader.getHolder().getDenyConditions()
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource
+        void loadAll(String name) {
+            var url = getClass().getResource("/data/%s/%s/%s.json".formatted(LimitMobSpawn.MOD_ID, LimitMobSpawn.MOD_ID, name));
+            assertNotNull(url, "File %s.json doesn't exist.".formatted(name));
+        }
+
+        static Stream<String> loadAll() throws Exception {
+            Class<?> aClass = Class.forName("com.kotori316.limiter.data.Rules");
+            return Stream.of(aClass.getDeclaredMethods())
+                .filter(m -> !Modifier.isStatic(m.getModifiers()))
+                .filter(m -> m.getParameterTypes().length == 0)
+                .filter(m -> m.getReturnType() == JsonObject.class)
+                .map(Method::getName);
+        }
     }
 
-    static class LoadAnd extends BeforeAllTest {
+    static class LoadAndTest extends BeforeAllTest {
         static JsonObject makeObject(String type, JsonElement value) {
             JsonObject condition = new JsonObject();
             condition.addProperty("type", type);
