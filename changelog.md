@@ -9,6 +9,13 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v16.9
+
+* Added Light Limit.
+  * See [here][light_example] for example.
+
+[light_example]: https://github.com/Kotori316/LimitMobSpawn/blob/302a63a26d0a4f046019257d7d09d3b2bf6b928e/src/test/resources/data/limitmobspawn/limitmobspawn/allow_only_0.json
+
 ## v16.8
 
 * Added function to change spawn count of Monster Spawner.
