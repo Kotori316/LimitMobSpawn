@@ -260,7 +260,7 @@ task copyToDir(type: Copy, dependsOn: "build") {
 }
 
 task copyToDrive(type: Copy, dependsOn: "build") {
-    def PATH_NAME = "destination"
+    def PATH_NAME = "drive_path"
     from(jar.getArchiveFile(), deobfJar.getArchiveFile(), srcJar.getArchiveFile())
     into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
     onlyIf {

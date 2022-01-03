@@ -250,7 +250,7 @@ class Rules {
 
     JsonObject allow_only_0() {
         JsonObject object = new JsonObject();
-        object.addProperty("_comment", "Allow Monsters to spawn where light level is over 1. As 1.18 do.");
+        object.addProperty("_comment", "Stop monsters from spawning in areas whose light level is over 0. As 1.18 do.");
         object.add("deny", as(new And(
             new MobCategoryLimit(MobCategory.MONSTER),
             new LightLevelLimit(LightLayer.BLOCK, 0)

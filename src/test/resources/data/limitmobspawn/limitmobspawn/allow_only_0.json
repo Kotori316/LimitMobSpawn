@@ -1,5 +1,5 @@
 {
-  "_comment": "Allow Monsters to spawn where light level is over 1. As 1.18 do.",
+  "_comment": "Stop monsters from spawning in areas whose light level is over 0. As 1.18 do.",
   "deny": [
     {
       "values": [
