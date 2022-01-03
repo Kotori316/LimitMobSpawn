@@ -56,7 +56,7 @@ public interface LMSHandler extends INBTSerializable<CompoundTag> {
     @Override
     default void deserializeNBT(CompoundTag nbt) {
         for (RuleType ruleType : RuleType.values()) {
-            nbt.getList(ruleType.saveName(), Constants.NBT.TAG_COMPOUND).stream()
+            nbt.getList(ruleType.saveName(), Tag.TAG_COMPOUND).stream()
                 .map(n -> new Dynamic<>(NbtOps.INSTANCE, n))
                 .map(SpawnConditionLoader.INSTANCE::deserialize)
                 .forEach(t -> ruleType.add(this, t));
