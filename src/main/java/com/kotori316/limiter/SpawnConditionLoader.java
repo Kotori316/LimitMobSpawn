@@ -34,6 +34,7 @@ import com.kotori316.limiter.conditions.BiomeCategoryLimit;
 import com.kotori316.limiter.conditions.BiomeLimit;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.LightLevelLimit;
 import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Not;
@@ -64,6 +65,7 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
         register(BiomeLimit.SERIALIZER);
         register(BiomeCategoryLimit.SERIALIZER);
         register(RandomLimit.SERIALIZER);
+        register(LightLevelLimit.SERIALIZER);
     }
 
     // ---------- Data pack Serialize & Deserialize ----------

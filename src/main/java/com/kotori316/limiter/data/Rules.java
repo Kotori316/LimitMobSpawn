@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,6 +27,7 @@ import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.Creator;
 import com.kotori316.limiter.conditions.DimensionLimit;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.LightLevelLimit;
 import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Or;
@@ -243,6 +245,16 @@ class Rules {
             conditions.add(ModLoadedCondition.Serializer.INSTANCE.getJson(new ModLoadedCondition("gaiadimension")));
             object.add("conditions", conditions);
         }
+        return object;
+    }
+
+    JsonObject allow_only_0() {
+        JsonObject object = new JsonObject();
+        object.addProperty("_comment", "Allow Monsters to spawn where light level is over 1. As 1.18 do.");
+        object.add("deny", as(new And(
+            new MobCategoryLimit(MobCategory.MONSTER),
+            new LightLevelLimit(LightLayer.BLOCK, 0)
+        )));
         return object;
     }
 }
