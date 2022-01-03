@@ -22,7 +22,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: "com.matthewprenger.cursegradle"
 
-version = '17.0'
+version = '17.1'
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'LimitMobSpawn'
 

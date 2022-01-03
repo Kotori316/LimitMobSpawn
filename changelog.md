@@ -9,6 +9,15 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v17.1
+
+* Added LightLevelLimit.
+  * It has 2 properties, `layer`, `level`.
+    * Layer is either Block or Sky.
+    * Level should be in 0 to 15.
+  * This condition outputs `true` if the light level in layer > `level`.
+  * Set `layer`=block, `level`=0 to reproduce 1.18 condition.
+
 ## v17.0
 
 * Update for 1.17.1
