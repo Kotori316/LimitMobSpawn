@@ -94,7 +94,7 @@ public class LMSCommand {
                 lmsHandler.getSpawnerControl().getMessages().forEach(s -> context.getSource().sendSuccess(s, true));
                 return Command.SINGLE_SUCCESS;
             }));
-            literal.then(spawner);
+            // literal.then(spawner);
         }
         dispatcher.register(literal);
     }
