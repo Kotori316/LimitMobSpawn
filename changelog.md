@@ -9,6 +9,10 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v18.2
+
+* Remove Spawner Mixin as it prevents the client launching.
+
 ## v18.1
 
 * Added LightLevelLimit in 1.18.

@@ -25,7 +25,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'org.spongepowered.mixin'
 
-version = '18.1'
+version = '18.2'
 group = 'com.kotori316' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'LimitMobSpawn'
 
