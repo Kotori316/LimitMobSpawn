@@ -3,7 +3,7 @@ package com.kotori316.limiter.conditions;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import net.minecraft.world.LightType;
+import net.minecraft.world.level.LightLayer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,14 +19,14 @@ class LightLevelLimitTest extends BeforeAllTest {
     }
 
     @ParameterizedTest
-    @MethodSource
-    void cycleTest(LightType layer, int level) {
+    @MethodSource("cycleTest")
+    void cycleConsistency(LightLayer layer, int level) {
         LightLevelLimit limit = new LightLevelLimit(layer, level);
         testCycle(limit);
     }
 
     static Stream<Object[]> cycleTest() {
-        return Stream.of(LightType.values()).flatMap(layer ->
+        return Stream.of(LightLayer.values()).flatMap(layer ->
             IntStream.rangeClosed(-2, 17)
                 .mapToObj(level -> new Object[]{layer, level}));
     }

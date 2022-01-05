@@ -34,6 +34,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -54,7 +55,6 @@ import com.kotori316.limiter.conditions.RandomLimit;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,6 +67,11 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
         assertTrue(LoadJsonTest.emptyElements().length > 0);
         assertTrue(LoadJsonTest.stupids().length > 0);
         assertTrue(FromJsonFileTest.loadAll().findAny().isPresent());
+    }
+
+    @Test
+    void checkCondition() {
+        assertTrue(SpawnConditionLoader.SKIP_CONDITION);
     }
 
     static class RegisterTest extends BeforeAllTest {
@@ -426,6 +431,80 @@ class SpawnConditionLoaderTest extends BeforeAllTest {
 
             TestSpawn or = Or.SERIALIZER.from(new Dynamic<>(JsonOps.INSTANCE, orJson));
             assertEquals(new Or(All.getInstance()), or);
+        }
+
+        @Nested
+        class InvalidTypeThrowingTest {
+            @Test
+            void invalidType1() {
+                JsonObject object = makeObject("NOT_EXIST_TYPE", new JsonObject());
+
+                assertThrows(IllegalArgumentException.class, () -> SpawnConditionLoader.INSTANCE.deserialize(object));
+            }
+
+            @Test
+            void invalidType2() {
+                JsonObject object = new JsonObject();
+                object.addProperty("value", "what?");
+
+                assertThrows(IllegalArgumentException.class, () -> SpawnConditionLoader.INSTANCE.deserialize(object));
+            }
+
+            @Test
+            void invalidType3() {
+                JsonObject object = new JsonObject();
+                object.addProperty("type", "anonymous");
+                object.addProperty("value", "what?");
+
+                assertThrows(IllegalArgumentException.class, () -> SpawnConditionLoader.INSTANCE.deserialize(object));
+            }
+        }
+
+        @Nested
+        class InvalidTypeNoThrowingTest {
+            @Test
+            void invalidType1() {
+                boolean pre = SpawnConditionLoader.SKIP_CONDITION;
+                SpawnConditionLoader.SKIP_CONDITION = false;
+                JsonObject object = makeObject("NOT_EXIST_TYPE", new JsonObject());
+                try {
+                    TestSpawn spawn = SpawnConditionLoader.INSTANCE.deserialize(object);
+                    assertEquals(TestSpawn.Empty.INSTANCE, spawn);
+                } finally {
+                    SpawnConditionLoader.SKIP_CONDITION = pre;
+                }
+            }
+
+            @Test
+            void invalidType2() {
+                boolean pre = SpawnConditionLoader.SKIP_CONDITION;
+                SpawnConditionLoader.SKIP_CONDITION = false;
+                JsonObject object = new JsonObject();
+                object.addProperty("value", "what?");
+
+                try {
+                    TestSpawn spawn = SpawnConditionLoader.INSTANCE.deserialize(object);
+                    assertEquals(TestSpawn.Empty.INSTANCE, spawn);
+                } finally {
+                    SpawnConditionLoader.SKIP_CONDITION = pre;
+                }
+            }
+
+            @Test
+            void invalidType3() {
+                boolean pre = SpawnConditionLoader.SKIP_CONDITION;
+                SpawnConditionLoader.SKIP_CONDITION = false;
+                JsonObject object = new JsonObject();
+                object.addProperty("type", "anonymous");
+                object.addProperty("value", "what?");
+
+                try {
+                    TestSpawn spawn = SpawnConditionLoader.INSTANCE.deserialize(object);
+                    assertEquals(TestSpawn.Empty.INSTANCE, spawn);
+                } finally {
+                    SpawnConditionLoader.SKIP_CONDITION = pre;
+                }
+            }
         }
     }
 }

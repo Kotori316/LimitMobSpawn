@@ -48,7 +48,8 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
     private final Map<String, TestSpawn.Serializer<?>> serializers = new HashMap<>();
     public static final SpawnConditionLoader INSTANCE = new SpawnConditionLoader();
     private final LMSDataPackHolder holder = new LMSDataPackHolder();
-    private static final boolean SKIP_CONDITION = System.getProperty("limit_mob_spawn_data_gen") != null;
+    @VisibleForTesting
+    static boolean SKIP_CONDITION = System.getProperty("limit_mob_spawn_data_gen") != null;
 
     private SpawnConditionLoader() {
         super(GSON, LimitMobSpawn.MOD_ID);
@@ -129,8 +130,13 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
         String type = dynamic.get("type").asString("anonymous");
         TestSpawn.Serializer<?> serializer = serializers.get(type);
         if (serializer == null || serializer == TestSpawn.EMPTY_SERIALIZER) {
-            LimitMobSpawn.LOGGER.error(MARKER, "Type {} is not registered. Error in loading {}", type, dynamic.getValue());
-            return TestSpawn.Empty.INSTANCE;
+            if (SKIP_CONDITION) {
+                // Throw exception in test.
+                throw new IllegalArgumentException("Type %s is not registered. Error in loading %s".formatted(type, dynamic.getValue()));
+            } else {
+                LimitMobSpawn.LOGGER.error(MARKER, "Type {} is not registered. Error in loading {}", type, dynamic.getValue());
+                return TestSpawn.Empty.INSTANCE;
+            }
         }
         return serializer.from(dynamic);
     }
