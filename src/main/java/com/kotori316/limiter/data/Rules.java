@@ -184,14 +184,16 @@ class Rules {
 
     JsonObject mining_dim() {
         JsonObject object = new JsonObject();
+        object.addProperty("_comment", "Stop spawning of Zombie and Skeleton in 'mining_dimension', which is modded dimension.");
         {
             object.add("deny", as(
-                All.getInstance()
-                    .and(new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("mining_dimension:mining"))))
-                    .and(new Or(
+                new And(
+                    new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("mining_dimension:mining"))),
+                    new Or(
                         new EntityLimit(EntityType.ZOMBIE),
                         new EntityLimit(EntityType.SKELETON)
-                    ))
+                    )
+                )
             ));
         }
         {
