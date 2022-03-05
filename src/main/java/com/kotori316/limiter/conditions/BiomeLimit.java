@@ -35,8 +35,8 @@ public record BiomeLimit(@Nonnull ResourceKey<Biome> biomeResourceKey) implement
     @Override
     public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable MobSpawnType reason) {
         if (worldIn instanceof LevelReader worldReader) {
-            Biome biome = worldReader.getBiome(pos);
-            return test(biome);
+            var biome = worldReader.getBiome(pos);
+            return test(biome.value());
         }
         return false;
     }

@@ -22,11 +22,12 @@ public record BiomeCategoryLimit(Biome.BiomeCategory category) implements TestSp
         LimitMobSpawn.LOGGER.debug(TestSpawn.MARKER, getClass().getSimpleName() + " Instance created with {}", category);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean test(BlockGetter worldIn, BlockPos pos, EntityType<?> entityTypeIn, @Nullable MobSpawnType reason) {
         if (worldIn instanceof LevelReader worldReader) {
-            Biome biome = worldReader.getBiome(pos);
-            return category == biome.getBiomeCategory();
+            var biome = worldReader.getBiome(pos);
+            return category == Biome.getBiomeCategory(biome);
         }
         return false;
     }
