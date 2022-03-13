@@ -42,8 +42,8 @@ String mcVersion() {
 }
 
 minecraft {
-    // mappings channel: 'parchment', version: (project.parchmentMapping as String)
-    mappings channel: 'official', version: mcVersion()
+    mappings channel: 'parchment', version: ((project.parchmentMapping + "-" + mcVersion()) as String)
+    // mappings channel: 'official', version: mcVersion()
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
