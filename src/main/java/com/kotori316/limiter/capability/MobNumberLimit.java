@@ -2,11 +2,15 @@ package com.kotori316.limiter.capability;
 
 import java.util.EnumMap;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +45,33 @@ public final class MobNumberLimit implements INBTSerializable<CompoundTag> {
 
     public void set(MobCategory mobCategory, int limit) {
         this.map.put(mobCategory, limit);
+    }
+
+    public Optional<Component> getMessage() {
+        if (this.map.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(
+                new TextComponent(map.entrySet().stream()
+                    .map(e -> "%s%s%s: %d".formatted(ChatFormatting.AQUA, e.getKey(), ChatFormatting.RESET, e.getValue()))
+                    .collect(Collectors.joining("\n")))
+            );
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MobNumberLimit that = (MobNumberLimit) o;
+
+        return map.equals(that.map);
+    }
+
+    @Override
+    public int hashCode() {
+        return map.hashCode();
     }
 
     @Nullable

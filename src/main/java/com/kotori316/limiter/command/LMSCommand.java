@@ -15,7 +15,9 @@ import javax.annotation.Nonnull;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.server.command.EnumArgument;
 
 import com.kotori316.limiter.Config;
 import com.kotori316.limiter.LimitMobSpawn;
@@ -95,6 +97,26 @@ public class LMSCommand {
                 return Command.SINGLE_SUCCESS;
             }));
             // literal.then(spawner);
+        }
+        {
+            LiteralArgumentBuilder<CommandSourceStack> categoryLimit = Commands.literal("category_limit");
+            categoryLimit.then(Commands.literal("set")
+                .requires(s -> s.hasPermission(Config.getInstance().getPermission()))
+                .then(Commands.argument("category", EnumArgument.enumArgument(MobCategory.class))
+                    .then(Commands.argument("limit", IntegerArgumentType.integer(0)).executes(context -> {
+                        MobCategory category = context.getArgument("category", MobCategory.class);
+                        Integer limit = context.getArgument("limit", Integer.class);
+                        getAllLmsHandlers(context).forEach(l -> l.getMobNumberLimit().set(category, limit));
+                        context.getSource().sendSuccess(new TextComponent("Set %s limit to %s".formatted(category, limit)), true);
+                        return Command.SINGLE_SUCCESS;
+                    })))
+            );
+            categoryLimit.then(Commands.literal("query").executes(context -> {
+                var message = getLmsHandler(context).getMobNumberLimit().getMessage();
+                message.ifPresent(m -> context.getSource().sendSuccess(m, true));
+                return Command.SINGLE_SUCCESS;
+            }));
+            literal.then(categoryLimit);
         }
         dispatcher.register(literal);
     }
