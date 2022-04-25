@@ -9,6 +9,11 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v18.4
+
+* Added function to change the maximum number of mobs to spawn.
+* Add command for MobNumberLimit. `limit-mob-spawn category_limit set <CATEGORY> <COUNT>`
+
 ## v18.3
 
 * Update for 1.18.2
