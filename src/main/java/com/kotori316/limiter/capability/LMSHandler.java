@@ -38,6 +38,8 @@ public interface LMSHandler extends INBTSerializable<CompoundTag> {
 
     SpawnerControl getSpawnerControl();
 
+    MobNumberLimit getMobNumberLimit();
+
     @Override
     default CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
@@ -49,6 +51,7 @@ public interface LMSHandler extends INBTSerializable<CompoundTag> {
             nbt.put(ruleType.saveName(), ruleType.getRules(this).stream().map(t -> t.to(NbtOps.INSTANCE)).collect(arrayCollector));
         }
         nbt.put("SpawnerControl", getSpawnerControl().serializeNBT());
+        nbt.put("MobNumberLimit", getMobNumberLimit().serializeNBT());
         return nbt;
     }
 
@@ -61,6 +64,7 @@ public interface LMSHandler extends INBTSerializable<CompoundTag> {
                 .forEach(t -> ruleType.add(this, t));
         }
         getSpawnerControl().deserializeNBT(nbt.getCompound("SpawnerControl"));
+        getMobNumberLimit().deserializeNBT(nbt.getCompound("MobNumberLimit"));
     }
 
     static void registerCapability(RegisterCapabilitiesEvent event) {

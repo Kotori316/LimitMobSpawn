@@ -49,6 +49,11 @@ public class LMSDataPackHolder implements LMSHandler {
     }
 
     @Override
+    public MobNumberLimit getMobNumberLimit() {
+        return new MobNumberLimit();
+    }
+
+    @Override
     public Set<TestSpawn> getDefaultConditions() {
         return defaultSet;
     }
