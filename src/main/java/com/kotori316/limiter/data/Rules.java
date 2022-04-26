@@ -259,4 +259,14 @@ class Rules {
         )));
         return object;
     }
+
+    JsonObject prevent_natural_monster() {
+        JsonObject object = new JsonObject();
+        object.addProperty("_comment", "Prevent monsters from spawning naturally.");
+        object.add("deny", as(new And(
+            new MobCategoryLimit(MobCategory.MONSTER),
+            new Or(new MobSpawnTypeLimit(MobSpawnType.NATURAL), new MobSpawnTypeLimit(MobSpawnType.CHUNK_GENERATION))
+        )));
+        return object;
+    }
 }
