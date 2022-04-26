@@ -15,6 +15,7 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nonnull;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import com.kotori316.limiter.TestSpawn;
 import com.kotori316.limiter.conditions.All;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.DimensionLimit;
+import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
@@ -321,6 +323,19 @@ class TestSpawnParserTest extends BeforeAllTest {
             assertDoesNotThrow(parser::createInstance);
             And and = (And) parser.createInstance();
             And expected = new And(DimensionLimit.fromName("overworld").not(), new MobSpawnTypeLimit(MobSpawnType.NATURAL));
+            assertEquals(expected, and);
+        }
+
+        @Test
+        void parse5() {
+            var expected = new And(
+                new MobCategoryLimit(MobCategory.MONSTER),
+                new Or(new MobSpawnTypeLimit(MobSpawnType.NATURAL), new MobSpawnTypeLimit(MobSpawnType.CHUNK_GENERATION))
+            );
+            var input = "and[classification[classification=monster], or[spawn_reason[spawn_reason=natural], spawn_reason[spawn_reason=chunk_generation]]]";
+            TestSpawnParser parser = new TestSpawnParser(new StringReader(input));
+            assertDoesNotThrow(parser::parse);
+            And and = (And) assertDoesNotThrow(parser::createInstance);
             assertEquals(expected, and);
         }
 
