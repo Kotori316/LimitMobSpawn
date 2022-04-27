@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import org.jetbrains.annotations.Nullable;
 
 import com.kotori316.limiter.TestSpawn;
 
@@ -12,6 +14,8 @@ public class LMSDataPackHolder implements LMSHandler {
     private Set<TestSpawn> denySet = Collections.emptySet();
     private Set<TestSpawn> defaultSet = Collections.emptySet();
     private Set<TestSpawn> forceSet = Collections.emptySet();
+    @Nullable
+    public ICondition.IContext context;
 
     @Override
     @Deprecated // This class is not for each append.

@@ -16,11 +16,16 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.tags.TagManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.conditions.ConditionContext;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -84,7 +89,14 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
         Set<TestSpawn> forceSet = new HashSet<>();
         for (JsonElement element : objectIn.values()) {
             JsonObject asObject = element.getAsJsonObject();
-            if (SKIP_CONDITION || CraftingHelper.processConditions(asObject, "conditions")) {
+            ICondition.IContext context;
+            if (holder.context != null) {
+                context = holder.context;
+            } else {
+                if (!SKIP_CONDITION) LimitMobSpawn.LOGGER.warn(MARKER, "holder.context should not be null.");
+                context = ICondition.IContext.EMPTY;
+            }
+            if (SKIP_CONDITION || CraftingHelper.processConditions(asObject, "conditions", context)) {
                 defaultSet.addAll(getValues(asObject.get(RuleType.DEFAULT.saveName())));
                 denySet.addAll(getValues(asObject.get(RuleType.DENY.saveName())));
                 forceSet.addAll(getValues(asObject.get(RuleType.FORCE.saveName())));
@@ -97,6 +109,21 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
 
     public LMSHandler getHolder() {
         return holder;
+    }
+
+    public void setContext(ReloadableServerResources resources) {
+        var field = ObfuscationReflectionHelper.findField(ReloadableServerResources.class, "f_206849_");
+        try {
+            var c = new ConditionContext((TagManager) field.get(resources));
+            this.setContext(c);
+        } catch (ReflectiveOperationException e) {
+            LimitMobSpawn.LOGGER.fatal(MARKER, "Got exception in getting context of tags.", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setContext(ICondition.IContext context) {
+        this.holder.context = context;
     }
 
     @VisibleForTesting

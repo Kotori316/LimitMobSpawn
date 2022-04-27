@@ -51,6 +51,7 @@ public class LimitMobSpawn {
 
     @SubscribeEvent
     public void addLister(AddReloadListenerEvent event) {
+        SpawnConditionLoader.INSTANCE.setContext(event.getServerResources());
         event.addListener(SpawnConditionLoader.INSTANCE);
     }
 
