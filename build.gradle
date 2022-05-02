@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.4.0'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
@@ -84,7 +84,7 @@ repositories {
 }
 
 def getForgeVersionToBuild() {
-    return 'net.minecraftforge:forge:1.16.5-36.2.8'
+    return 'net.minecraftforge:forge:1.16.5-36.2.34'
 }
 
 dependencies {
@@ -150,20 +150,23 @@ artifacts {
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('signJar')
 
-task signJar(type: net.minecraftforge.gradle.common.task.SignJar, dependsOn: 'reobfJar') {
+task signJar(dependsOn: 'reobfJar') {
     boolean executeCondition = project.hasProperty('keyStoreAlias') &&
             project.hasProperty('keyStore') &&
             project.hasProperty('keyStorePass')
     onlyIf { executeCondition }
-    if (executeCondition) {
-        keyStore = project.getProperty("keyStore")
-        alias = project.getProperty('keyStoreAlias')
-        storePass = project.getProperty('keyStorePass')
-        keyPass = ""
+    doLast {
+        //noinspection HttpUrlsUsage
+        ant.signjar(
+                jar: jar.archiveFile.get(),
+                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+                sigalg: "SHA1withRSA",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com"
+        )
     }
-
-    inputFile = jar.getArchiveFile().get()
-    outputFile = jar.getArchiveFile().get()
 }
 
 curseforge {
