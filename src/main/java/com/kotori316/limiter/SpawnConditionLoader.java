@@ -16,16 +16,12 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.tags.TagManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ConditionContext;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -109,17 +105,6 @@ public class SpawnConditionLoader extends SimpleJsonResourceReloadListener {
 
     public LMSHandler getHolder() {
         return holder;
-    }
-
-    public void setContext(ReloadableServerResources resources) {
-        var field = ObfuscationReflectionHelper.findField(ReloadableServerResources.class, "f_206849_");
-        try {
-            var c = new ConditionContext((TagManager) field.get(resources));
-            this.setContext(c);
-        } catch (ReflectiveOperationException e) {
-            LimitMobSpawn.LOGGER.fatal(MARKER, "Got exception in getting context of tags.", e);
-            throw new RuntimeException(e);
-        }
     }
 
     public void setContext(ICondition.IContext context) {
