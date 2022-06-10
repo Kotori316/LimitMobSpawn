@@ -41,6 +41,13 @@ class MobNumberLimitTest {
     }
 
     @Test
+    void deserializeEmpty() {
+        var m = new MobNumberLimit();
+        m.deserializeNBT(new CompoundTag());
+        assertEquals(new MobNumberLimit(), m);
+    }
+
+    @Test
     void firstIsEmpty() {
         var m = new MobNumberLimit();
         assertAll(
