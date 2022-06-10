@@ -26,12 +26,11 @@ public final class MobNumberLimit implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        this.map = new EnumMap<>(
-            nbt.getAllKeys().stream()
-                .map(MobNumberLimit::get)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toMap(Function.identity(), t -> nbt.getInt(t.getName())))
-        );
+        var savedData = nbt.getAllKeys().stream()
+            .map(MobNumberLimit::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(Function.identity(), t -> nbt.getInt(t.getName())));
+        this.map = savedData.isEmpty() ? new EnumMap<>(MobCategory.class) : new EnumMap<>(savedData);
     }
 
     public OptionalInt getLimit(MobCategory mobCategory) {
