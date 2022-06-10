@@ -1,8 +1,7 @@
 package com.kotori316.limiter.mixin;
 
-import java.util.Random;
-
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -23,7 +22,7 @@ public class MobEntityMixin {
      */
     @Inject(method = "checkMobSpawnRules", at = @At("HEAD"), cancellable = true)
     private static void checkMobSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor world, MobSpawnType reason,
-                                           BlockPos pos, Random randomIn, CallbackInfoReturnable<Boolean> cir) {
+                                           BlockPos pos, RandomSource randomIn, CallbackInfoReturnable<Boolean> cir) {
         LimitMobSpawn.SpawnCheckResult checkResult = LimitMobSpawn.allowSpawning(world, pos, entityType, reason);
         if (checkResult == LimitMobSpawn.SpawnCheckResult.DENY) {
             LimitMobSpawn.LOGGER.log(LimitMobSpawn.LOG_LEVEL, LMSEventHandler.LMS_MARKER, "MobEntity#checkMobSpawnRules denied spawning of {} by {} at {}.", entityType, reason, pos);

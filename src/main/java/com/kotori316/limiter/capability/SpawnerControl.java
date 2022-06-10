@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class SpawnerControl implements INBTSerializable<CompoundTag> {
@@ -42,10 +42,10 @@ public class SpawnerControl implements INBTSerializable<CompoundTag> {
             '}';
     }
 
-    public List<TextComponent> getMessages() {
+    public List<Component> getMessages() {
         return Arrays.asList(
-            new TextComponent("SpawnerControl"),
-            new TextComponent("SpawnCount: " + getSpawnCount())
+            Component.literal("SpawnerControl"),
+            Component.literal("SpawnCount: " + getSpawnCount())
         );
     }
 }

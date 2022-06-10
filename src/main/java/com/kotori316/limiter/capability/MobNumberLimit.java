@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +51,7 @@ public final class MobNumberLimit implements INBTSerializable<CompoundTag> {
             return Optional.empty();
         } else {
             return Optional.of(
-                new TextComponent(map.entrySet().stream()
+                Component.literal(map.entrySet().stream()
                     .map(e -> "%s%s%s: %d".formatted(ChatFormatting.AQUA, e.getKey(), ChatFormatting.RESET, e.getValue()))
                     .collect(Collectors.joining("\n")))
             );

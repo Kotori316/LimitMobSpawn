@@ -1,7 +1,9 @@
 {
     "pack": {
         "description": "limit-mob-spawn resources",
-        "pack_format": 8,
-        "_comment": "V7"
+        "pack_format": 9,
+        "forge:resource_pack_format": 9,
+        "forge:data_pack_format": 10,
+        "_comment": "V9"
     }
 }
