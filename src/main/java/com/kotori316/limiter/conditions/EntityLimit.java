@@ -49,8 +49,8 @@ public class EntityLimit implements TestSpawn {
     @Override
     public String toString() {
         return "EntityLimit{" +
-            "type=" + type + '(' + type.getRegistryName() + ')' +
-            '}';
+               "type=" + type + '(' + EntityType.getKey(type) + ')' +
+               '}';
     }
 
     @Override

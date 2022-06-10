@@ -16,6 +16,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.TestSpawn;
@@ -42,7 +43,7 @@ public record BiomeLimit(@Nonnull ResourceKey<Biome> biomeResourceKey) implement
     }
 
     public boolean test(Biome biome) {
-        return biomeResourceKey.location().equals(biome.getRegistryName());
+        return biomeResourceKey.location().equals(ForgeRegistries.BIOMES.getKey(biome));
     }
 
     @Override

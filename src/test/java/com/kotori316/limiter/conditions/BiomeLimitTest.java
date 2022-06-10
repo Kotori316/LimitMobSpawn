@@ -46,6 +46,6 @@ class BiomeLimitTest extends BeforeAllTest {
     void cycle(ResourceKey<Biome> key, Biome biome) {
         BiomeLimit limit = new BiomeLimit(key);
         testCycle(limit);
-        assertEquals(limit, new BiomeLimit(Objects.requireNonNull(biome.getRegistryName())));
+        assertEquals(limit, new BiomeLimit(Objects.requireNonNull(ForgeRegistries.BIOMES.getKey(biome))));
     }
 }

@@ -16,19 +16,20 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.VisibleForTesting;
 
-import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.SpawnConditionLoader;
 import com.kotori316.limiter.TestSpawn;
 
 public class TestSpawnArgument implements ArgumentType<TestSpawn> {
+    /**
+     * The function was moved to {@link com.kotori316.limiter.mixin.ArgumentTypesMixin mixin}
+     * because of a need to register the object in private fields in {@link net.minecraft.commands.synchronization.ArgumentTypeInfos the class}.
+     */
     public static void registerArgumentType() {
-        ArgumentTypes.register(LimitMobSpawn.MOD_ID + ":rule", TestSpawnArgument.class, new EmptyArgumentSerializer<>(TestSpawnArgument::new));
+        // Noop.
     }
 
     @Override
@@ -54,9 +55,9 @@ public class TestSpawnArgument implements ArgumentType<TestSpawn> {
 }
 
 class TestSpawnParser {
-    static final SimpleCommandExceptionType TYPE_NOT_FOUND = new SimpleCommandExceptionType(new TextComponent("Type not found."));
-    static final SimpleCommandExceptionType PROPERTY_NOT_FOUND = new SimpleCommandExceptionType(new TextComponent("Property not found."));
-    static final DynamicCommandExceptionType FAILED_CREATE_INSTANCE = new DynamicCommandExceptionType(o -> new TextComponent("Error " + o));
+    static final SimpleCommandExceptionType TYPE_NOT_FOUND = new SimpleCommandExceptionType(Component.literal("Type not found."));
+    static final SimpleCommandExceptionType PROPERTY_NOT_FOUND = new SimpleCommandExceptionType(Component.literal("Property not found."));
+    static final DynamicCommandExceptionType FAILED_CREATE_INSTANCE = new DynamicCommandExceptionType(o -> Component.literal("Error " + o));
     private final StringReader reader;
     private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestion = SuggestionsBuilder::buildFuture;
     private String ruleName;
