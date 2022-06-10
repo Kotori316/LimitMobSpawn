@@ -9,6 +9,11 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v19.0
+
+* Update for 1.19
+* Fixed error message shown in loading.
+
 ## v18.4
 
 * Added function to change the maximum number of mobs to spawn.
