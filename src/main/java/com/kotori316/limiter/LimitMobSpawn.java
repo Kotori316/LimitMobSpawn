@@ -2,6 +2,8 @@ package com.kotori316.limiter;
 
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.BlockGetter;
@@ -16,9 +18,9 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkConstants;
+import net.minecraftforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,14 +41,14 @@ public class LimitMobSpawn {
         //Make sure the mod being absent on the other network side does not cause the client to display the server as incompatible
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
         MinecraftForge.EVENT_BUS.register(this);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::register);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(LMSHandler::registerCapability);
         ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.getInstance().setup(common));
     }
 
-    public void setup(FMLCommonSetupEvent event) {
-        TestSpawnArgument.registerArgumentType();
+    public void register(RegisterEvent event) {
+        event.register(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, new ResourceLocation(LimitMobSpawn.MOD_ID + ":rule"), TestSpawnArgument::registerArgumentType);
     }
 
     @SubscribeEvent

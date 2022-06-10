@@ -16,6 +16,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -24,12 +27,8 @@ import com.kotori316.limiter.SpawnConditionLoader;
 import com.kotori316.limiter.TestSpawn;
 
 public class TestSpawnArgument implements ArgumentType<TestSpawn> {
-    /**
-     * The function was moved to {@link com.kotori316.limiter.mixin.ArgumentTypesMixin mixin}
-     * because of a need to register the object in private fields in {@link net.minecraft.commands.synchronization.ArgumentTypeInfos the class}.
-     */
-    public static void registerArgumentType() {
-        // Noop.
+    public static ArgumentTypeInfo<?, ?> registerArgumentType() {
+        return ArgumentTypeInfos.registerByClass(TestSpawnArgument.class, SingletonArgumentInfo.contextFree(TestSpawnArgument::new));
     }
 
     @Override
