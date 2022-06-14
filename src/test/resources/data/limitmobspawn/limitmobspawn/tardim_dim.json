@@ -1,0 +1,26 @@
+{
+  "deny": [
+    {
+      "values": [
+        {
+          "dim": "tardim:tardis_dimension",
+          "type": "dimension"
+        },
+        {
+          "values": [
+            {
+              "entity": "minecraft:zombie",
+              "type": "entity"
+            },
+            {
+              "entity": "minecraft:skeleton",
+              "type": "entity"
+            }
+          ],
+          "type": "or"
+        }
+      ],
+      "type": "and"
+    }
+  ]
+}

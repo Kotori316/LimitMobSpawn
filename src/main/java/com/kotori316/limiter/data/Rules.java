@@ -250,6 +250,18 @@ class Rules {
         return object;
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
+    JsonObject tardim_dim() {
+        JsonObject object = new JsonObject();
+        object.add("deny", as(
+            new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("tardim:tardis_dimension")))
+                .and(new Or(
+                    new EntityLimit(EntityType.ZOMBIE),
+                    new EntityLimit(EntityType.SKELETON)))
+        ));
+        return object;
+    }
+
     JsonObject allow_only_0() {
         JsonObject object = new JsonObject();
         object.addProperty("_comment", "Stop monsters from spawning in areas whose light level is over 0. As 1.18 do.");
