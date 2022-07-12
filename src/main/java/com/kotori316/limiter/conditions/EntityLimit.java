@@ -116,7 +116,7 @@ public class EntityLimit implements TestSpawn {
         @Override
         public Set<ResourceLocation> suggestions(String property, @Nullable SharedSuggestionProvider provider) {
             if (property.equals("entity")) {
-                return ForgeRegistries.ENTITIES.getKeys();
+                return ForgeRegistries.ENTITY_TYPES.getKeys();
             }
             return Collections.emptySet();
         }
