@@ -33,7 +33,7 @@ jobs:
           cache-disabled: true
       - name: Upload failed test report
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: build/reports/tests/*
           name: Test-Report
