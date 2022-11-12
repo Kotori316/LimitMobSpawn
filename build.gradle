@@ -264,12 +264,36 @@ task copyToDir(type: Copy, dependsOn: "build") {
     }
 }
 
+def PUBLISH_DEST_ENV_NAME = "drive_path"
 task copyToDrive(type: Copy, dependsOn: "build") {
-    def PATH_NAME = "drive_path"
     from(jar.getArchiveFile(), deobfJar.getArchiveFile(), srcJar.getArchiveFile())
-    into(file(java.util.Optional.ofNullable(System.getenv(PATH_NAME)).orElse(".")))
+    into(file(java.util.Optional.ofNullable(System.getenv(PUBLISH_DEST_ENV_NAME)).orElse(".")))
     onlyIf {
-        System.getenv(PATH_NAME) != null &&
-                Files.exists(Paths.get(System.getenv(PATH_NAME)))
+        System.getenv(PUBLISH_DEST_ENV_NAME) != null &&
+                Files.exists(Paths.get(System.getenv(PUBLISH_DEST_ENV_NAME)))
+    }
+}
+
+
+def tempDatapack = file("${project.buildDir}/tempDatapack")
+task copyPackMeta(type: Copy) {
+    from("src/main/resources/example.mcmeta")
+    rename("example.mcmeta", "pack.mcmeta")
+    into("$tempDatapack")
+}
+
+task copyPackData(type: Copy) {
+    dependsOn("runData")
+    from("src/test/resources/data/lms_example")
+    into("$tempDatapack/data/lms_example")
+}
+
+task createDataPack(type: Zip, dependsOn: ["copyPackMeta", "copyPackData"]) {
+    archiveFileName = "lms-example-${mcVersion()}.zip"
+    destinationDirectory = file(java.util.Optional.ofNullable(System.getenv(PUBLISH_DEST_ENV_NAME)).orElse(project.buildDir))
+    from(tempDatapack)
+    onlyIf {
+        System.getenv(PUBLISH_DEST_ENV_NAME) != null &&
+                Files.exists(Paths.get(System.getenv(PUBLISH_DEST_ENV_NAME)))
     }
 }
