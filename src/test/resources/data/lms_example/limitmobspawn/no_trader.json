@@ -1,0 +1,44 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "limitmobspawn"
+    }
+  ],
+  "deny": [
+    {
+      "type": "and",
+      "values": [
+        {
+          "type": "or",
+          "values": [
+            {
+              "type": "entity",
+              "entity": "minecraft:wandering_trader"
+            },
+            {
+              "type": "entity",
+              "entity": "minecraft:trader_llama"
+            }
+          ]
+        },
+        {
+          "type": "not",
+          "value": {
+            "type": "or",
+            "values": [
+              {
+                "type": "spawn_reason",
+                "spawn_reason": "spawn_egg"
+              },
+              {
+                "type": "spawn_reason",
+                "spawn_reason": "spawner"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

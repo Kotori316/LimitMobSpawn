@@ -21,6 +21,7 @@ public class LimitMobSpawnDataProvider {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         event.getGenerator().addProvider(event.includeServer(), new TestSpawnProvider(event.getGenerator()));
+        event.getGenerator().addProvider(event.includeServer(), new ExampleRuleProvider(event.getGenerator()));
     }
 
     private record TestSpawnProvider(DataGenerator dataGenerator) implements DataProvider {
@@ -41,6 +42,28 @@ public class LimitMobSpawnDataProvider {
         private List<Pair<String, JsonElement>> getData() {
             List<Pair<String, JsonElement>> list = new ArrayList<>();
             Rules.addAll(list);
+            return list;
+        }
+    }
+
+    private record ExampleRuleProvider(DataGenerator dataGenerator) implements DataProvider {
+
+        @Override
+        public void run(CachedOutput cache) throws IOException {
+            Path parent = dataGenerator.getOutputFolder().resolve("data/" + "lms_example" + "/" + LimitMobSpawn.MOD_ID);
+            for (Pair<String, JsonElement> pair : getData()) {
+                DataProvider.saveStable(cache, pair.getRight(), parent.resolve(pair.getLeft() + ".json"));
+            }
+        }
+
+        @Override
+        public String getName() {
+            return getClass().getName();
+        }
+
+        private List<Pair<String, JsonElement>> getData() {
+            List<Pair<String, JsonElement>> list = new ArrayList<>();
+            ExampleRules.addAll(list);
             return list;
         }
     }

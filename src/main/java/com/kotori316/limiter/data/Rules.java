@@ -38,6 +38,10 @@ class Rules {
     static void addAll(List<Pair<String, JsonElement>> list) {
         Rules rules = new Rules();
         Class<?>[] classes = {};
+        generateJson(list, rules);
+    }
+
+    static void generateJson(List<Pair<String, JsonElement>> list, Object rules) {
         Arrays.stream(rules.getClass().getDeclaredMethods())
             .filter(m -> (m.getModifiers() & Modifier.STATIC) == 0)
             .filter(m -> m.getParameterTypes().length == 0)
@@ -53,7 +57,7 @@ class Rules {
             });
     }
 
-    private static JsonArray as(TestSpawn... conditions) {
+    static JsonArray as(TestSpawn... conditions) {
         JsonArray array = new JsonArray();
         for (TestSpawn spawn : conditions) {
             array.add(spawn.toJson());
