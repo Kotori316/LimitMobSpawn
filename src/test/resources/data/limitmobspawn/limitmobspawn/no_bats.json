@@ -2,20 +2,20 @@
   "_comment": "Prevent spawning of bats, except from Spawn Egg.",
   "deny": [
     {
+      "type": "and",
       "values": [
         {
-          "entity": "minecraft:bat",
-          "type": "entity"
+          "type": "entity",
+          "entity": "minecraft:bat"
         },
         {
+          "type": "not",
           "value": {
-            "spawn_reason": "spawn_egg",
-            "type": "spawn_reason"
-          },
-          "type": "not"
+            "type": "spawn_reason",
+            "spawn_reason": "spawn_egg"
+          }
         }
-      ],
-      "type": "and"
+      ]
     }
   ]
 }

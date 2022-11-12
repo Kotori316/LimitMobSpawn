@@ -1,13 +1,13 @@
 {
-  "deny": [
-    {
-      "classification": "monster",
-      "type": "classification"
-    }
-  ],
   "conditions": [
     {
       "type": "forge:true"
+    }
+  ],
+  "deny": [
+    {
+      "type": "classification",
+      "classification": "monster"
     }
   ]
 }

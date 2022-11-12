@@ -2,26 +2,26 @@
   "_comment": "Cancel 70% of spawning.",
   "deny": [
     {
+      "type": "and",
       "values": [
         {
-          "p": 0.7,
-          "type": "random"
+          "type": "random",
+          "p": 0.7
         },
         {
+          "type": "or",
           "values": [
             {
-              "spawn_reason": "natural",
-              "type": "spawn_reason"
+              "type": "spawn_reason",
+              "spawn_reason": "natural"
             },
             {
-              "spawn_reason": "reinforcement",
-              "type": "spawn_reason"
+              "type": "spawn_reason",
+              "spawn_reason": "reinforcement"
             }
-          ],
-          "type": "or"
+          ]
         }
-      ],
-      "type": "and"
+      ]
     }
   ]
 }

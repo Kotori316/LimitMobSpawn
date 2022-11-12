@@ -2,32 +2,32 @@
   "_comment": "In overworld, only witch spawns at night. Other monsters disappeared.",
   "default": [
     {
+      "type": "and",
       "values": [
         {
-          "entity": "minecraft:witch",
-          "type": "entity"
+          "type": "entity",
+          "entity": "minecraft:witch"
         },
         {
-          "dim": "minecraft:overworld",
-          "type": "dimension"
+          "type": "dimension",
+          "dim": "minecraft:overworld"
         }
-      ],
-      "type": "and"
+      ]
     }
   ],
   "deny": [
     {
+      "type": "and",
       "values": [
         {
-          "classification": "monster",
-          "type": "classification"
+          "type": "classification",
+          "classification": "monster"
         },
         {
-          "dim": "minecraft:overworld",
-          "type": "dimension"
+          "type": "dimension",
+          "dim": "minecraft:overworld"
         }
-      ],
-      "type": "and"
+      ]
     }
   ]
 }

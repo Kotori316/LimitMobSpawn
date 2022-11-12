@@ -2,18 +2,18 @@
   "_comment": "Stop monsters from spawning in areas whose light level is over 0. As 1.18 do.",
   "deny": [
     {
+      "type": "and",
       "values": [
         {
-          "classification": "monster",
-          "type": "classification"
+          "type": "classification",
+          "classification": "monster"
         },
         {
-          "level": 0,
+          "type": "light",
           "layer": "BLOCK",
-          "type": "light"
+          "level": 0
         }
-      ],
-      "type": "and"
+      ]
     }
   ]
 }

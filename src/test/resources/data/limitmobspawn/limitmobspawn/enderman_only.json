@@ -1,14 +1,14 @@
 {
   "_comment": "You'll see only Endermans in the world!",
-  "force": [
-    {
-      "entity": "minecraft:enderman",
-      "type": "entity"
-    }
-  ],
   "deny": [
     {
       "type": "all"
+    }
+  ],
+  "force": [
+    {
+      "type": "entity",
+      "entity": "minecraft:enderman"
     }
   ]
 }

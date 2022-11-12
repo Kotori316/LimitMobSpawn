@@ -2,26 +2,26 @@
   "_comment": "Prevent monsters from spawning naturally.",
   "deny": [
     {
+      "type": "and",
       "values": [
         {
-          "classification": "monster",
-          "type": "classification"
+          "type": "classification",
+          "classification": "monster"
         },
         {
+          "type": "or",
           "values": [
             {
-              "spawn_reason": "natural",
-              "type": "spawn_reason"
+              "type": "spawn_reason",
+              "spawn_reason": "natural"
             },
             {
-              "spawn_reason": "chunk_generation",
-              "type": "spawn_reason"
+              "type": "spawn_reason",
+              "spawn_reason": "chunk_generation"
             }
-          ],
-          "type": "or"
+          ]
         }
-      ],
-      "type": "and"
+      ]
     }
   ]
 }

@@ -1,35 +1,42 @@
 {
   "_comment": "Conditions in each category are combined by OR.",
+  "conditions": [
+    {
+      "type": "forge:true"
+    }
+  ],
   "default": [
     {
+      "type": "and",
       "values": [
         {
-          "entity": "minecraft:piglin",
-          "type": "entity"
+          "type": "entity",
+          "entity": "minecraft:piglin"
         },
         {
-          "dim": "minecraft:the_nether",
-          "type": "dimension"
+          "type": "dimension",
+          "dim": "minecraft:the_nether"
         }
-      ],
-      "type": "and"
+      ]
     },
     {
+      "type": "or",
       "values": [
         {
-          "classification": "creature",
-          "type": "classification"
+          "type": "classification",
+          "classification": "creature"
         },
         {
-          "classification": "misc",
-          "type": "classification"
+          "type": "classification",
+          "classification": "misc"
         }
-      ],
-      "type": "or"
+      ]
     },
     {
+      "type": "and",
       "values": [
         {
+          "type": "position",
           "pos1": [
             -500,
             0,
@@ -39,38 +46,31 @@
             500,
             256,
             500
-          ],
-          "type": "position"
+          ]
         },
         {
-          "dim": "minecraft:the_end",
-          "type": "dimension"
+          "type": "dimension",
+          "dim": "minecraft:the_end"
         }
-      ],
-      "type": "and"
+      ]
     }
   ],
   "deny": [
     {
-      "dim": "minecraft:overworld",
-      "type": "dimension"
+      "type": "dimension",
+      "dim": "minecraft:overworld"
     },
     {
-      "dim": "minecraft:the_nether",
-      "type": "dimension"
+      "type": "dimension",
+      "dim": "minecraft:the_nether"
     },
     {
-      "dim": "minecraft:the_end",
-      "type": "dimension"
+      "type": "dimension",
+      "dim": "minecraft:the_end"
     },
     {
-      "entity": "minecraft:bat",
-      "type": "entity"
-    }
-  ],
-  "conditions": [
-    {
-      "type": "forge:true"
+      "type": "entity",
+      "entity": "minecraft:bat"
     }
   ]
 }

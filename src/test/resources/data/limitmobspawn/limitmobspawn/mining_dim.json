@@ -1,33 +1,33 @@
 {
   "_comment": "Stop spawning of Zombie and Skeleton in 'mining_dimension', which is modded dimension.",
-  "deny": [
-    {
-      "values": [
-        {
-          "dim": "mining_dimension:mining",
-          "type": "dimension"
-        },
-        {
-          "values": [
-            {
-              "entity": "minecraft:zombie",
-              "type": "entity"
-            },
-            {
-              "entity": "minecraft:skeleton",
-              "type": "entity"
-            }
-          ],
-          "type": "or"
-        }
-      ],
-      "type": "and"
-    }
-  ],
   "conditions": [
     {
-      "modid": "mining_dimension",
-      "type": "forge:mod_loaded"
+      "type": "forge:mod_loaded",
+      "modid": "mining_dimension"
+    }
+  ],
+  "deny": [
+    {
+      "type": "and",
+      "values": [
+        {
+          "type": "dimension",
+          "dim": "mining_dimension:mining"
+        },
+        {
+          "type": "or",
+          "values": [
+            {
+              "type": "entity",
+              "entity": "minecraft:zombie"
+            },
+            {
+              "type": "entity",
+              "entity": "minecraft:skeleton"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

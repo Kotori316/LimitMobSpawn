@@ -1,49 +1,56 @@
 {
   "_comment": "Conditions in each category are combined by OR.",
+  "conditions": [
+    {
+      "type": "forge:true"
+    }
+  ],
   "default": [
     {
-      "spawn_reason": "spawner",
-      "type": "spawn_reason"
+      "type": "spawn_reason",
+      "spawn_reason": "spawner"
     },
     {
-      "spawn_reason": "spawn_egg",
-      "type": "spawn_reason"
+      "type": "spawn_reason",
+      "spawn_reason": "spawn_egg"
     },
     {
+      "type": "and",
       "values": [
         {
+          "type": "not",
           "value": {
-            "dim": "minecraft:overworld",
-            "type": "dimension"
-          },
-          "type": "not"
+            "type": "dimension",
+            "dim": "minecraft:overworld"
+          }
         },
         {
-          "entity": "minecraft:ghast",
-          "type": "entity"
+          "type": "entity",
+          "entity": "minecraft:ghast"
         }
-      ],
-      "type": "and"
+      ]
     }
   ],
   "deny": [
     {
-      "dim": "minecraft:overworld",
-      "type": "dimension"
+      "type": "dimension",
+      "dim": "minecraft:overworld"
     },
     {
-      "dim": "minecraft:the_nether",
-      "type": "dimension"
+      "type": "dimension",
+      "dim": "minecraft:the_nether"
     },
     {
-      "dim": "minecraft:the_end",
-      "type": "dimension"
+      "type": "dimension",
+      "dim": "minecraft:the_end"
     }
   ],
   "force": [
     {
+      "type": "and",
       "values": [
         {
+          "type": "position",
           "pos1": [
             -64,
             0,
@@ -53,23 +60,23 @@
             64,
             256,
             64
-          ],
-          "type": "position"
+          ]
         },
         {
-          "dim": "minecraft:overworld",
-          "type": "dimension"
+          "type": "dimension",
+          "dim": "minecraft:overworld"
         },
         {
-          "entity": "minecraft:enderman",
-          "type": "entity"
+          "type": "entity",
+          "entity": "minecraft:enderman"
         }
-      ],
-      "type": "and"
+      ]
     },
     {
+      "type": "and",
       "values": [
         {
+          "type": "position",
           "pos1": [
             64,
             0,
@@ -79,24 +86,17 @@
             128,
             256,
             64
-          ],
-          "type": "position"
+          ]
         },
         {
-          "dim": "minecraft:overworld",
-          "type": "dimension"
+          "type": "dimension",
+          "dim": "minecraft:overworld"
         },
         {
-          "entity": "minecraft:witch",
-          "type": "entity"
+          "type": "entity",
+          "entity": "minecraft:witch"
         }
-      ],
-      "type": "and"
-    }
-  ],
-  "conditions": [
-    {
-      "type": "forge:true"
+      ]
     }
   ]
 }
