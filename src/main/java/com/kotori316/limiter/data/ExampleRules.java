@@ -6,7 +6,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.crafting.conditions.FalseCondition;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,9 +17,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.kotori316.limiter.LimitMobSpawn;
 import com.kotori316.limiter.conditions.And;
 import com.kotori316.limiter.conditions.EntityLimit;
+import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Not;
 import com.kotori316.limiter.conditions.Or;
+import com.kotori316.limiter.conditions.PositionLimit;
 
 import static com.kotori316.limiter.data.Rules.as;
 
@@ -56,6 +61,19 @@ final class ExampleRules {
         JsonArray conditions = new JsonArray();
         conditions.add(ModLoadedCondition.Serializer.INSTANCE.getJson(new ModLoadedCondition(LimitMobSpawn.MOD_ID)));
         object.add("conditions", conditions);
+        return object;
+    }
+
+    JsonObject underground_only() {
+        JsonObject object = new JsonObject();
+        JsonArray conditions = new JsonArray();
+        conditions.add(FalseCondition.Serializer.INSTANCE.getJson(FalseCondition.INSTANCE));
+        object.add("conditions", conditions);
+        object.addProperty("_comment", "Hostile monsters only in underground");
+        object.add("deny", as(new And(
+            new MobCategoryLimit(MobCategory.MONSTER),
+            new PositionLimit(-Level.MAX_LEVEL_SIZE, 64, -Level.MAX_LEVEL_SIZE, Level.MAX_LEVEL_SIZE, Level.MAX_ENTITY_SPAWN_Y, Level.MAX_LEVEL_SIZE)
+        )));
         return object;
     }
 }

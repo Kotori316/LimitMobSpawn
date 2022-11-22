@@ -31,6 +31,7 @@ import com.kotori316.limiter.conditions.LightLevelLimit;
 import com.kotori316.limiter.conditions.MobCategoryLimit;
 import com.kotori316.limiter.conditions.MobSpawnTypeLimit;
 import com.kotori316.limiter.conditions.Or;
+import com.kotori316.limiter.conditions.PositionLimit;
 import com.kotori316.limiter.conditions.RandomLimit;
 
 @SuppressWarnings("unused")
@@ -270,6 +271,16 @@ class Rules {
         object.add("deny", as(new And(
             new MobCategoryLimit(MobCategory.MONSTER),
             new Or(new MobSpawnTypeLimit(MobSpawnType.NATURAL), new MobSpawnTypeLimit(MobSpawnType.CHUNK_GENERATION))
+        )));
+        return object;
+    }
+
+    JsonObject underground_only() {
+        JsonObject object = new JsonObject();
+        object.addProperty("_comment", "Hostile monsters only in underground");
+        object.add("deny", as(new And(
+            new MobCategoryLimit(MobCategory.MONSTER),
+            new PositionLimit(-Level.MAX_LEVEL_SIZE, 64, -Level.MAX_LEVEL_SIZE, Level.MAX_LEVEL_SIZE, Level.MAX_ENTITY_SPAWN_Y, Level.MAX_LEVEL_SIZE)
         )));
         return object;
     }

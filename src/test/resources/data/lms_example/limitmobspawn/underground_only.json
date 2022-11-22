@@ -1,0 +1,32 @@
+{
+  "_comment": "Hostile monsters only in underground",
+  "conditions": [
+    {
+      "type": "forge:false"
+    }
+  ],
+  "deny": [
+    {
+      "type": "and",
+      "values": [
+        {
+          "type": "classification",
+          "classification": "monster"
+        },
+        {
+          "type": "position",
+          "pos1": [
+            -30000000,
+            -30000000,
+            20000000
+          ],
+          "pos2": [
+            64,
+            30000000,
+            30000000
+          ]
+        }
+      ]
+    }
+  ]
+}
