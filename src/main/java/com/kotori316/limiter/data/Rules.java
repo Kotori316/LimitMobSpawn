@@ -8,7 +8,7 @@ import java.util.Locale;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -193,7 +193,7 @@ class Rules {
         {
             object.add("deny", as(
                 new And(
-                    new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("mining_dimension:mining"))),
+                    new DimensionLimit(ResourceKey.create(Registries.DIMENSION, new ResourceLocation("mining_dimension:mining"))),
                     new Or(
                         new EntityLimit(EntityType.ZOMBIE),
                         new EntityLimit(EntityType.SKELETON)
@@ -214,7 +214,7 @@ class Rules {
         JsonObject object = new JsonObject();
         {
             object.add("deny", as(
-                new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("gaiadimension:gaia_dimension")))
+                new DimensionLimit(ResourceKey.create(Registries.DIMENSION, new ResourceLocation("gaiadimension:gaia_dimension")))
                     .and(new Or(
                         new EntityLimit("gaiadimension:agate_golem            ".trim()),
                         new EntityLimit("gaiadimension:ancient_lagrahk        ".trim()),

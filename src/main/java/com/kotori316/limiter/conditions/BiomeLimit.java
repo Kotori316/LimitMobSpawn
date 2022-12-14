@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -30,7 +30,7 @@ public record BiomeLimit(@Nonnull ResourceKey<Biome> biomeResourceKey) implement
     }
 
     public BiomeLimit(@Nonnull ResourceLocation biome) {
-        this(ResourceKey.create(Registry.BIOME_REGISTRY, biome));
+        this(ResourceKey.create(Registries.BIOME, biome));
     }
 
     @Override
@@ -74,13 +74,13 @@ public record BiomeLimit(@Nonnull ResourceKey<Biome> biomeResourceKey) implement
             if (provider == null || !property.equals(saveKey()))
                 return Collections.emptySet();
             return provider.registryAccess()
-                .registryOrThrow(Registry.BIOME_REGISTRY)
+                .registryOrThrow(Registries.BIOME)
                 .keySet();
         }
 
         @Override
         public ResourceKey<Biome> fromString(String s) {
-            return ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(s));
+            return ResourceKey.create(Registries.BIOME, new ResourceLocation(s));
         }
 
         @Override

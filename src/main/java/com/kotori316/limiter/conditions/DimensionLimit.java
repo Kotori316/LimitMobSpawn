@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -27,7 +27,7 @@ public record DimensionLimit(ResourceKey<Level> type) implements TestSpawn {
     }
 
     public static DimensionLimit fromName(String name) {
-        return new DimensionLimit(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(name)));
+        return new DimensionLimit(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(name)));
     }
 
     @Override
@@ -77,7 +77,7 @@ public record DimensionLimit(ResourceKey<Level> type) implements TestSpawn {
 
         @Override
         public ResourceKey<Level> fromString(String s) {
-            return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(s));
+            return ResourceKey.create(Registries.DIMENSION, new ResourceLocation(s));
         }
 
         @Override

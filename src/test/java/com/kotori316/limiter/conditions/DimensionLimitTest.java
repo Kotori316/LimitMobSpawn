@@ -3,7 +3,7 @@ package com.kotori316.limiter.conditions;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.JsonOps;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -24,8 +24,8 @@ class DimensionLimitTest extends BeforeAllTest {
             Level.OVERWORLD,
             Level.NETHER,
             Level.END,
-            ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("mining_dimension:mining")),
-            ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("kick:gaia_dimension45"))
+            ResourceKey.create(Registries.DIMENSION, new ResourceLocation("mining_dimension:mining")),
+            ResourceKey.create(Registries.DIMENSION, new ResourceLocation("kick:gaia_dimension45"))
         );
     }
 

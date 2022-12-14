@@ -1,9 +1,9 @@
 package com.kotori316.limiter.data;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonElement;
 import net.minecraft.data.CachedOutput;
@@ -27,11 +27,11 @@ public class LimitMobSpawnDataProvider {
     private record TestSpawnProvider(DataGenerator dataGenerator) implements DataProvider {
 
         @Override
-        public void run(CachedOutput cache) throws IOException {
-            Path parent = dataGenerator.getOutputFolder().resolve("data/" + LimitMobSpawn.MOD_ID + "/" + LimitMobSpawn.MOD_ID);
-            for (Pair<String, JsonElement> pair : getData()) {
-                DataProvider.saveStable(cache, pair.getRight(), parent.resolve(pair.getLeft() + ".json"));
-            }
+        public CompletableFuture<?> run(CachedOutput cache) {
+            Path parent = dataGenerator.getPackOutput().getOutputFolder().resolve("data/" + LimitMobSpawn.MOD_ID + "/" + LimitMobSpawn.MOD_ID);
+            return CompletableFuture.allOf(getData().stream().map(pair ->
+                DataProvider.saveStable(cache, pair.getRight(), parent.resolve(pair.getLeft() + ".json"))
+            ).toArray(CompletableFuture[]::new));
         }
 
         @Override
@@ -49,11 +49,11 @@ public class LimitMobSpawnDataProvider {
     private record ExampleRuleProvider(DataGenerator dataGenerator) implements DataProvider {
 
         @Override
-        public void run(CachedOutput cache) throws IOException {
-            Path parent = dataGenerator.getOutputFolder().resolve("data/" + "lms_example" + "/" + LimitMobSpawn.MOD_ID);
-            for (Pair<String, JsonElement> pair : getData()) {
-                DataProvider.saveStable(cache, pair.getRight(), parent.resolve(pair.getLeft() + ".json"));
-            }
+        public CompletableFuture<?> run(CachedOutput cache) {
+            Path parent = dataGenerator.getPackOutput().getOutputFolder().resolve("data/" + "lms_example" + "/" + LimitMobSpawn.MOD_ID);
+            return CompletableFuture.allOf(getData().stream().map(pair ->
+                DataProvider.saveStable(cache, pair.getRight(), parent.resolve(pair.getLeft() + ".json"))
+            ).toArray(CompletableFuture[]::new));
         }
 
         @Override

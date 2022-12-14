@@ -2,7 +2,7 @@ package com.kotori316.limiter;
 
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -48,7 +48,7 @@ public class LimitMobSpawn {
     }
 
     public void register(RegisterEvent event) {
-        event.register(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, new ResourceLocation(LimitMobSpawn.MOD_ID + ":rule"), TestSpawnArgument::registerArgumentType);
+        event.register(Registries.COMMAND_ARGUMENT_TYPE, new ResourceLocation(LimitMobSpawn.MOD_ID + ":rule"), TestSpawnArgument::registerArgumentType);
     }
 
     @SubscribeEvent
