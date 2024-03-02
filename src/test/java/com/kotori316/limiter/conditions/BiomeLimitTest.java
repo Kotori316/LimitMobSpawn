@@ -31,7 +31,7 @@ class BiomeLimitTest extends BeforeAllTest {
     static Stream<Arguments> registeredBiomes() {
         var key = ResourceKey.create(ForgeRegistries.Keys.BIOMES, new ResourceLocation(LimitMobSpawn.MOD_ID, "test_biome"));
         var biome = new Biome.BiomeBuilder()
-            .precipitation(Biome.Precipitation.NONE)
+            .hasPrecipitation(false)
             .temperature(0.5F)
             .downfall(0.5F)
             .specialEffects(new BiomeSpecialEffects.Builder()
