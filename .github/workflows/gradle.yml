@@ -11,29 +11,16 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    container:
-      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.19.3
-      credentials:
-        username: kotori316
-        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
-          cache-disabled: true
-      - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: runData
-          cache-disabled: true
+      - uses: actions/checkout@v4
+      - run: chmod +x ./gradlew
+      - run: ./gradlew assemble
+      - run: ./gradlew test
+      - run: ./gradlew runData
       - name: Upload failed test report
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: build/reports/tests/*
-          name: Test-Report
+          name: Test-Report-LMS
