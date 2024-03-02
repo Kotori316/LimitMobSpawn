@@ -1,0 +1,16 @@
+name: Release
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    permissions:
+      id-token: write
+      contents: write
+      packages: write
+    # See https://github.com/Kotori316/common-script/blob/main/.github/workflows/release-prod-gradle.yaml
+    uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@main'
+    with:
+      release_command: 'checkReleaseVersion assemble publishToMavenLocal curseforge registerVersion publish'
+      enable_signature_check: true
+    secrets: inherit
