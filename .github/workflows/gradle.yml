@@ -21,6 +21,7 @@ jobs:
       - run: chmod +x ./gradlew
       - run: ./gradlew assemble
       - run: ./gradlew test
+      - run: ./gradlew downloadAssets || ./gradlew downloadAssets || true
       - run: ./gradlew runData
       - name: Upload failed test report
         if: failure()

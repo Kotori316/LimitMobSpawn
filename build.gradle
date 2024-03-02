@@ -177,7 +177,7 @@ tasks.register('signKeyStoreJar') {
 
 curseforge {
     final File file = file("changelog.md")
-    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: ""
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
     project {
         id = '449932'
         changelogType = 'markdown'

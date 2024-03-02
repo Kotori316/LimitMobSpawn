@@ -9,6 +9,10 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v20.1.0
+
+* Update for 1.20.1
+
 ## v19.3
 
 * Update to 1.19.2
