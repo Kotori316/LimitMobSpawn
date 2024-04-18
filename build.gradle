@@ -87,6 +87,13 @@ repositories {
         name = "Mixin"
         url = 'https://repo.spongepowered.org/maven'
     }
+    maven {
+        name = "Curse"
+        url = uri("https://www.cursemaven.com")
+        content {
+            includeGroup("curse.maven")
+        }
+    }
 }
 
 
@@ -100,6 +107,8 @@ dependencies {
     testImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: JUPITER_VERSION)
     testRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: JUPITER_VERSION)
     testImplementation(group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2')
+    // Runtime test dependencies.
+    runtimeOnly(fg.deobf("curse.maven:crackers-wither-storm-mod-621405:4995110"))
 }
 
 mixin {
