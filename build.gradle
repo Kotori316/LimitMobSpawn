@@ -267,7 +267,7 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     platform = "forge"
     platformVersion = project.findProperty("forgeVersion") as String
     modName = "limitmobspawn"
-    changelog = "For ${mcVersion()}"
+    changelog = "${project.version} for ${mcVersion()}"
     homepage = "https://www.curseforge.com/minecraft/mc-mods/limit-mob-spawn"
 }
 
