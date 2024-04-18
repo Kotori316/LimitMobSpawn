@@ -9,6 +9,11 @@
 
 [action details]: https://github.com/Kotori316/LimitMobSpawn/actions/workflows/gradle.yml
 
+## v20.1.1
+
+* Add a config option `affectBosses`
+  * If true, rules can affect spawning of boss monster.
+
 ## v20.1.0
 
 * Update for 1.20.1
